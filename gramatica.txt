@@ -1,0 +1,32 @@
+expresiones:
+-suma
+-resta
+-multiplicacion
+-division
+-umenos
+
+-and 
+-or
+-not
+
+-mayor que
+-menor que
+-mayor igual
+-menor igual 
+-igual igual
+-diferente
+
+-if
+-switch
+
+-for
+-while
+-do while
+
+-arreglos
+-structs
+
+-funciones
+-metodos
+-nativas
+

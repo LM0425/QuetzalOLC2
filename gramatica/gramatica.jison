@@ -11,6 +11,7 @@
 
 
 ";"                 return 'RPTCOMA';
+","					return 'RCOMA';
 "("                 return 'RPARIZQ';
 ")"                 return 'RPARDER';
 "["                 return 'RCORIZQ';
@@ -24,8 +25,12 @@
 'struct'            return 'RSTRUCT';
 'int'               return 'RINT';
 'double'            return 'RDOUBLE';
+'float'				return 'RFLOAT';
+'String'            return 'RSTRING';
+'char'				return 'RCHAR'
+'boolean'			return 'RBOOLEAN';
+'null'				return 'RNULL';
 '=='                return 'RIGUALIGUAL';
-'string'            return 'RSTRING';
 '!='                return 'RDIFERENTE';
 '!'                 return 'RNOT';
 '>='                return 'RMAYORIGUAL';
@@ -91,15 +96,33 @@ ini
 ;
 
 instrucciones
-	: instruccion instrucciones
+	: instrucciones instruccion
 	| instruccion
 	| error { console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
 ;
 
 instruccion
-	: REVALUAR CORIZQ expresion CORDER PTCOMA {
-		console.log('El valor de la expresión es: ' + $3);
-	}
+	: variables RPTCOMA
+;
+
+variables
+	: tipo ID RIGUAL expresion { console.log("Variable declarada de tipo " + $1 + " con nombre " + $2 + "y valor " + $4);}
+	| tipo listaid { console.log("lista de variables de tipo " + $1 + " con variables " + $2);}
+	| ID RIGUAL expresion { console.log("asignacion a variable " + $1 + " de neuvo valor " + $3);}
+;
+
+listaid
+	: listaid RCOMA ID {$1.append($3); $$ = $1 }
+	| ID { $$ = [$1];}
+;
+
+tipo
+	: RINT
+	| RDOUBLE
+	| RFLOAT
+	| RSTRING
+	| RCHAR
+	| RBOOLEAN
 ;
 
 expresion

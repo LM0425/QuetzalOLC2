@@ -10,11 +10,19 @@
 %%
 
 "Evaluar"           return 'REVALUAR';
+'int'               return 'RINT';
+'double'            return 'RDOUBLE';
+'float'				return 'RFLOAT';
+'String'            return 'RSTRING';
+'char'				return 'RCHAR'
+'boolean'			return 'RBOOLEAN';
 ";"                 return 'PTCOMA';
+","					return 'RCOMA';
 "("                 return 'PARIZQ';
 ")"                 return 'PARDER';
 "["                 return 'CORIZQ';
 "]"                 return 'CORDER';
+"="					return 'RIGUAL';
 
 "+"                 return 'MAS';
 "-"                 return 'MENOS';
@@ -27,6 +35,9 @@
 
 [0-9]+("."[0-9]+)?\b    return 'DECIMAL';
 [0-9]+\b                return 'ENTERO';
+[a-zA-Z][a-zA-Z_0-9]*   return 'ID';
+[\"[^\']*?\"]    		return  'CADENA';
+[\'[^\'\\]\'] return 'CARACTER';
 
 <<EOF>>                 return 'EOF';
 
@@ -54,9 +65,27 @@ instrucciones
 ;
 
 instruccion
-	: REVALUAR CORIZQ expresion CORDER PTCOMA {
-		console.log('El valor de la expresión es: ' + $3);
-	}
+	: variables PTCOMA
+;
+
+variables
+	: tipo ID RIGUAL expresion { console.log("Variable declarada de tipo " + $1 + " con nombre " + $2 + "y valor " + $4);}
+	| tipo listaid { console.log("lista de variables de tipo " + $1 + " con variables " + $2);}
+	| ID RIGUAL expresion { console.log("asignacion a variable " + $1 + " de neuvo valor " + $3);}
+;
+
+listaid
+	: listaid RCOMA ID {$$ = $1; $$.push($3); }
+	| ID { $$ = new Array(); $$.push($1); }
+;
+
+tipo
+	: RINT
+	| RDOUBLE
+	| RFLOAT
+	| RSTRING
+	| RCHAR
+	| RBOOLEAN
 ;
 
 expresion
@@ -68,4 +97,5 @@ expresion
 	| ENTERO                        { $$ = Number($1); }
 	| DECIMAL                       { $$ = Number($1); }
 	| PARIZQ expresion PARDER       { $$ = $2; }
+	| CADENA 						{ $$ = $1;}
 ;
