@@ -24,6 +24,12 @@ class Aritmetica {
         if (this.operador === Tipo_1.OperadorAritmetico.MAS) {
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
                 this.tipo = Tipo_1.Tipo.INT;
+                return Number(izq) + Number(der);
+            }
+        }
+        if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
                 return izq + der;
             }
         }

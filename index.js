@@ -7,8 +7,9 @@ document.getElementById("eventoAnalizar").addEventListener("click", displayDate)
 
 function displayDate() {
     console.log("Analizando");
+    var textoIngresado = document.getElementById('txCodigo').value;
     
-    const instrucciones = gramatica.parse("print(10.56);");
+    const instrucciones = gramatica.parse(textoIngresado);
     const ast = new AST.AST(instrucciones);
     const entornoGlobal = new Entorno.Entorno(null);
     ast.setTSglobal(entornoGlobal);
@@ -22,14 +23,13 @@ function displayDate() {
     console.log(ast.getConsola());
 }
 
-// function analizar(entrada) {
-    
-//     console.log("analizar");
-//     console.log(entrada);
-//     try {
-//         test=gramatica.parse(entrada);
-//         console.log("test",test)
-//     } catch (error) {
-//         console.log(error);   
+// function numeracion(e) {
+//     let eArea = document.getElementById('areaNumeracion');
+//     let eArea2 = document.getElementById('txCodigo');
+//     let numeros = eArea2.value.split("\n").length;
+//     let msj="";
+//     for (let i = 0; i < numeros; i++) {
+//         msj += i + "\n";
 //     }
+//     eArea.value=msj;
 // }

@@ -7,6 +7,16 @@
 
 %options case-insensitive
 
+escapeChar              [\'\"\\bfnrtv]
+escape                  \\{escapeChar}
+acceptedCharDouble      [^\"\\]+
+stringDouble            {escape}|{acceptedCharDouble}
+stringLiteral           \"{stringDouble}\"
+
+acceptedCharSingle      [^\'\\]
+stringSingle            {escape}|{acceptedCharDouble}
+charLiteral             \'{stringDouble}\'
+
 %%
 
 ";"                 return 'PTCOMA';
@@ -47,6 +57,8 @@
 'String'            return 'RSTRING';
 'char'				return 'RCHAR'
 'boolean'			return 'RBOOLEAN';
+'true'				return 'RTRUE';
+'false'				return 'RFALSE';
 'void'				return 'RVOID';
 'null'				return 'RNULL';
 
@@ -62,11 +74,19 @@
 [//.*]             	{}
 [/\*(.|\n)*?\*/]    {}
 
-[0-9]+("."[0-9]+)?\b    return 'DECIMAL';
+[0-9]+\.[0-9]+\b    return 'DECIMAL';
 [0-9]+\b                return 'ENTERO';
 [a-zA-Z][a-zA-Z_0-9]*   return 'ID';
-[\"[^\']*?\"]    		return  'CADENA';
-[\'[^\'\\]\'] 			return 'CARACTER';
+// [\"[^\']*?\"]    		return  'CADENA';
+// [\'[^\'\\]\'] 			return 'CARACTER';
+{stringLiteral}         {
+                            yytext = yytext.substr(1, yyleng - 2)
+                            return 'CADENA'
+                        }
+{charLiteral}           {
+                            yytext = yytext.substr(1, yyleng - 2)
+                            return 'CARACTER'
+                        }
 
 <<EOF>>                 return 'EOF';
 
@@ -76,10 +96,10 @@
 /* Imports */
 
 %{
-	const { Primitivos } = require("./dist/Expresiones/Primitivos");
-	const { Aritmetica } = require("./dist/Expresiones/Aritmetica");
-	const { Imprimir } = require("./dist/Instrucciones/Imprimir");
-	const { Tipo, OperadorAritmetico } = require("./dist/AST/Tipo");
+	const { Primitivos } = require("./Expresiones/Primitivos");
+	const { Aritmetica } = require("./Expresiones/Aritmetica");
+	const { Imprimir } = require("./Instrucciones/Imprimir");
+	const { Tipo, OperadorAritmetico } = require("./AST/Tipo");
 %}
 /* Asociación de operadores y precedencia */
 
@@ -104,6 +124,7 @@ instrucciones
 instruccion
 	: variables PTCOMA { $$ = $1; }
 	| imprimir PTCOMA { $$ = $1; }
+	| llamada PTCOMA
 ;
 
 variables
@@ -128,14 +149,21 @@ tipo
 
 expresion
 	: MENOS expresion %prec UMENOS  { $$ = new Aritmetica(OperadorAritmetico.UMENOS, $2, null, @1.first_line, @1.first_column); }
-	| expresion MAS expresion       { $$ = new Aritmetica(OperadorAritmetico.MAS, $1, $2, @1.first_line, @1.first_column); }
-	| expresion MENOS expresion     { $$ = new Aritmetica(OperadorAritmetico.MENOS, $1, $2, @1.first_line, @1.first_column); }
-	| expresion POR expresion       { $$ = new Aritmetica(OperadorAritmetico.POR, $1, $2, @1.first_line, @1.first_column); }
-	| expresion DIVIDIDO expresion  { $$ = new Aritmetica(OperadorAritmetico.DIV, $1, $2, @1.first_line, @1.first_column); }
-	| ENTERO                        { $$ = new Primitivos(OperadorAritmetico.INT, $1, @1.first_line, @1.first_column); }
-	| DECIMAL                       { $$ = new Primitivos(OperadorAritmetico.DOUBLE, $1, @1.first_line, @1.first_column); }
+	| expresion MAS expresion       { $$ = new Aritmetica(OperadorAritmetico.MAS, $1, $3, @1.first_line, @1.first_column); }
+	| expresion MENOS expresion     { $$ = new Aritmetica(OperadorAritmetico.MENOS, $1, $3, @1.first_line, @1.first_column); }
+	| expresion POR expresion       { $$ = new Aritmetica(OperadorAritmetico.POR, $1, $3, @1.first_line, @1.first_column); }
+	| expresion DIVIDIDO expresion  { $$ = new Aritmetica(OperadorAritmetico.DIV, $1, $3, @1.first_line, @1.first_column); }
+	| ENTERO                        { $$ = new Primitivos(Tipo.INT, $1, @1.first_line, @1.first_column); }
+	| DECIMAL                       { $$ = new Primitivos(Tipo.DOUBLE, $1, @1.first_line, @1.first_column); }
+	| CADENA 						{ $$ = new Primitivos(Tipo.STRING, $1, @1.first_line, @1.first_column); }
+	| CARACTER						{ $$ = new Primitivos(Tipo.CHAR, $1, @1.first_line, @1.first_column); }
+	| RTRUE							{ $$ = new Primitivos(Tipo.BOOL, true, @1.first_line, @1.first_column); }
+	| RFALSE						{ $$ = new Primitivos(Tipo.BOOL, false, @1.first_line, @1.first_column); }
 	| PARIZQ expresion PARDER       { $$ = $2; }
-	| CADENA 						{ $$ = new Primitivos(Tipo.STRING, $1, @1.first_line, @1.first_column);}
+;
+
+llamada
+	: ID PARIZQ PARDER
 ;
 
 imprimir

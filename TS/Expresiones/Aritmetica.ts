@@ -6,14 +6,14 @@ import { OperadorAritmetico, Tipo } from "../AST/Tipo";
 
 export class Aritmetica implements Instruccion{
     
-    operador: any;
+    operador: OperadorAritmetico;
     opIzquierdo:any;
     opDerecho:any;
     fila: number;
     columna: number;
     tipo:Tipo
 
-    constructor(operador:any, opIzquierdo:any, opDerecho:any, fila:number, columna:number){
+    constructor(operador:OperadorAritmetico, opIzquierdo:any, opDerecho:any, fila:number, columna:number){
         this.operador = operador;
         this.opDerecho = opDerecho;
         this.opIzquierdo = opIzquierdo;
@@ -32,6 +32,14 @@ export class Aritmetica implements Instruccion{
 
         if(this.operador === OperadorAritmetico.MAS){
             if(this.opIzquierdo.tipo === Tipo.INT && this.opDerecho.tipo === Tipo.INT){
+                this.tipo = Tipo.INT;
+                return Number(izq) + Number(der);
+            }
+
+        }if(this.operador === OperadorAritmetico.MENOS){
+
+            if(this.opIzquierdo.tipo === Tipo.INT && this.opDerecho.tipo === Tipo.INT){
+                
                 this.tipo = Tipo.INT;
                 return izq + der;
             }

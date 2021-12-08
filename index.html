@@ -57,14 +57,17 @@
           <br>
         <div class="cols">
             <div>
-                <textarea name= "editorEntrada" id="editorEntrada"></textarea>
+                <!--<textarea name= "editorEntrada" id="editorEntrada"></textarea>-->
+                <textarea id="areaNumeracion" cols="1" rows="25" readonly></textarea>
+                <!--<textarea id="txCodigo" cols="70" rows="25" onkeyup="numeracion(event);"></textarea>-->
+                <textarea id="txCodigo" cols="70" rows="25" ></textarea>
             </div>
             <div>
                 <textarea id="editorSalida"></textarea>
             </div>
         </div>
         
-        <script>
+        <!-- <script>
             var editor=CodeMirror.fromTextArea(document.getElementById('editorEntrada'),{
                 mode:"javascript",
                 theme:"dracula",
@@ -78,7 +81,7 @@
                 lineNumbers:true
             });
             editor2.setSize("650","600")
-        </script>
+        </script> -->
         <!-- <script src="gramatica.js"></script> -->
         <script src="bundle.js"></script>
         
