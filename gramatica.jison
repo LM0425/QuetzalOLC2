@@ -9,25 +9,62 @@
 
 %%
 
-"Evaluar"           return 'REVALUAR';
+";"                 return 'RPTCOMA';
+","					return 'RCOMA';
+"("                 return 'RPARIZQ';
+")"                 return 'RPARDER';
+"["                 return 'RCORIZQ';
+"]"                 return 'RCORDER';
+"{"					return 'RLLAVEIZQ';
+"}"					return 'RLLAVEDER';
+":"					return	'RDOSPUNTOS'
+
+"+"                 return 'RMAS';
+"-"                 return 'RMENOS';
+"*"                 return 'RPOR';
+"/"                 return 'RDIVIDIDO';
+
+'struct'            return 'RSTRUCT';
 'int'               return 'RINT';
 'double'            return 'RDOUBLE';
 'float'				return 'RFLOAT';
 'String'            return 'RSTRING';
 'char'				return 'RCHAR'
 'boolean'			return 'RBOOLEAN';
-";"                 return 'PTCOMA';
-","					return 'RCOMA';
-"("                 return 'PARIZQ';
-")"                 return 'PARDER';
-"["                 return 'CORIZQ';
-"]"                 return 'CORDER';
-"="					return 'RIGUAL';
+'null'				return 'RNULL';
+'=='                return 'RIGUALIGUAL';
+'!='                return 'RDIFERENTE';
+'!'                 return 'RNOT';
+'>='                return 'RMAYORIGUAL';
+'<='                return 'RMENORIGUAL';
+'<'                 return 'RMENOR';
+'>'                 return 'RMAYOR';
+'&&'                return 'RAND';
+'||'                return 'ROR';
+'sin'               return 'RSIN';
+'log10'             return 'RLOG10';
+'cos'               return 'RCOS';
+'tan'               return 'RTAN';
+'sqrt'              return 'RSQRT';
+'='                 return 'RIGUAL';
+'\.'                return 'RPUNTO';
+'for'               return 'RFOR';
+'switch'            return 'RSWITCH';
+'breack'            return 'RBREACK';
+'case'              return 'RCASE';
+'default'           return 'RDEFAULT';
+'while'             return 'RWHILE';
+'do'                return  'RDO';
+'if'                return 'RIF';
+'else'              return  'RELSE';
+'in'                return  'RIN';
+'println'             return 'RPRINTLN';
+'print'             return 'RPRINT';
 
-"+"                 return 'MAS';
-"-"                 return 'MENOS';
-"*"                 return 'POR';
-"/"                 return 'DIVIDIDO';
+//comentarios
+
+[//.*]             {}
+[/\*(.|\n)*?\*/]    {}
 
 /* Espacios en blanco */
 [ \r\t]+            {}
@@ -46,8 +83,8 @@
 
 /* Asociación de operadores y precedencia */
 
-%left 'MAS' 'MENOS'
-%left 'POR' 'DIVIDIDO'
+%left 'MAS' 'MENOS' 'RMENOR' 'RMAYOR'
+%left 'POR' 'DIVIDIDO' 'RIGUALIGUAL' 'RMAYORIGUAL' 'RMENORIGUAL' 'RDIFERENTE'
 %left UMENOS
 
 %start ini
@@ -65,7 +102,68 @@ instrucciones
 ;
 
 instruccion
-	: variables PTCOMA
+	: variables RPTCOMA
+	| if_instruccion
+	| while_instruccion
+	| switch_instruccion
+	| funcion_instruccion
+	| llamar_funcion RPTCOMA
+	| imprimir RPTCOMA
+
+;
+
+imprimir
+	: RPRINTLN RPARIZQ l_expresiones RPARDER
+	| RPRINT RPARIZQ l_expresiones RPARDER
+;
+
+l_expresiones
+	: l_expresiones RCOMA expresion
+	| expresion
+;
+
+llamar_funcion
+	: ID RPARIZQ RPARDER
+	| ID RPARIZQ listaid RPARDER 
+;
+
+funcion_instruccion
+	: tipo ID RPARIZQ parametros RPARDER RLLAVEIZQ RLLAVEDER
+	| tipo ID RPARIZQ RPARDER RLLAVEIZQ RLLAVEDER
+;
+
+parametros
+	: parametros RCOMA parametro
+	| parametro
+;
+
+parametro
+	: tipo ID
+;
+
+switch_instruccion
+	: RSWITCH RPARIZQ expresion RPARDER RLLAVEIZQ l_case RDEFAULT RDOSPUNTOS instrucciones RLLAVEDER
+;
+
+l_case
+	: l_case case
+	| case
+;
+
+case
+	: RCASE expresion RDOSPUNTOS instrucciones
+	| RCASE expresion RDOSPUNTOS instrucciones RBREACK RPTCOMA
+;
+
+while_instruccion
+	: RWHILE RPARIZQ condicion RPARDER RLLAVEIZQ instrucciones RLLAVEDER
+	| RDO RLLAVEIZQ instrucciones RLLAVEDER RWHILE RPARIZQ condicion RPARDER RPTCOMA
+;
+
+if_instruccion
+	: RIF RPARIZQ condicion RPARDER RLLAVEIZQ instrucciones RLLAVEDER RELSE if_instruccion {}
+	| RIF RPARIZQ condicion RPARDER RLLAVEIZQ instrucciones RLLAVEDER RELSE RLLAVEIZQ instrucciones RLLAVEDER	{}
+	| RIF RPARIZQ condicion RPARDER RLLAVEIZQ instrucciones RLLAVEDER	{} 
 ;
 
 variables
@@ -88,6 +186,15 @@ tipo
 	| RBOOLEAN
 ;
 
+condicion
+	: expresion RMAYORIGUAL expresion	{}
+	| expresion RMENORIGUAL expresion		{}
+	| expresion RIGUALIGUAL expresion	{}
+	| expresion RDIFERENTE expresion {}
+	| expresion RMAYOR expresion	{}
+	| expresion RMENOR expresion	{}
+;
+
 expresion
 	: MENOS expresion %prec UMENOS  { $$ = $2 *-1; }
 	| expresion MAS expresion       { $$ = $1 + $3; }
@@ -98,4 +205,6 @@ expresion
 	| DECIMAL                       { $$ = Number($1); }
 	| PARIZQ expresion PARDER       { $$ = $2; }
 	| CADENA 						{ $$ = $1;}
+	| ID							{ $$ = $1; }
+	| llamar_funcion
 ;
