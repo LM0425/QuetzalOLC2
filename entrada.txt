@@ -1,0 +1,14 @@
+//Archivo de Entrada de prueba PROYECTO 1 - COMPI 2
+
+//print("Archivo de entrada");
+
+/* ------------
+    Comentario
+    Multilinea
+------------ */
+
+// ****** Tipos de datos ******
+
+//print("Tipos de datos: null, int, double, boolean, char, String");
+//print("Estructuras: Arreglos, Structs")
+
