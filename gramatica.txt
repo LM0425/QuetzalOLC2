@@ -16,12 +16,12 @@ expresiones:
 -igual igual
 -diferente
 
--if
--switch
+-if-----
+-switch----
 
 -for
--while
--do while
+-while--
+-do while-----
 
 -arreglos
 -structs
