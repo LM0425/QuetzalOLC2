@@ -39,15 +39,73 @@ exports.AST = AST;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Entorno = void 0;
+const Excepcion_1 = require("./Excepcion");
 class Entorno {
-    constructor(anterior) {
+    constructor(anterior = null) {
         this.tabla = {}; // Diccionario vacio, es como una tabla hash
         this.anterior = anterior;
+    }
+    setTabla(simbolo) {
+        if (this.tabla.hasOwnProperty(simbolo.indentificador.toLowerCase())) {
+            console.log("El simbolo ya existe");
+            return new Excepcion_1.Excepcion("Semantico", "Variable " + simbolo.indentificador + " ya existe", simbolo.fila, simbolo.columna);
+        }
+        else {
+            this.tabla[simbolo.indentificador.toLowerCase()] = simbolo;
+            console.log("simbolo insertado");
+            return null; // Se agrego correctamente
+        }
+    }
+    getTabla(identificador) {
+        let tablaActual;
+        while (tablaActual.tabla !== null) {
+            if (tablaActual.tabla.hasOwnProperty(identificador.toLowerCase())) {
+                console.log("Simbolo encontrado");
+                return tablaActual.tabla[identificador.toLowerCase()]; // Retorno Simbolo (variable)
+            }
+            else {
+                tablaActual = tablaActual.anterior;
+            }
+        }
+        return null; // No existe el simbolo
+    }
+    actualizarTabla(simbolo) {
+        let tablaActual;
+        let id = simbolo.indentificador.toLowerCase();
+        while (tablaActual.tabla !== null) {
+            if (tablaActual.tabla.hasOwnProperty(id)) {
+                if (tablaActual.tabla[id].getTipo() === simbolo.getTipo()) {
+                    console.log("Modificando simbolo");
+                    tablaActual.tabla[id].setValor(simbolo.getValor());
+                    return null;
+                }
+                else {
+                    console.log("Tipo diferente en modificacion");
+                    return new Excepcion_1.Excepcion("Semantico", "Tipo de valor difente al tipo del simbolo a modificar", simbolo.getFila(), simbolo.getColumna());
+                }
+            }
+            else {
+                tablaActual = tablaActual.anterior;
+            }
+        }
+        return new Excepcion_1.Excepcion("Semantico", "Variable no encontrada en Asignacion", simbolo.getFila(), simbolo.getColumna());
     }
     agregar(id, simbolo) {
         id = id.toLowerCase();
         simbolo.indentificador = simbolo.indentificador.toLowerCase();
         this.tabla[id] = simbolo;
+    }
+    agregarSimbolo(simbolo) {
+        let id = simbolo.indentificador.toLowerCase();
+        if (this.tabla.hasOwnProperty(id)) {
+            console.log("El simbolo ya existe");
+            return new Excepcion_1.Excepcion("Semantico", "Variable " + simbolo.indentificador + " ya existe", simbolo.fila, simbolo.columna);
+        }
+        else {
+            this.tabla[id] = simbolo;
+            console.log("simbolo insertado");
+            return null; // Se agrego correctamente
+        }
     }
     eliminar(id) {
         id = id.toLowerCase();
@@ -95,10 +153,28 @@ class Entorno {
             }
         }
     }
+    actualizarSimbolo(simbolo) {
+        let id = simbolo.indentificador.toLowerCase();
+        for (let e = this; e != null; e = e.anterior) {
+            const value = e.tabla[id];
+            if (value !== undefined) {
+                if (value.getTipo() === simbolo.getTipo()) {
+                    console.log("Modificando simbolo");
+                    e.tabla[id].setValor(simbolo.getValor());
+                    return null;
+                }
+                else {
+                    console.log("Tipo diferente en modificacion");
+                    return new Excepcion_1.Excepcion("Semantico", "Tipo de valor difente al tipo del simbolo a modificar", simbolo.getFila(), simbolo.getColumna());
+                }
+            }
+        }
+        return new Excepcion_1.Excepcion("Semantico", "Variable no encontrada en Asignacion", simbolo.getFila(), simbolo.getColumna());
+    }
 }
 exports.Entorno = Entorno;
 
-},{}],3:[function(require,module,exports){
+},{"./Excepcion":3}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Excepcion = void 0;
@@ -116,6 +192,45 @@ class Excepcion {
 exports.Excepcion = Excepcion;
 
 },{}],4:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Simbolo = void 0;
+class Simbolo {
+    constructor(identificador, tipo, fila, columna, valor) {
+        this.indentificador = identificador;
+        this.tipo = tipo;
+        this.fila = fila;
+        this.columna = columna;
+        this.valor = valor;
+    }
+    getId() {
+        return this.indentificador;
+    }
+    setId(identificador) {
+        this.indentificador = identificador;
+    }
+    getTipo() {
+        return this.tipo;
+    }
+    setTipo(tipo) {
+        this.tipo = tipo;
+    }
+    getValor() {
+        return this.valor;
+    }
+    setValor(valor) {
+        this.valor = valor;
+    }
+    getFila() {
+        return this.fila;
+    }
+    getColumna() {
+        return this.columna;
+    }
+}
+exports.Simbolo = Simbolo;
+
+},{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OperadorLogico = exports.OperadorRelacional = exports.OperadorAritmetico = exports.Tipo = void 0;
@@ -152,11 +267,11 @@ var OperadorRelacional;
 var OperadorLogico;
 (function (OperadorLogico) {
     OperadorLogico[OperadorLogico["AND"] = 0] = "AND";
-    OperadorLogico[OperadorLogico["NOT"] = 1] = "NOT";
-    OperadorLogico[OperadorLogico["OR"] = 2] = "OR";
+    OperadorLogico[OperadorLogico["OR"] = 1] = "OR";
+    OperadorLogico[OperadorLogico["NOT"] = 2] = "NOT";
 })(OperadorLogico = exports.OperadorLogico || (exports.OperadorLogico = {}));
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Aritmetica = void 0;
@@ -199,7 +314,83 @@ class Aritmetica {
 }
 exports.Aritmetica = Aritmetica;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":4}],6:[function(require,module,exports){
+},{"../AST/Excepcion":3,"../AST/Tipo":5}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Identificador = void 0;
+const Excepcion_1 = require("../AST/Excepcion");
+class Identificador {
+    constructor(identificador, fila, columna) {
+        this.identificador = identificador;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        let simbolo = table.getSimbolo(this.identificador);
+        if (simbolo === null)
+            return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
+        this.tipo = simbolo.getTipo();
+        return simbolo.getValor();
+    }
+}
+exports.Identificador = Identificador;
+
+},{"../AST/Excepcion":3}],8:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Logica = void 0;
+const Excepcion_1 = require("../AST/Excepcion");
+const Tipo_1 = require("../AST/Tipo");
+class Logica {
+    constructor(operador, opIzquierdo, opDerecho, fila, columna) {
+        this.operador = operador;
+        this.opIzquierdo = opIzquierdo;
+        this.opDerecho = opDerecho;
+        this.fila = fila;
+        this.columna = columna;
+        this.tipo = Tipo_1.Tipo.BOOL;
+    }
+    interpretar(tree, table) {
+        var izq = this.opIzquierdo.interpretar(tree, table);
+        if (izq instanceof Excepcion_1.Excepcion)
+            return izq;
+        if (this.opDerecho !== null) {
+            var der = this.opDerecho.interpretar(tree, table);
+            if (der instanceof Excepcion_1.Excepcion)
+                return der;
+        }
+        if (this.operador === Tipo_1.OperadorLogico.AND) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.BOOL && this.opDerecho.tipo === Tipo_1.Tipo.BOOL) {
+                return izq && der;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para &&.", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorLogico.OR) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.BOOL && this.opDerecho.tipo === Tipo_1.Tipo.BOOL) {
+                return izq || der;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para ||.", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorLogico.NOT) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.BOOL) {
+                return !izq;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para !.", this.fila, this.columna);
+            }
+        }
+        else {
+            return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
+        }
+    }
+}
+exports.Logica = Logica;
+
+},{"../AST/Excepcion":3,"../AST/Tipo":5}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Primitivos = void 0;
@@ -216,7 +407,345 @@ class Primitivos {
 }
 exports.Primitivos = Primitivos;
 
-},{}],7:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Relacional = void 0;
+const Excepcion_1 = require("../AST/Excepcion");
+const Tipo_1 = require("../AST/Tipo");
+class Relacional {
+    constructor(operador, opIzquierdo, opDerecho, fila, columna) {
+        this.operador = operador;
+        this.opIzquierdo = opIzquierdo;
+        this.opDerecho = opDerecho;
+        this.fila = fila;
+        this.columna = columna;
+        this.tipo = Tipo_1.Tipo.BOOL;
+    }
+    interpretar(tree, table) {
+        var izq = this.opIzquierdo.interpretar(tree, table);
+        if (izq instanceof Excepcion_1.Excepcion)
+            return izq;
+        var der = this.opDerecho.interpretar(tree, table);
+        if (der instanceof Excepcion_1.Excepcion)
+            return der;
+        if (this.operador === Tipo_1.OperadorRelacional.IGUALIGUAL) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return Number(izq) === Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return Number(izq) === parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return Number(izq) === der.charCodeAt(0);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return parseFloat(izq) === Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return parseFloat(izq) === parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return parseFloat(izq) === der.charCodeAt(0);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.BOOL && this.opDerecho.tipo === Tipo_1.Tipo.BOOL) {
+                return izq === der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return izq.charCodeAt(0) === Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return izq.charCodeAt(0) === parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return izq.charCodeAt(0) === der.charCodeAt(0);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                return izq === der;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para ==.", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorRelacional.DIFERENTE) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return Number(izq) !== Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return Number(izq) !== parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return Number(izq) !== der.charCodeAt(0);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return parseFloat(izq) !== Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return parseFloat(izq) !== parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return parseFloat(izq) !== der.charCodeAt(0);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.BOOL && this.opDerecho.tipo === Tipo_1.Tipo.BOOL) {
+                return izq !== der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return izq.charCodeAt(0) !== Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return izq.charCodeAt(0) !== parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return izq.charCodeAt(0) !== der.charCodeAt(0);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                return izq !== der;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para !=.", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorRelacional.MENORQUE) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return Number(izq) < Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return Number(izq) < parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return parseFloat(izq) < Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return parseFloat(izq) < parseFloat(der);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para <.", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorRelacional.MAYORQUE) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return Number(izq) > Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return Number(izq) > parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return parseFloat(izq) > Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return parseFloat(izq) > parseFloat(der);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para >.", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorRelacional.MENORIGUAL) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return Number(izq) <= Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return Number(izq) <= parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return parseFloat(izq) <= Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return parseFloat(izq) <= parseFloat(der);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para <=.", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorRelacional.MAYORIGUAL) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return Number(izq) >= Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return Number(izq) >= parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                return parseFloat(izq) >= Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                return parseFloat(izq) >= parseFloat(der);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo Erroneo de operando para >=.", this.fila, this.columna);
+            }
+        }
+        else {
+            return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
+        }
+    }
+}
+exports.Relacional = Relacional;
+
+},{"../AST/Excepcion":3,"../AST/Tipo":5}],11:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Asignacion = void 0;
+const Excepcion_1 = require("../AST/Excepcion");
+const Simbolo_1 = require("../AST/Simbolo");
+class Asignacion {
+    constructor(identificador, expresion, fila, columna) {
+        this.identificador = identificador;
+        this.expresion = expresion;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        let value = this.expresion.interpretar(tree, table);
+        if (value instanceof Excepcion_1.Excepcion)
+            return value;
+        let simbolo = new Simbolo_1.Simbolo(this.identificador, this.expresion.tipo, this.fila, this.columna, value);
+        let result = table.actualizarSimbolo(simbolo);
+        if (result instanceof Excepcion_1.Excepcion)
+            return result;
+        return null;
+    }
+}
+exports.Asignacion = Asignacion;
+
+},{"../AST/Excepcion":3,"../AST/Simbolo":4}],12:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Break = void 0;
+class Break {
+    constructor(fila, columna) {
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        return this;
+    }
+}
+exports.Break = Break;
+
+},{}],13:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Case = void 0;
+class Case {
+    constructor(expresion, instrucciones, fila, columna) {
+        this.expresion = expresion;
+        this.instrucciones = instrucciones;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        return this;
+    }
+}
+exports.Case = Case;
+
+},{}],14:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Declaracion = void 0;
+const Excepcion_1 = require("../AST/Excepcion");
+const Simbolo_1 = require("../AST/Simbolo");
+class Declaracion {
+    constructor(tipo, identficador, fila, columna, expresion) {
+        this.tipo = tipo;
+        this.identificador = identficador;
+        this.expresion = expresion;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        let value = null;
+        if (this.expresion !== null) {
+            value = this.expresion.interpretar(tree, table); // Valor a asignar a la variable
+            if (this.tipo !== this.expresion.tipo)
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato difente al tipo de la variable.", this.fila, this.columna);
+        }
+        for (let id of this.identificador) {
+            if (value instanceof Excepcion_1.Excepcion)
+                return value;
+            let simbolo = new Simbolo_1.Simbolo(id, this.tipo, this.fila, this.columna, value);
+            let result = table.agregarSimbolo(simbolo);
+            if (result instanceof Excepcion_1.Excepcion)
+                return result;
+        }
+        return null;
+    }
+}
+exports.Declaracion = Declaracion;
+
+},{"../AST/Excepcion":3,"../AST/Simbolo":4}],15:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Default = void 0;
+class Default {
+    constructor(instrucciones, fila, columna) {
+        this.instrucciones = instrucciones;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        return this;
+    }
+}
+exports.Default = Default;
+
+},{}],16:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.If = void 0;
+const Entorno_1 = require("../AST/Entorno");
+const Excepcion_1 = require("../AST/Excepcion");
+const Tipo_1 = require("../AST/Tipo");
+class If {
+    constructor(condicion, instruccionesIf, instruccionesElse, elseIf, fila, columna) {
+        this.condicion = condicion;
+        this.instruccionesIf = instruccionesIf;
+        this.instruccionesElse = instruccionesElse;
+        this.elseIf = elseIf;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        let condicionIf = this.condicion.interpretar(tree, table);
+        if (condicionIf instanceof Excepcion_1.Excepcion)
+            return condicionIf;
+        if (this.condicion.tipo === Tipo_1.Tipo.BOOL) {
+            if (condicionIf === true) {
+                let nuevaTabla = new Entorno_1.Entorno(table);
+                for (let instruccion of this.instruccionesIf) {
+                    let result = instruccion.interpretar(tree, nuevaTabla);
+                    if (result instanceof Excepcion_1.Excepcion) {
+                        tree.getExcepciones().push(result);
+                        tree.updateConsola(result.toString());
+                    }
+                }
+            }
+            else {
+                if (this.instruccionesElse !== null) {
+                    let nuevaTabla = new Entorno_1.Entorno(table);
+                    for (let instruccion of this.instruccionesIf) {
+                        let result = instruccion.interpretar(tree, nuevaTabla);
+                        if (result instanceof Excepcion_1.Excepcion) {
+                            tree.getExcepciones().push(result);
+                            tree.updateConsola(result.toString());
+                        }
+                        ;
+                    }
+                }
+                else if (this.elseIf !== null) {
+                    let result = this.elseIf.interpretar(tree, table);
+                    if (result instanceof Excepcion_1.Excepcion)
+                        return result;
+                }
+            }
+        }
+        else {
+            return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no booleano en condicion If.", this.fila, this.columna);
+        }
+    }
+}
+exports.If = If;
+
+},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Imprimir = void 0;
@@ -234,7 +763,71 @@ class Imprimir {
 }
 exports.Imprimir = Imprimir;
 
-},{}],8:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Switch = void 0;
+const Entorno_1 = require("../AST/Entorno");
+const Excepcion_1 = require("../AST/Excepcion");
+const Break_1 = require("./Break");
+class Switch {
+    constructor(expresion, cases, porDefecto, fila, columna) {
+        this.expresion = expresion;
+        this.cases = cases;
+        this.porDefecto = porDefecto;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        let condicion = this.expresion.interpretar(tree, table);
+        if (condicion instanceof Excepcion_1.Excepcion)
+            return condicion;
+        let cumple = false;
+        if (this.cases !== null) {
+            for (let caso of this.cases) {
+                let expresionCaso = caso.interpretar(tree, table);
+                if (expresionCaso instanceof Excepcion_1.Excepcion) {
+                    tree.getExcepciones().push(expresionCaso);
+                    tree.updateConsola(expresionCaso.toString());
+                    continue;
+                }
+                if (this.expresion.tipo === caso.expresion.tipo) {
+                    if (condicion === expresionCaso) {
+                        let nuevaTabla = new Entorno_1.Entorno(table);
+                        for (let instruccion of caso.instrucciones) {
+                            let result = instruccion.interpretar(tree, nuevaTabla);
+                            if (result instanceof Excepcion_1.Excepcion) {
+                                tree.getExcepciones().push(result);
+                                tree.updateConsola(result.toString());
+                            }
+                            if (result instanceof Break_1.Break) {
+                                cumple = true;
+                                return null;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!cumple) {
+            if (this.porDefecto !== null) {
+                let nuevaTabla = new Entorno_1.Entorno(table);
+                for (let instruccion of this.porDefecto.instrucciones) {
+                    let result = instruccion.interpretar(tree, nuevaTabla);
+                    if (result instanceof Excepcion_1.Excepcion) {
+                        tree.getExcepciones().push(result);
+                        tree.updateConsola(result.toString());
+                    }
+                    if (result instanceof Break_1.Break)
+                        return null;
+                }
+            }
+        }
+    }
+}
+exports.Switch = Switch;
+
+},{"../AST/Entorno":2,"../AST/Excepcion":3,"./Break":12}],19:[function(require,module,exports){
 (function (process){(function (){
 /* parser generated by jison 0.4.18 */
 /*
@@ -310,12 +903,12 @@ exports.Imprimir = Imprimir;
   }
 */
 var gramatica = (function(){
-var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,9],$V1=[1,11],$V2=[1,12],$V3=[1,13],$V4=[1,14],$V5=[1,15],$V6=[1,16],$V7=[1,10],$V8=[5,12,17,18,19,20,21,22,35],$V9=[8,16],$Va=[1,30],$Vb=[1,31],$Vc=[1,32],$Vd=[1,33],$Ve=[1,34],$Vf=[1,35],$Vg=[1,36],$Vh=[1,37],$Vi=[1,43],$Vj=[1,42],$Vk=[1,44],$Vl=[1,45],$Vm=[8,23,24,25,26,34],$Vn=[8,23,24,34];
+var o=function(k,v,o,l){for(o=o||{},l=k.length;l--;o[k[l]]=v);return o},$V0=[1,4],$V1=[1,12],$V2=[1,17],$V3=[1,18],$V4=[1,19],$V5=[1,20],$V6=[1,21],$V7=[1,14],$V8=[1,15],$V9=[1,16],$Va=[1,13],$Vb=[5,15,20,21,22,23,24,46,48,50,54,56,57,60],$Vc=[1,31],$Vd=[8,19],$Ve=[1,46],$Vf=[1,38],$Vg=[1,39],$Vh=[1,40],$Vi=[1,41],$Vj=[1,42],$Vk=[1,43],$Vl=[1,44],$Vm=[1,45],$Vn=[1,47],$Vo=[1,59],$Vp=[1,58],$Vq=[1,60],$Vr=[1,61],$Vs=[1,62],$Vt=[1,63],$Vu=[1,64],$Vv=[1,65],$Vw=[1,66],$Vx=[1,67],$Vy=[1,68],$Vz=[1,69],$VA=[8,19,25,26,27,28,29,30,31,32,33,34,35,36,45,55],$VB=[19,45],$VC=[8,19,35,36,45,55],$VD=[8,19,25,26,29,30,31,32,33,34,35,36,45,55],$VE=[8,19,29,30,31,32,33,34,35,36,45,55],$VF=[1,97],$VG=[54,56];
 var parser = {trace: function trace () { },
 yy: {},
-symbols_: {"error":2,"ini":3,"instrucciones":4,"EOF":5,"instruccion":6,"variables":7,"PTCOMA":8,"imprimir":9,"llamada":10,"tipo":11,"ID":12,"IGUAL":13,"expresion":14,"listaid":15,"COMA":16,"RINT":17,"RDOUBLE":18,"RFLOAT":19,"RSTRING":20,"RCHAR":21,"RBOOLEAN":22,"MENOS":23,"MAS":24,"POR":25,"DIVIDIDO":26,"ENTERO":27,"DECIMAL":28,"CADENA":29,"CARACTER":30,"RTRUE":31,"RFALSE":32,"PARIZQ":33,"PARDER":34,"RPRINT":35,"$accept":0,"$end":1},
-terminals_: {2:"error",5:"EOF",8:"PTCOMA",12:"ID",13:"IGUAL",16:"COMA",17:"RINT",18:"RDOUBLE",19:"RFLOAT",20:"RSTRING",21:"RCHAR",22:"RBOOLEAN",23:"MENOS",24:"MAS",25:"POR",26:"DIVIDIDO",27:"ENTERO",28:"DECIMAL",29:"CADENA",30:"CARACTER",31:"RTRUE",32:"RFALSE",33:"PARIZQ",34:"PARDER",35:"RPRINT"},
-productions_: [0,[3,2],[4,2],[4,1],[4,1],[6,2],[6,2],[6,2],[7,4],[7,2],[7,3],[15,3],[15,1],[11,1],[11,1],[11,1],[11,1],[11,1],[11,1],[14,2],[14,3],[14,3],[14,3],[14,3],[14,1],[14,1],[14,1],[14,1],[14,1],[14,1],[14,3],[10,3],[9,4]],
+symbols_: {"error":2,"ini":3,"instrucciones":4,"EOF":5,"instruccion":6,"variables":7,"PTCOMA":8,"imprimir":9,"llamada":10,"if":11,"switch":12,"break":13,"tipo":14,"ID":15,"IGUAL":16,"expresion":17,"listaid":18,"COMA":19,"RINT":20,"RDOUBLE":21,"RSTRING":22,"RCHAR":23,"RBOOLEAN":24,"MENOS":25,"MAS":26,"POR":27,"DIVIDIDO":28,"MENOR":29,"MAYOR":30,"MENORIGUAL":31,"MAYORIGUAL":32,"IGUALIGUAL":33,"DIFERENTE":34,"AND":35,"OR":36,"NOT":37,"ENTERO":38,"DECIMAL":39,"CADENA":40,"CARACTER":41,"RTRUE":42,"RFALSE":43,"PARIZQ":44,"PARDER":45,"RIF":46,"LLAVEIZQ":47,"LLAVEDER":48,"RELSE":49,"RSWITCH":50,"caselist":51,"default":52,"case":53,"RCASE":54,"DOSPT":55,"RDEFAULT":56,"RBREAK":57,"parametrosLlamada":58,"parametroLlamada":59,"RPRINT":60,"$accept":0,"$end":1},
+terminals_: {2:"error",5:"EOF",8:"PTCOMA",15:"ID",16:"IGUAL",19:"COMA",20:"RINT",21:"RDOUBLE",22:"RSTRING",23:"RCHAR",24:"RBOOLEAN",25:"MENOS",26:"MAS",27:"POR",28:"DIVIDIDO",29:"MENOR",30:"MAYOR",31:"MENORIGUAL",32:"MAYORIGUAL",33:"IGUALIGUAL",34:"DIFERENTE",35:"AND",36:"OR",37:"NOT",38:"ENTERO",39:"DECIMAL",40:"CADENA",41:"CARACTER",42:"RTRUE",43:"RFALSE",44:"PARIZQ",45:"PARDER",46:"RIF",47:"LLAVEIZQ",48:"LLAVEDER",49:"RELSE",50:"RSWITCH",54:"RCASE",55:"DOSPT",56:"RDEFAULT",57:"RBREAK",60:"RPRINT"},
+productions_: [0,[3,2],[4,2],[4,1],[4,1],[6,2],[6,2],[6,2],[6,1],[6,1],[6,2],[7,4],[7,2],[7,3],[18,3],[18,1],[14,1],[14,1],[14,1],[14,1],[14,1],[17,2],[17,3],[17,3],[17,3],[17,3],[17,3],[17,3],[17,3],[17,3],[17,3],[17,3],[17,3],[17,3],[17,2],[17,1],[17,1],[17,1],[17,1],[17,1],[17,1],[17,1],[17,3],[17,1],[11,7],[11,11],[11,9],[12,8],[51,2],[51,1],[53,4],[52,3],[13,1],[10,4],[10,3],[58,3],[58,1],[59,1],[9,4]],
 performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* action[1] */, $$ /* vstack */, _$ /* lstack */) {
 /* this == yyval */
 
@@ -327,70 +920,151 @@ break;
 case 2:
  $$[$0-1].push($$[$0]); this.$ = $$[$0-1];
 break;
-case 3:
+case 3: case 49: case 56:
  this.$ = [$$[$0]]; 
 break;
 case 4:
  console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); 
 break;
-case 5: case 6: case 30:
+case 5: case 6: case 7: case 10: case 42:
  this.$ = $$[$0-1]; 
 break;
-case 8:
- console.log("Variable declarada de tipo " + $$[$0-3] + " con nombre " + $$[$0-2] + " y valor " + $$[$0]);
-break;
-case 9:
- console.log("lista de variables de tipo " + $$[$0-1] + " con variables " + $$[$0]);
-break;
-case 10:
- console.log("asignacion a variable " + $$[$0-2] + " de nuevo valor " + $$[$0]);
+case 8: case 9: case 43:
+ this.$ = $$[$0]; 
 break;
 case 11:
-this.$ = $$[$0-2]; this.$.push($$[$0]); 
+ this.$ = new Declaracion($$[$0-3], [$$[$0-2]], _$[$0-3].first_line, _$[$0-3].first_column, $$[$0]); 
 break;
 case 12:
+ this.$ = new Declaracion($$[$0-1], $$[$0], _$[$0-1].first_line, _$[$0-1].first_column, null); 
+break;
+case 13:
+ this.$ = new Asignacion($$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+break;
+case 14:
+this.$ = $$[$0-2]; this.$.push($$[$0]); 
+break;
+case 15:
  this.$ = new Array(); this.$.push($$[$0]); 
 break;
+case 16:
+ this.$ = Tipo.INT; 
+break;
+case 17:
+ this.$ = Tipo.DOUBLE; 
+break;
+case 18:
+ this.$ = Tipo.STRING; 
+break;
 case 19:
- this.$ = new Aritmetica(OperadorAritmetico.UMENOS, $$[$0], null, _$[$0-1].first_line, _$[$0-1].first_column); 
+ this.$ = Tipo.CHAR; 
 break;
 case 20:
- this.$ = new Aritmetica(OperadorAritmetico.MAS, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+ this.$ = Tipo.BOOL; 
 break;
 case 21:
- this.$ = new Aritmetica(OperadorAritmetico.MENOS, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+ this.$ = new Aritmetica(OperadorAritmetico.UMENOS, $$[$0], null, _$[$0-1].first_line, _$[$0-1].first_column); 
 break;
 case 22:
- this.$ = new Aritmetica(OperadorAritmetico.POR, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+ this.$ = new Aritmetica(OperadorAritmetico.MAS, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 23:
- this.$ = new Aritmetica(OperadorAritmetico.DIV, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+ this.$ = new Aritmetica(OperadorAritmetico.MENOS, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 24:
- this.$ = new Primitivos(Tipo.INT, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+ this.$ = new Aritmetica(OperadorAritmetico.POR, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 25:
- this.$ = new Primitivos(Tipo.DOUBLE, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+ this.$ = new Aritmetica(OperadorAritmetico.DIV, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 26:
- this.$ = new Primitivos(Tipo.STRING, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+ this.$ = new Relacional(OperadorRelacional.MENORQUE, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 27:
- this.$ = new Primitivos(Tipo.CHAR, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+ this.$ = new Relacional(OperadorRelacional.MAYORQUE, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 28:
- this.$ = new Primitivos(Tipo.BOOL, true, _$[$0].first_line, _$[$0].first_column); 
+ this.$ = new Relacional(OperadorRelacional.MENORIGUAL, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 29:
- this.$ = new Primitivos(Tipo.BOOL, false, _$[$0].first_line, _$[$0].first_column); 
+ this.$ = new Relacional(OperadorRelacional.MAYORIGUAL, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+break;
+case 30:
+ this.$ = new Relacional(OperadorRelacional.IGUALIGUAL, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+break;
+case 31:
+ this.$ = new Relacional(OperadorRelacional.DIFERENTE, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
 break;
 case 32:
+ this.$ = new Logica(OperadorLogico.AND, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+break;
+case 33:
+ this.$ = new Logica(OperadorLogico.OR, $$[$0-2], $$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+break;
+case 34:
+ this.$ = new Logica(OperadorLogico.NOT, $$[$0], null, _$[$0-1].first_line, _$[$0-1].first_column); 
+break;
+case 35:
+ this.$ = new Primitivos(Tipo.INT, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+break;
+case 36:
+ this.$ = new Primitivos(Tipo.DOUBLE, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+break;
+case 37:
+ this.$ = new Primitivos(Tipo.STRING, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+break;
+case 38:
+ this.$ = new Primitivos(Tipo.CHAR, $$[$0], _$[$0].first_line, _$[$0].first_column); 
+break;
+case 39:
+ this.$ = new Primitivos(Tipo.BOOL, true, _$[$0].first_line, _$[$0].first_column); 
+break;
+case 40:
+ this.$ = new Primitivos(Tipo.BOOL, false, _$[$0].first_line, _$[$0].first_column); 
+break;
+case 41:
+ this.$ = new Identificador($$[$0], _$[$0].first_line, _$[$0].first_column); 
+break;
+case 44:
+ this.$ = new If($$[$0-4], $$[$0-1], null, null, _$[$0-6].first_line, _$[$0-6].first_column); 
+break;
+case 45:
+ this.$ = new If($$[$0-8], $$[$0-5], $$[$0-1], null, _$[$0-10].first_line, _$[$0-10].first_column); 
+break;
+case 46:
+ this.$ = new If($$[$0-6], $$[$0-3], null, $$[$0], _$[$0-8].first_line, _$[$0-8].first_column); 
+break;
+case 47:
+ this.$ = new Switch($$[$0-5], $$[$0-2], $$[$0-1], _$[$0-7].first_line, _$[$0-7].first_column); 
+break;
+case 48:
+ $$[$0-1].push($$[$0]); this.$ = $$[$0-1]; 
+break;
+case 50:
+ this.$ = new Case($$[$0-2], $$[$0], _$[$0-3].first_line, _$[$0-3].first_column); 
+break;
+case 51:
+ this.$ = new Default($$[$0], _$[$0-2].first_line, _$[$0-2].first_column); 
+break;
+case 52:
+ this.$ = new Break(_$[$0].first_line, _$[$0].first_column); 
+break;
+case 53: case 54:
+  
+break;
+case 55:
+ $$[$0-2].push($$[$0]); this.$ = $$[$0-2]; 
+break;
+case 57:
+ this.$ = $$[$0] 
+break;
+case 58:
  this.$ = new Imprimir($$[$0-1], _$[$0-3].first_line, _$[$0-3].first_column); 
 break;
 }
 },
-table: [{2:[1,4],3:1,4:2,6:3,7:5,9:6,10:7,11:8,12:$V0,17:$V1,18:$V2,19:$V3,20:$V4,21:$V5,22:$V6,35:$V7},{1:[3]},{5:[1,17],6:18,7:5,9:6,10:7,11:8,12:$V0,17:$V1,18:$V2,19:$V3,20:$V4,21:$V5,22:$V6,35:$V7},o($V8,[2,3]),o($V8,[2,4]),{8:[1,19]},{8:[1,20]},{8:[1,21]},{12:[1,22],15:23},{13:[1,24],33:[1,25]},{33:[1,26]},{12:[2,13]},{12:[2,14]},{12:[2,15]},{12:[2,16]},{12:[2,17]},{12:[2,18]},{1:[2,1]},o($V8,[2,2]),o($V8,[2,5]),o($V8,[2,6]),o($V8,[2,7]),o($V9,[2,12],{13:[1,27]}),{8:[2,9],16:[1,28]},{14:29,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},{34:[1,38]},{14:39,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},{14:40,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},{12:[1,41]},{8:[2,10],23:$Vi,24:$Vj,25:$Vk,26:$Vl},{14:46,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},o($Vm,[2,24]),o($Vm,[2,25]),o($Vm,[2,26]),o($Vm,[2,27]),o($Vm,[2,28]),o($Vm,[2,29]),{14:47,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},{8:[2,31]},{23:$Vi,24:$Vj,25:$Vk,26:$Vl,34:[1,48]},{8:[2,8],23:$Vi,24:$Vj,25:$Vk,26:$Vl},o($V9,[2,11]),{14:49,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},{14:50,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},{14:51,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},{14:52,23:$Va,27:$Vb,28:$Vc,29:$Vd,30:$Ve,31:$Vf,32:$Vg,33:$Vh},o($Vm,[2,19]),{23:$Vi,24:$Vj,25:$Vk,26:$Vl,34:[1,53]},{8:[2,32]},o($Vn,[2,20],{25:$Vk,26:$Vl}),o($Vn,[2,21],{25:$Vk,26:$Vl}),o($Vm,[2,22]),o($Vm,[2,23]),o($Vm,[2,30])],
-defaultActions: {11:[2,13],12:[2,14],13:[2,15],14:[2,16],15:[2,17],16:[2,18],17:[2,1],38:[2,31],48:[2,32]},
+table: [{2:$V0,3:1,4:2,6:3,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,50:$V8,57:$V9,60:$Va},{1:[3]},{5:[1,22],6:23,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,50:$V8,57:$V9,60:$Va},o($Vb,[2,3]),o($Vb,[2,4]),{8:[1,24]},{8:[1,25]},{8:[1,26]},o($Vb,[2,8]),o($Vb,[2,9]),{8:[1,27]},{15:[1,28],18:29},{16:[1,30],44:$Vc},{44:[1,32]},{44:[1,33]},{44:[1,34]},{8:[2,52]},{15:[2,16]},{15:[2,17]},{15:[2,18]},{15:[2,19]},{15:[2,20]},{1:[2,1]},o($Vb,[2,2]),o($Vb,[2,5]),o($Vb,[2,6]),o($Vb,[2,7]),o($Vb,[2,10]),o($Vd,[2,15],{16:[1,35]}),{8:[2,12],19:[1,36]},{10:48,15:$Ve,17:37,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:52,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn,45:[1,50],58:49,59:51},{10:48,15:$Ve,17:53,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:54,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:55,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:56,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{15:[1,57]},{8:[2,13],25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz},{10:48,15:$Ve,17:70,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:71,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},o($VA,[2,35]),o($VA,[2,36]),o($VA,[2,37]),o($VA,[2,38]),o($VA,[2,39]),o($VA,[2,40]),o($VA,[2,41],{44:$Vc}),{10:48,15:$Ve,17:72,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},o($VA,[2,43]),{19:[1,74],45:[1,73]},o($VA,[2,54]),o($VB,[2,56]),o($VB,[2,57],{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz}),{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz,45:[1,75]},{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz,45:[1,76]},{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz,45:[1,77]},{8:[2,11],25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz},o($Vd,[2,14]),{10:48,15:$Ve,17:78,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:79,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:80,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:81,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:82,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:83,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:84,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:85,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:86,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:87,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:88,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},{10:48,15:$Ve,17:89,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},o($VA,[2,21]),o($VC,[2,34],{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx}),{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz,45:[1,90]},o($VA,[2,53]),{10:48,15:$Ve,17:52,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn,59:91},{8:[2,58]},{47:[1,92]},{47:[1,93]},o($VD,[2,22],{27:$Vq,28:$Vr}),o($VD,[2,23],{27:$Vq,28:$Vr}),o($VA,[2,24]),o($VA,[2,25]),o($VE,[2,26],{25:$Vo,26:$Vp,27:$Vq,28:$Vr}),o($VE,[2,27],{25:$Vo,26:$Vp,27:$Vq,28:$Vr}),o($VE,[2,28],{25:$Vo,26:$Vp,27:$Vq,28:$Vr}),o($VE,[2,29],{25:$Vo,26:$Vp,27:$Vq,28:$Vr}),o($VE,[2,30],{25:$Vo,26:$Vp,27:$Vq,28:$Vr}),o($VE,[2,31],{25:$Vo,26:$Vp,27:$Vq,28:$Vr}),o($VC,[2,32],{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx}),o([8,19,36,45,55],[2,33],{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy}),o($VA,[2,42]),o($VB,[2,55]),{2:$V0,4:94,6:3,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,50:$V8,57:$V9,60:$Va},{51:95,53:96,54:$VF},{6:23,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,48:[1,98],50:$V8,57:$V9,60:$Va},{52:99,53:100,54:$VF,56:[1,101]},o($VG,[2,49]),{10:48,15:$Ve,17:102,25:$Vf,37:$Vg,38:$Vh,39:$Vi,40:$Vj,41:$Vk,42:$Vl,43:$Vm,44:$Vn},o($Vb,[2,44],{49:[1,103]}),{48:[1,104]},o($VG,[2,48]),{55:[1,105]},{25:$Vo,26:$Vp,27:$Vq,28:$Vr,29:$Vs,30:$Vt,31:$Vu,32:$Vv,33:$Vw,34:$Vx,35:$Vy,36:$Vz,55:[1,106]},{11:108,46:$V7,47:[1,107]},o($Vb,[2,47]),{2:$V0,4:109,6:3,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,50:$V8,57:$V9,60:$Va},{2:$V0,4:110,6:3,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,50:$V8,57:$V9,60:$Va},{2:$V0,4:111,6:3,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,50:$V8,57:$V9,60:$Va},o($Vb,[2,46]),{6:23,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,48:[2,51],50:$V8,57:$V9,60:$Va},o($VG,[2,50],{7:5,9:6,10:7,11:8,12:9,13:10,14:11,6:23,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,50:$V8,57:$V9,60:$Va}),{6:23,7:5,9:6,10:7,11:8,12:9,13:10,14:11,15:$V1,20:$V2,21:$V3,22:$V4,23:$V5,24:$V6,46:$V7,48:[1,112],50:$V8,57:$V9,60:$Va},o($Vb,[2,45])],
+defaultActions: {16:[2,52],17:[2,16],18:[2,17],19:[2,18],20:[2,19],21:[2,20],22:[2,1],75:[2,58]},
 parseError: function parseError (str, hash) {
     if (hash.recoverable) {
         this.trace(str);
@@ -639,10 +1313,21 @@ _handle_error:
     return true;
 }};
 
+	const { Tipo, OperadorAritmetico, OperadorRelacional, OperadorLogico } = require("./AST/Tipo");
 	const { Primitivos } = require("./Expresiones/Primitivos");
 	const { Aritmetica } = require("./Expresiones/Aritmetica");
+	const { Relacional } = require("./Expresiones/Relacional");
+	const { Logica } = require("./Expresiones/Logica");
+	const { Declaracion } = require("./Instrucciones/Declaracion");
+	const { Asignacion } = require("./Instrucciones/Asignacion");
+	const { Identificador } = require("./Expresiones/Identificador");
 	const { Imprimir } = require("./Instrucciones/Imprimir");
-	const { Tipo, OperadorAritmetico } = require("./AST/Tipo");
+	const { If } = require("./Instrucciones/If");
+	const { Switch } = require("./Instrucciones/Switch");
+	const { Case } = require("./Instrucciones/Case");
+	const { Default } = require("./Instrucciones/Default");
+	const { Break } = require("./Instrucciones/Break");
+	
 /* generated by jison-lex 0.3.4 */
 var lexer = (function(){
 var lexer = ({
@@ -973,75 +1658,75 @@ var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:return 8;
 break;
-case 1:return 16;
+case 1:return 19;
 break;
 case 2:return 'PUNTO';
 break;
-case 3:return 'DOSPT';
+case 3:return 55;
 break;
 case 4:return 'TERNARIO'
 break;
-case 5:return 33;
+case 5:return 44;
 break;
-case 6:return 34;
+case 6:return 45;
 break;
 case 7:return 'CORIZQ';
 break;
 case 8:return 'CORDER';
 break;
-case 9:return 'LLAVEIZQ';
+case 9:return 47;
 break;
-case 10:return 'LLAVEDER';
+case 10:return 48;
 break;
-case 11:return 24;
+case 11:return 26;
 break;
-case 12:return 23;
+case 12:return 25;
 break;
-case 13:return 25;
+case 13:return 27;
 break;
-case 14:return 26;
+case 14:return 28;
 break;
 case 15:return 'MODULO';
 break;
-case 16:return 'IGUALIGUAL';
+case 16:return 33;
 break;
-case 17:return 'DIFERENTE';
+case 17:return 34;
 break;
-case 18:return 'MAYORIGUAL';
+case 18:return 32;
 break;
-case 19:return 'MENORIGUAL';
+case 19:return 31;
 break;
-case 20:return 'MAYOR';
+case 20:return 30;
 break;
-case 21:return 'MENOR';
+case 21:return 29;
 break;
-case 22:return 13;
+case 22:return 16;
 break;
-case 23:return 'AND';
+case 23:return 35;
 break;
-case 24:return 'OR';
+case 24:return 36;
 break;
-case 25:return 'NOT';
+case 25:return 37;
 break;
 case 26:return 'CONCATENAR';
 break;
 case 27:return 'REPETICION';
 break;
-case 28:return 17;
+case 28:return 20;
 break;
-case 29:return 18;
+case 29:return 21;
 break;
-case 30:return 19;
+case 30:return 'RFLOAT';
 break;
-case 31:return 20;
+case 31:return 22;
 break;
-case 32:return 21
+case 32:return 23
 break;
-case 33:return 22;
+case 33:return 24;
 break;
-case 34:return 31;
+case 34:return 42;
 break;
-case 35:return 32;
+case 35:return 43;
 break;
 case 36:return 'RVOID';
 break;
@@ -1049,42 +1734,54 @@ case 37:return 'RNULL';
 break;
 case 38:return 'RPRINTLN';
 break;
-case 39:return 35;
+case 39:return 60;
 break;
 case 40:return 'RMAIN';
 break;
-case 41:
+case 41:return 46;
 break;
-case 42:
+case 42:return 49;
 break;
-case 43:
+case 43:return 50;
 break;
-case 44:
+case 44:return 54;
 break;
-case 45:return 28;
+case 45:return 56;
 break;
-case 46:return 27;
+case 46:return 57;
 break;
-case 47:return 12;
+case 47:
 break;
 case 48:
-                            yy_.yytext = yy_.yytext.substr(1, yy_.yyleng - 2)
-                            return 29
-                        
 break;
 case 49:
+break;
+case 50:
+break;
+case 51:return 39;
+break;
+case 52:return 38;
+break;
+case 53:return 15;
+break;
+case 54:
                             yy_.yytext = yy_.yytext.substr(1, yy_.yyleng - 2)
-                            return 30
+                            return 40
                         
 break;
-case 50:return 5;
+case 55:
+                            yy_.yytext = yy_.yytext.substr(1, yy_.yyleng - 2)
+                            return 41
+                        
 break;
-case 51: console.error('Este es un error léxico: ' + yy_.yytext + ', en la linea: ' + yy_.yylloc.first_line + ', en la columna: ' + yy_.yylloc.first_column); 
+case 56:return 5;
+break;
+case 57: console.error('Este es un error léxico: ' + yy_.yytext + ', en la linea: ' + yy_.yylloc.first_line + ', en la columna: ' + yy_.yylloc.first_column); 
 break;
 }
 },
-rules: [/^(?:;)/i,/^(?:,)/i,/^(?:\.)/i,/^(?::)/i,/^(?:\?)/i,/^(?:\()/i,/^(?:\))/i,/^(?:\[)/i,/^(?:\])/i,/^(?:\{)/i,/^(?:\})/i,/^(?:\+)/i,/^(?:-)/i,/^(?:\*)/i,/^(?:\/)/i,/^(?:%)/i,/^(?:==)/i,/^(?:!=)/i,/^(?:>=)/i,/^(?:<=)/i,/^(?:>)/i,/^(?:<)/i,/^(?:=)/i,/^(?:&&)/i,/^(?:\|\|)/i,/^(?:!)/i,/^(?:&)/i,/^(?:\^)/i,/^(?:int\b)/i,/^(?:double\b)/i,/^(?:float\b)/i,/^(?:String\b)/i,/^(?:char\b)/i,/^(?:boolean\b)/i,/^(?:true\b)/i,/^(?:false\b)/i,/^(?:void\b)/i,/^(?:null\b)/i,/^(?:println\b)/i,/^(?:print\b)/i,/^(?:main\b)/i,/^(?:[ \r\t]+)/i,/^(?:\n)/i,/^(?:[//.*])/i,/^(?:[/\*(.|\n)*?\*/])/i,/^(?:[0-9]+\.[0-9]+\b)/i,/^(?:[0-9]+\b)/i,/^(?:[a-zA-Z][a-zA-Z_0-9]*)/i,/^(?:("((\\([\'\"\\bfnrtv]))|([^\"\\]+))"))/i,/^(?:('((\\([\'\"\\bfnrtv]))|([^\"\\]+))'))/i,/^(?:$)/i,/^(?:.)/i],
-conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],"inclusive":true}}
+rules: [/^(?:;)/i,/^(?:,)/i,/^(?:\.)/i,/^(?::)/i,/^(?:\?)/i,/^(?:\()/i,/^(?:\))/i,/^(?:\[)/i,/^(?:\])/i,/^(?:\{)/i,/^(?:\})/i,/^(?:\+)/i,/^(?:-)/i,/^(?:\*)/i,/^(?:\/)/i,/^(?:%)/i,/^(?:==)/i,/^(?:!=)/i,/^(?:>=)/i,/^(?:<=)/i,/^(?:>)/i,/^(?:<)/i,/^(?:=)/i,/^(?:&&)/i,/^(?:\|\|)/i,/^(?:!)/i,/^(?:&)/i,/^(?:\^)/i,/^(?:int\b)/i,/^(?:double\b)/i,/^(?:float\b)/i,/^(?:String\b)/i,/^(?:char\b)/i,/^(?:boolean\b)/i,/^(?:true\b)/i,/^(?:false\b)/i,/^(?:void\b)/i,/^(?:null\b)/i,/^(?:println\b)/i,/^(?:print\b)/i,/^(?:main\b)/i,/^(?:if\b)/i,/^(?:else\b)/i,/^(?:switch\b)/i,/^(?:case\b)/i,/^(?:default\b)/i,/^(?:break\b)/i,/^(?:[ \r\t]+)/i,/^(?:\n)/i,/^(?:[//.*])/i,/^(?:[/\*(.|\n)*?\*/])/i,/^(?:[0-9]+\.[0-9]+\b)/i,/^(?:[0-9]+\b)/i,/^(?:[a-zA-Z][a-zA-Z_0-9]*)/i,/^(?:("((\\([\'\"\\bfnrtv]))|([^\"\\]+))"))/i,/^(?:('((\\([\'\"\\bfnrtv]))|([^\"\\]+))'))/i,/^(?:$)/i,/^(?:.)/i],
+conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57],"inclusive":true}}
 });
 return lexer;
 })();
@@ -1114,7 +1811,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 }
 }
 }).call(this)}).call(this,require('_process'))
-},{"./AST/Tipo":4,"./Expresiones/Aritmetica":5,"./Expresiones/Primitivos":6,"./Instrucciones/Imprimir":7,"_process":12,"fs":10,"path":11}],9:[function(require,module,exports){
+},{"./AST/Tipo":5,"./Expresiones/Aritmetica":6,"./Expresiones/Identificador":7,"./Expresiones/Logica":8,"./Expresiones/Primitivos":9,"./Expresiones/Relacional":10,"./Instrucciones/Asignacion":11,"./Instrucciones/Break":12,"./Instrucciones/Case":13,"./Instrucciones/Declaracion":14,"./Instrucciones/Default":15,"./Instrucciones/If":16,"./Instrucciones/Imprimir":17,"./Instrucciones/Switch":18,"_process":23,"fs":21,"path":22}],20:[function(require,module,exports){
 const AST = require("./JS/AST/AST");
 const Entorno = require("./JS/AST/Entorno");
 const Excepcion = require("./JS/AST/Excepcion");
@@ -1125,23 +1822,6 @@ document.getElementById("eventoAnalizar").addEventListener("click", displayDate)
 function displayDate() {
     console.log("Analizando");
     var textoIngresado = document.getElementById('txCodigo').value;
-    //console.log(textoIngresado)
-
-    let entrada = `
-    print(10);
-    print(" ");
-    print(10.25);
-    print(" ");
-    print("Hola");
-    print(" ");
-    print('b');
-    print(" ");
-    print(true);
-    print(" ");
-    print(false);
-    print(" ");
-    print(18 + 41);
-    `;
     
     const instrucciones = gramatica.parse(textoIngresado);
     const ast = new AST.AST(instrucciones);
@@ -1157,31 +1837,19 @@ function displayDate() {
     console.log(ast.getConsola());
 }
 
-function numeracion(e) {
-    let eArea = document.getElementById('areaNumeracion');
-    let eArea2 = document.getElementById('txCodigo');
-    let numeros = eArea2.value.split("\n").length;
-    let msj="";
-    for (let i = 0; i < numeros; i++) {
-        msj += i + "\n";
-    }
-    eArea.value=msj;
-}
-
-// function analizar(entrada) {
-    
-//     console.log("analizar");
-//     console.log(entrada);
-//     try {
-//         test=gramatica.parse(entrada);
-//         console.log("test",test)
-//     } catch (error) {
-//         console.log(error);   
+// function numeracion(e) {
+//     let eArea = document.getElementById('areaNumeracion');
+//     let eArea2 = document.getElementById('txCodigo');
+//     let numeros = eArea2.value.split("\n").length;
+//     let msj="";
+//     for (let i = 0; i < numeros; i++) {
+//         msj += i + "\n";
 //     }
+//     eArea.value=msj;
 // }
-},{"./JS/AST/AST":1,"./JS/AST/Entorno":2,"./JS/AST/Excepcion":3,"./JS/gramatica":8}],10:[function(require,module,exports){
+},{"./JS/AST/AST":1,"./JS/AST/Entorno":2,"./JS/AST/Excepcion":3,"./JS/gramatica":19}],21:[function(require,module,exports){
 
-},{}],11:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function (process){(function (){
 // 'path' module extracted from Node.js v8.11.1 (only the posix part)
 // transplited with Babel
@@ -1714,7 +2382,7 @@ posix.posix = posix;
 module.exports = posix;
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":12}],12:[function(require,module,exports){
+},{"_process":23}],23:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -1900,5 +2568,5 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}]},{},[9])(9)
+},{}]},{},[20])(20)
 });
