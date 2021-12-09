@@ -16,7 +16,11 @@ export enum OperadorAritmetico {
     POR,
     DIV,
     MOD,
-    UMENOS
+    UMENOS,
+    CONCATENAR,
+    REPETIR,
+    MASMAS,
+    MENOSMENOS,
 }
 
 export enum OperadorRelacional {
