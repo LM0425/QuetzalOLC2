@@ -7,6 +7,16 @@
 
 %options case-insensitive
 
+escapeChar              [\'\"\\bfnrtv]
+escape                  \\{escapeChar}
+acceptedCharDouble      [^\"\\]+
+stringDouble            {escape}|{acceptedCharDouble}
+stringLiteral           \"{stringDouble}\"
+
+acceptedCharSingle      [^\'\\]
+stringSingle            {escape}|{acceptedCharDouble}
+charLiteral             \'{stringDouble}\'
+
 %%
 
 ";"                 return 'PTCOMA';
@@ -47,12 +57,16 @@
 'String'            return 'RSTRING';
 'char'				return 'RCHAR'
 'boolean'			return 'RBOOLEAN';
+'true'				return 'RTRUE';
+'false'				return 'RFALSE';
 'void'				return 'RVOID';
 'null'				return 'RNULL';
 
 'println'           return 'RPRINTLN';
 'print'             return 'RPRINT';
 'main'				return 'RMAIN';
+'if'				return 'RIF';
+'else'				return 'RELSE';
 
 /* Espacios en blanco */
 [ \r\t]+            {}
@@ -62,11 +76,19 @@
 [//.*]             	{}
 [/\*(.|\n)*?\*/]    {}
 
-[0-9]+("."[0-9]+)?\b    return 'DECIMAL';
+[0-9]+\.[0-9]+\b    return 'DECIMAL';
 [0-9]+\b                return 'ENTERO';
 [a-zA-Z][a-zA-Z_0-9]*   return 'ID';
-[\"[^\']*?\"]    		return  'CADENA';
-[\'[^\'\\]\'] 			return 'CARACTER';
+// [\"[^\']*?\"]    		return  'CADENA';
+// [\'[^\'\\]\'] 			return 'CARACTER';
+{stringLiteral}         {
+                            yytext = yytext.substr(1, yyleng - 2)
+                            return 'CADENA'
+                        }
+{charLiteral}           {
+                            yytext = yytext.substr(1, yyleng - 2)
+                            return 'CARACTER'
+                        }
 
 <<EOF>>                 return 'EOF';
 
@@ -76,15 +98,25 @@
 /* Imports */
 
 %{
-	const { Primitivos } = require("./dist/Expresiones/Primitivos");
-	const { Aritmetica } = require("./dist/Expresiones/Aritmetica");
-	const { Imprimir } = require("./dist/Instrucciones/Imprimir");
-	const { Tipo, OperadorAritmetico } = require("./dist/AST/Tipo");
+	const { Tipo, OperadorAritmetico, OperadorRelacional, OperadorLogico } = require("./AST/Tipo");
+	const { Primitivos } = require("./Expresiones/Primitivos");
+	const { Aritmetica } = require("./Expresiones/Aritmetica");
+	const { Relacional } = require("./Expresiones/Relacional");
+	const { Logica } = require("./Expresiones/Logica");
+	const { Declaracion } = require("./Instrucciones/Declaracion");
+	const { Asignacion } = require("./Instrucciones/Asignacion");
+	const { Identificador } = require("./Expresiones/Identificador");
+	const { Imprimir } = require("./Instrucciones/Imprimir");
+	const { If } = require("./Instrucciones/If");
+	
 %}
 /* Asociación de operadores y precedencia */
-
+%left 'OR'
+%left 'AND'
+%left 'UNOT'
+%left 'IGUALIGUAL' 'DIFERENTE' 'MENOR' 'MAYOR' 'MENORIGUAL' 'MAYORIGUAL'
 %left 'MAS' 'MENOS'
-%left 'POR' 'DIVIDIDO'
+%left 'POR' 'DIVIDIDO' 'MODULO'
 %left UMENOS
 
 %start ini
@@ -102,14 +134,16 @@ instrucciones
 ;
 
 instruccion
-	: variables PTCOMA { $$ = $1; }
-	| imprimir PTCOMA { $$ = $1; }
+	: variables PTCOMA	{ $$ = $1; }
+	| imprimir PTCOMA 	{ $$ = $1; }
+	| llamada PTCOMA 	{ $$ = $1; }
+	| if 				{ $$ = $1; }
 ;
 
 variables
-	: tipo ID IGUAL expresion { console.log("Variable declarada de tipo " + $1 + " con nombre " + $2 + " y valor " + $4);}
-	| tipo listaid { console.log("lista de variables de tipo " + $1 + " con variables " + $2);}
-	| ID IGUAL expresion { console.log("asignacion a variable " + $1 + " de nuevo valor " + $3);}
+	: tipo ID IGUAL expresion 	{ $$ = new Declaracion($1, [$2], @1.first_line, @1.first_column, $4); }
+	| tipo listaid 				{ $$ = new Declaracion($1, $2, @1.first_line, @1.first_column, null); }
+	| ID IGUAL expresion 		{ $$ = new Asignacion($1, $3, @1.first_line, @1.first_column); }
 ;
 
 listaid
@@ -118,24 +152,57 @@ listaid
 ;
 
 tipo
-	: RINT
-	| RDOUBLE
-	| RFLOAT
-	| RSTRING
-	| RCHAR
-	| RBOOLEAN
+	: RINT 		{ $$ = Tipo.INT; }
+	| RDOUBLE 	{ $$ = Tipo.DOUBLE; }
+	| RSTRING	{ $$ = Tipo.STRING; }
+	| RCHAR		{ $$ = Tipo.CHAR; }
+	| RBOOLEAN	{ $$ = Tipo.BOOL; }
 ;
 
 expresion
-	: MENOS expresion %prec UMENOS  { $$ = new Aritmetica(OperadorAritmetico.UMENOS, $2, null, @1.first_line, @1.first_column); }
-	| expresion MAS expresion       { $$ = new Aritmetica(OperadorAritmetico.MAS, $1, $2, @1.first_line, @1.first_column); }
-	| expresion MENOS expresion     { $$ = new Aritmetica(OperadorAritmetico.MENOS, $1, $2, @1.first_line, @1.first_column); }
-	| expresion POR expresion       { $$ = new Aritmetica(OperadorAritmetico.POR, $1, $2, @1.first_line, @1.first_column); }
-	| expresion DIVIDIDO expresion  { $$ = new Aritmetica(OperadorAritmetico.DIV, $1, $2, @1.first_line, @1.first_column); }
-	| ENTERO                        { $$ = new Primitivos(OperadorAritmetico.INT, $1, @1.first_line, @1.first_column); }
-	| DECIMAL                       { $$ = new Primitivos(OperadorAritmetico.DOUBLE, $1, @1.first_line, @1.first_column); }
-	| PARIZQ expresion PARDER       { $$ = $2; }
-	| CADENA 						{ $$ = new Primitivos(Tipo.STRING, $1, @1.first_line, @1.first_column);}
+	: MENOS expresion %prec UMENOS  	{ $$ = new Aritmetica(OperadorAritmetico.UMENOS, $2, null, @1.first_line, @1.first_column); }
+	| expresion MAS expresion       	{ $$ = new Aritmetica(OperadorAritmetico.MAS, $1, $3, @1.first_line, @1.first_column); }
+	| expresion MENOS expresion     	{ $$ = new Aritmetica(OperadorAritmetico.MENOS, $1, $3, @1.first_line, @1.first_column); }
+	| expresion POR expresion       	{ $$ = new Aritmetica(OperadorAritmetico.POR, $1, $3, @1.first_line, @1.first_column); }
+	| expresion DIVIDIDO expresion  	{ $$ = new Aritmetica(OperadorAritmetico.DIV, $1, $3, @1.first_line, @1.first_column); }
+	| expresion MENOR expresion			{ $$ = new Relacional(OperadorRelacional.MENORQUE, $1, $3, @1.first_line, @1.first_column); }
+	| expresion MAYOR expresion			{ $$ = new Relacional(OperadorRelacional.MAYORQUE, $1, $3, @1.first_line, @1.first_column); }
+	| expresion MENORIGUAL expresion	{ $$ = new Relacional(OperadorRelacional.MENORIGUAL, $1, $3, @1.first_line, @1.first_column); }
+	| expresion MAYORIGUAL expresion	{ $$ = new Relacional(OperadorRelacional.MAYORIGUAL, $1, $3, @1.first_line, @1.first_column); }
+	| expresion IGUALIGUAL expresion	{ $$ = new Relacional(OperadorRelacional.IGUALIGUAL, $1, $3, @1.first_line, @1.first_column); }
+	| expresion DIFERENTE expresion		{ $$ = new Relacional(OperadorRelacional.DIFERENTE, $1, $3, @1.first_line, @1.first_column); }
+	| expresion AND expresion			{ $$ = new Logica(OperadorLogico.AND, $1, $3, @1.first_line, @1.first_column); }
+	| expresion OR expresion			{ $$ = new Logica(OperadorLogico.OR, $1, $3, @1.first_line, @1.first_column); }
+	| NOT expresion %prec UNOT			{ $$ = new Logica(OperadorLogico.NOT, $2, null, @1.first_line, @1.first_column); }
+	| ENTERO                        	{ $$ = new Primitivos(Tipo.INT, $1, @1.first_line, @1.first_column); }
+	| DECIMAL                       	{ $$ = new Primitivos(Tipo.DOUBLE, $1, @1.first_line, @1.first_column); }
+	| CADENA 							{ $$ = new Primitivos(Tipo.STRING, $1, @1.first_line, @1.first_column); }
+	| CARACTER							{ $$ = new Primitivos(Tipo.CHAR, $1, @1.first_line, @1.first_column); }
+	| RTRUE								{ $$ = new Primitivos(Tipo.BOOL, true, @1.first_line, @1.first_column); }
+	| RFALSE							{ $$ = new Primitivos(Tipo.BOOL, false, @1.first_line, @1.first_column); }
+	| ID								{ $$ = new Identificador($1, @1.first_line, @1.first_column); }
+	| PARIZQ expresion PARDER       	{ $$ = $2; }
+
+	| llamada						{ $$ = $1; }
+;
+if
+	: RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, null, null, @1.first_line, @1.first_column) }
+	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, $10, null, @1.first_line, @1.first_column) }
+	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE if { $$ = new If($3, $6, null, $9, @1.first_line, @1.first_column) }	
+;
+
+llamada
+	: ID PARIZQ parametrosLlamada PARDER 	{  }
+	| ID PARIZQ PARDER						{  }
+;
+
+parametrosLlamada
+	: parametrosLlamada COMA parametroLlamada 	{ $1.push($3); $$ = $1; }
+	| parametroLlamada 							{ $$ = [$1]; }
+;
+
+parametroLlamada
+	: expresion { $$ = $1 }
 ;
 
 imprimir

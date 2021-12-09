@@ -30,6 +30,6 @@ export enum OperadorRelacional {
 
 export enum OperadorLogico {
     AND,
-    NOT,
-    OR
+    OR,
+    NOT
 }

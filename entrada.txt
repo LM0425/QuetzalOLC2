@@ -12,3 +12,8 @@
 //print("Tipos de datos: null, int, double, boolean, char, String");
 //print("Estructuras: Arreglos, Structs")
 
+int x =10;
+print(x);
+x = 250;
+print(" ");
+print(x);

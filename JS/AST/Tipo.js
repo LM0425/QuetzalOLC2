@@ -34,6 +34,6 @@ var OperadorRelacional;
 var OperadorLogico;
 (function (OperadorLogico) {
     OperadorLogico[OperadorLogico["AND"] = 0] = "AND";
-    OperadorLogico[OperadorLogico["NOT"] = 1] = "NOT";
-    OperadorLogico[OperadorLogico["OR"] = 2] = "OR";
+    OperadorLogico[OperadorLogico["OR"] = 1] = "OR";
+    OperadorLogico[OperadorLogico["NOT"] = 2] = "NOT";
 })(OperadorLogico = exports.OperadorLogico || (exports.OperadorLogico = {}));
