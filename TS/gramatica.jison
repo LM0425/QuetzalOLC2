@@ -67,6 +67,10 @@ charLiteral             \'{stringDouble}\'
 'main'				return 'RMAIN';
 'if'				return 'RIF';
 'else'				return 'RELSE';
+'switch'			return 'RSWITCH';
+'case'				return 'RCASE';
+'default'			return 'RDEFAULT';
+'break'				return 'RBREAK';
 
 /* Espacios en blanco */
 [ \r\t]+            {}
@@ -108,6 +112,10 @@ charLiteral             \'{stringDouble}\'
 	const { Identificador } = require("./Expresiones/Identificador");
 	const { Imprimir } = require("./Instrucciones/Imprimir");
 	const { If } = require("./Instrucciones/If");
+	const { Switch } = require("./Instrucciones/Switch");
+	const { Case } = require("./Instrucciones/Case");
+	const { Default } = require("./Instrucciones/Default");
+	const { Break } = require("./Instrucciones/Break");
 	
 %}
 /* Asociación de operadores y precedencia */
@@ -138,6 +146,8 @@ instruccion
 	| imprimir PTCOMA 	{ $$ = $1; }
 	| llamada PTCOMA 	{ $$ = $1; }
 	| if 				{ $$ = $1; }
+	| switch			{ $$ = $1; }
+	| break PTCOMA		{ $$ = $1; }
 ;
 
 variables
@@ -185,10 +195,32 @@ expresion
 
 	| llamada						{ $$ = $1; }
 ;
+
 if
-	: RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, null, null, @1.first_line, @1.first_column) }
-	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, $10, null, @1.first_line, @1.first_column) }
-	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE if { $$ = new If($3, $6, null, $9, @1.first_line, @1.first_column) }	
+	: RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, null, null, @1.first_line, @1.first_column); }
+	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, $10, null, @1.first_line, @1.first_column); }
+	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE if { $$ = new If($3, $6, null, $9, @1.first_line, @1.first_column); }
+;
+
+switch
+	: RSWITCH PARIZQ expresion PARDER LLAVEIZQ caselist default LLAVEDER { $$ = new Switch($3, $6, $7, @1.first_line, @1.first_column); }
+;
+
+caselist
+	: caselist case	{ $1.push($2); $$ = $1; }
+	| case			{ $$ = [$1]; }
+;
+
+case
+	: RCASE expresion DOSPT instrucciones { $$ = new Case($2, $4, @1.first_line, @1.first_column); }
+;
+
+default
+	: RDEFAULT DOSPT instrucciones { $$ = new Default($3, @1.first_line, @1.first_column); }
+;
+
+break
+	: RBREAK { $$ = new Break(@1.first_line, @1.first_column); }
 ;
 
 llamada
