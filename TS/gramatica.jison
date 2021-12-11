@@ -1,6 +1,8 @@
 /**
- * Ejemplo mi primer proyecto con Jison utilizando Nodejs en Ubuntu
- */
+ *Proyecto 1 - Quetzal OLC2 
+  - 201403975 - Joel Obdulio Xicará Ríos
+  - 201503612 - Luis Fernando Morales García
+ **/
 
 /* Definición Léxica */
 %lex
@@ -23,7 +25,8 @@ charLiteral             \'{stringDouble}\'
 ","					return 'COMA';
 "."					return 'PUNTO';
 ":"					return 'DOSPT';
-"?"					return 'TERNARIO'
+"?"					return 'TERNARIO';
+"#"					return 'NUMERAL';
 "("                 return 'PARIZQ';
 ")"                 return 'PARDER';
 "["                 return 'CORIZQ';
@@ -85,11 +88,11 @@ charLiteral             \'{stringDouble}\'
 [a-zA-Z][a-zA-Z_0-9]*   return 'ID';
 // [\"[^\']*?\"]    		return  'CADENA';
 // [\'[^\'\\]\'] 			return 'CARACTER';
-{stringLiteral}         {
+[\"]((\\\")|(\\\')|(\\\n)|[^\"])+[\"]         {
                             yytext = yytext.substr(1, yyleng - 2)
                             return 'CADENA'
                         }
-{charLiteral}           {
+[\']((\\\n)|(\\\")|(\\\')|[^\'])[\']            {
                             yytext = yytext.substr(1, yyleng - 2)
                             return 'CARACTER'
                         }
@@ -116,6 +119,7 @@ charLiteral             \'{stringDouble}\'
 	const { Case } = require("./Instrucciones/Case");
 	const { Default } = require("./Instrucciones/Default");
 	const { Break } = require("./Instrucciones/Break");
+	const { ModificarArreglo } = require("./Instrucciones/ModificarArreglo");
 	
 %}
 /* Asociación de operadores y precedencia */
@@ -148,12 +152,17 @@ instruccion
 	| if 				{ $$ = $1; }
 	| switch			{ $$ = $1; }
 	| break PTCOMA		{ $$ = $1; }
+	| modificarArreglo	{ $$ = $1; }
 ;
 
 variables
-	: tipo ID IGUAL expresion 	{ $$ = new Declaracion($1, [$2], @1.first_line, @1.first_column, $4); }
-	| tipo listaid 				{ $$ = new Declaracion($1, $2, @1.first_line, @1.first_column, null); }
-	| ID IGUAL expresion 		{ $$ = new Asignacion($1, $3, @1.first_line, @1.first_column); }
+	: tipo ID IGUAL expresion 					{ $$ = new Declaracion($1, [$2], @1.first_line, @1.first_column, $4, false, false, false); }
+	| tipo listaid 								{ $$ = new Declaracion($1, $2, @1.first_line, @1.first_column, null, false, false, false); }
+	| ID IGUAL expresion 						{ $$ = new Asignacion($1, $3, @1.first_line, @1.first_column); }
+	| tipo CORIZQ CORDER ID IGUAL ID			{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $6, true, true, false); }
+	| tipo CORIZQ CORDER ID IGUAL NUMERAL ID	{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $7, true, false, true); }
+	| tipo CORIZQ CORDER ID IGUAL expresion		{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $6, true, false, false); }
+	
 ;
 
 listaid
@@ -184,16 +193,41 @@ expresion
 	| expresion AND expresion			{ $$ = new Logica(OperadorLogico.AND, $1, $3, @1.first_line, @1.first_column); }
 	| expresion OR expresion			{ $$ = new Logica(OperadorLogico.OR, $1, $3, @1.first_line, @1.first_column); }
 	| NOT expresion %prec UNOT			{ $$ = new Logica(OperadorLogico.NOT, $2, null, @1.first_line, @1.first_column); }
-	| ENTERO                        	{ $$ = new Primitivos(Tipo.INT, $1, @1.first_line, @1.first_column); }
-	| DECIMAL                       	{ $$ = new Primitivos(Tipo.DOUBLE, $1, @1.first_line, @1.first_column); }
-	| CADENA 							{ $$ = new Primitivos(Tipo.STRING, $1, @1.first_line, @1.first_column); }
-	| CARACTER							{ $$ = new Primitivos(Tipo.CHAR, $1, @1.first_line, @1.first_column); }
+	| ENTERO                        	{ $$ = new Primitivos(Tipo.INT, Number($1), @1.first_line, @1.first_column); }
+	| DECIMAL                       	{ $$ = new Primitivos(Tipo.DOUBLE, Number($1), @1.first_line, @1.first_column); }
+	| CADENA 							{ $$ = new Primitivos(Tipo.STRING, String($1), @1.first_line, @1.first_column); }
+	| CARACTER							{ $$ = new Primitivos(Tipo.CHAR, String($1), @1.first_line, @1.first_column); }
 	| RTRUE								{ $$ = new Primitivos(Tipo.BOOL, true, @1.first_line, @1.first_column); }
 	| RFALSE							{ $$ = new Primitivos(Tipo.BOOL, false, @1.first_line, @1.first_column); }
-	| ID								{ $$ = new Identificador($1, @1.first_line, @1.first_column); }
+	| ID								{ $$ = new Identificador(String($1), @1.first_line, @1.first_column); }
 	| PARIZQ expresion PARDER       	{ $$ = $2; }
 
+	| declaracionArregloT1				{ $$ = new Primitivos(Tipo.ARRAY, $1, @1.first_line, @1.first_column); }
+
 	| llamada						{ $$ = $1; }
+;
+
+declaracionArregloT1
+	: CORIZQ listaValores CORDER { $$ = $2; }
+;
+
+listaValores
+	: listaValores COMA valores { $1.push($3); $$ = $1 }
+	| valores { $$ = [$1]; }
+;
+
+valores
+	: declaracionArregloT1 { $$ = $1; }
+	| expresion { $$ = $1; }
+;
+
+modificarArreglo
+	: ID listaExpresiones IGUAL expresion PTCOMA { $$ = new ModificarArreglo($1, $2, $4, @1.first_line, @1.first_column); }
+;
+
+listaExpresiones
+	: listaExpresiones CORIZQ expresion CORDER	{ $1.push($3); $$ = $1; }
+	| CORIZQ expresion CORDER 					{ $$ = [$2] }
 ;
 
 if

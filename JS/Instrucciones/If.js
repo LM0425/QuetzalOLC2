@@ -18,7 +18,9 @@ class If {
         if (condicionIf instanceof Excepcion_1.Excepcion)
             return condicionIf;
         if (this.condicion.tipo === Tipo_1.Tipo.BOOL) {
+            console.log("Condicion - " + condicionIf);
             if (condicionIf === true) {
+                console.log("Entrando a if");
                 let nuevaTabla = new Entorno_1.Entorno(table);
                 for (let instruccion of this.instruccionesIf) {
                     let result = instruccion.interpretar(tree, nuevaTabla);
@@ -30,8 +32,9 @@ class If {
             }
             else {
                 if (this.instruccionesElse !== null) {
+                    console.log("Entrando a Else");
                     let nuevaTabla = new Entorno_1.Entorno(table);
-                    for (let instruccion of this.instruccionesIf) {
+                    for (let instruccion of this.instruccionesElse) {
                         let result = instruccion.interpretar(tree, nuevaTabla);
                         if (result instanceof Excepcion_1.Excepcion) {
                             tree.getExcepciones().push(result);
@@ -41,6 +44,7 @@ class If {
                     }
                 }
                 else if (this.elseIf !== null) {
+                    console.log("Entrando a else if");
                     let result = this.elseIf.interpretar(tree, table);
                     if (result instanceof Excepcion_1.Excepcion)
                         return result;

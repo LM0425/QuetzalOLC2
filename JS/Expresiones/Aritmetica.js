@@ -22,15 +22,281 @@ class Aritmetica {
                 return der;
         }
         if (this.operador === Tipo_1.OperadorAritmetico.MAS) {
+            //console.log('entrando a suma',this.opIzquierdo.tipo,this.opDerecho.tipo)
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
                 this.tipo = Tipo_1.Tipo.INT;
                 return Number(izq) + Number(der);
             }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return Number(izq) + parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return Number(izq) + Number(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) + Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) + parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return parseFloat(izq) + parseFloat(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) + Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) + parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return izq.charCodeAt(0) + der.charCodeAt(0);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                //var aux=izq;
+                //var ascii =aux.charCodeAt(0).toString();
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.BOOL && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.BOOL) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                return izq + der;
+            }
         }
-        if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
+        else if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
                 this.tipo = Tipo_1.Tipo.INT;
+                return Number(izq) - Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return Number(izq) - parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return Number(izq) - Number(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) - Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) - parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return parseFloat(izq) - parseFloat(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) - Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) - parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return izq.charCodeAt(0) - der.charCodeAt(0);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.POR) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                return Number(izq) * Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return Number(izq) * parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return Number(izq) * Number(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) * Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) * parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return parseFloat(izq) * parseFloat(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) * Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) * parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return izq.charCodeAt(0) * der.charCodeAt(0);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.DIV) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                return Number(izq) / Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return Number(izq) / parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return Number(izq) / Number(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) / Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) / parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return parseFloat(izq) / parseFloat(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) / Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) / parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return izq.charCodeAt(0) / der.charCodeAt(0);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.MOD) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                return Number(izq) % Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return Number(izq) % parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return Number(izq) % Number(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) % Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return parseFloat(izq) % parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = der;
+                var ascii = aux.charCodeAt(0);
+                return parseFloat(izq) % parseFloat(ascii);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) % Number(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                var aux = izq;
+                var ascii = aux.charCodeAt(0);
+                return Number(ascii) % parseFloat(der);
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                return izq.charCodeAt(0) % der.charCodeAt(0);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.CONCATENAR) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
+                this.tipo = Tipo_1.Tipo.STRING;
                 return izq + der;
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.REPETIR) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.STRING;
+                var resultado = izq.repeat(Number(der));
+                //console.log("iterar:", der);
+                return resultado;
             }
         }
         else {

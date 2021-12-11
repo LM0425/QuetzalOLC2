@@ -71,14 +71,7 @@ export class Aritmetica implements Instruccion{
                 var ascii =aux.charCodeAt(0);
                 return Number(ascii) + parseFloat(der);
             }else if(this.opIzquierdo.tipo === Tipo.CHAR && this.opDerecho.tipo === Tipo.CHAR){
-                console.log('entro a char y char');
-                this.tipo = Tipo.INT;
-                var aux=izq;
-                var ascii =aux.charCodeAt(0);
-                var aux2=der;
-                var ascii2 =aux2.charCodeAt(0);
-                console.log(ascii,ascii2)
-                return Number(ascii) + Number(ascii2);
+                return izq.charCodeAt(0) + der.charCodeAt(0)
             }else if(this.opIzquierdo.tipo === Tipo.CHAR && this.opDerecho.tipo === Tipo.STRING){
                 this.tipo = Tipo.STRING;
                 //var aux=izq;
@@ -139,14 +132,7 @@ export class Aritmetica implements Instruccion{
                 var ascii =aux.charCodeAt(0);
                 return Number(ascii) - parseFloat(der);
             }else if(this.opIzquierdo.tipo === Tipo.CHAR && this.opDerecho.tipo === Tipo.CHAR){
-                console.log('entro a char y char');
-                this.tipo = Tipo.INT;
-                var aux=izq;
-                var ascii =aux.charCodeAt(0);
-                var aux2=der;
-                var ascii2 =aux2.charCodeAt(0);
-                console.log(ascii,ascii2)
-                return Number(ascii) - Number(ascii2);
+                return izq.charCodeAt(0) - der.charCodeAt(0)
             }
         }else if(this.operador === OperadorAritmetico.POR){
 
@@ -183,14 +169,7 @@ export class Aritmetica implements Instruccion{
                 var ascii =aux.charCodeAt(0);
                 return Number(ascii) * parseFloat(der);
             }else if(this.opIzquierdo.tipo === Tipo.CHAR && this.opDerecho.tipo === Tipo.CHAR){
-                console.log('entro a char y char');
-                this.tipo = Tipo.INT;
-                var aux=izq;
-                var ascii =aux.charCodeAt(0);
-                var aux2=der;
-                var ascii2 =aux2.charCodeAt(0);
-                console.log(ascii,ascii2)
-                return Number(ascii) * Number(ascii2);
+                return izq.charCodeAt(0) * der.charCodeAt(0)
             }
         }else if(this.operador === OperadorAritmetico.DIV){
 
@@ -227,14 +206,7 @@ export class Aritmetica implements Instruccion{
                 var ascii =aux.charCodeAt(0);
                 return Number(ascii) / parseFloat(der);
             }else if(this.opIzquierdo.tipo === Tipo.CHAR && this.opDerecho.tipo === Tipo.CHAR){
-                console.log('entro a char y char');
-                this.tipo = Tipo.INT;
-                var aux=izq;
-                var ascii =aux.charCodeAt(0);
-                var aux2=der;
-                var ascii2 =aux2.charCodeAt(0);
-                console.log(ascii,ascii2)
-                return Number(ascii) / Number(ascii2);
+                return izq.charCodeAt(0) / der.charCodeAt(0)
             }
         }else if(this.operador === OperadorAritmetico.MOD){
 
@@ -271,14 +243,7 @@ export class Aritmetica implements Instruccion{
                 var ascii =aux.charCodeAt(0);
                 return Number(ascii) % parseFloat(der);
             }else if(this.opIzquierdo.tipo === Tipo.CHAR && this.opDerecho.tipo === Tipo.CHAR){
-                console.log('entro a char y char');
-                this.tipo = Tipo.INT;
-                var aux=izq;
-                var ascii =aux.charCodeAt(0);
-                var aux2=der;
-                var ascii2 =aux2.charCodeAt(0);
-                console.log(ascii,ascii2)
-                return Number(ascii) % Number(ascii2);
+                return izq.charCodeAt(0) % der.charCodeAt(0)
             }
         }else if(this.operador === OperadorAritmetico.CONCATENAR){
 

@@ -8,6 +8,7 @@ class Simbolo {
         this.fila = fila;
         this.columna = columna;
         this.valor = valor;
+        this.tipoArreglo = null;
     }
     getId() {
         return this.indentificador;
@@ -26,6 +27,12 @@ class Simbolo {
     }
     setValor(valor) {
         this.valor = valor;
+    }
+    getTipoArreglo() {
+        return this.tipoArreglo;
+    }
+    setTipoArreglo(tipo) {
+        this.tipoArreglo = tipo;
     }
     getFila() {
         return this.fila;

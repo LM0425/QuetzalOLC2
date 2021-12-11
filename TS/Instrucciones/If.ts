@@ -27,7 +27,9 @@ export class If implements Instruccion {
         if (condicionIf instanceof Excepcion) return condicionIf;
 
         if (this.condicion.tipo === Tipo.BOOL) {
+            console.log("Condicion - " + condicionIf)
             if (condicionIf === true) {
+                console.log("Entrando a if")
                 let nuevaTabla = new Entorno(table);
                 for (let instruccion of this.instruccionesIf) {
                     let result = instruccion.interpretar(tree, nuevaTabla);
@@ -38,8 +40,9 @@ export class If implements Instruccion {
                 }
             } else {
                 if (this.instruccionesElse !== null) {
+                    console.log("Entrando a Else")
                     let nuevaTabla = new Entorno(table);
-                    for (let instruccion of this.instruccionesIf) {
+                    for (let instruccion of this.instruccionesElse) {
                         let result = instruccion.interpretar(tree, nuevaTabla);
                         if (result instanceof Excepcion) {
                             tree.getExcepciones().push(result);
@@ -47,6 +50,7 @@ export class If implements Instruccion {
                         };
                     }
                 } else if (this.elseIf !== null) {
+                    console.log("Entrando a else if")
                     let result = this.elseIf.interpretar(tree, table);
                     if (result instanceof Excepcion) return result;
                 }

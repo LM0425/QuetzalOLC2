@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Imprimir = void 0;
+const Tipo_1 = require("../AST/Tipo");
 class Imprimir {
     constructor(expresion, fila, columna) {
         this.expresion = expresion;
@@ -9,7 +10,10 @@ class Imprimir {
     }
     interpretar(tree, table) {
         let value = this.expresion.interpretar(tree, table);
-        tree.updateConsola(String(value));
+        if (this.expresion.tipo === Tipo_1.Tipo.ARRAY) {
+            value = "[" + value + "]";
+        }
+        tree.updateConsola(value);
         return 0;
     }
 }

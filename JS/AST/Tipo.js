@@ -21,6 +21,10 @@ var OperadorAritmetico;
     OperadorAritmetico[OperadorAritmetico["DIV"] = 3] = "DIV";
     OperadorAritmetico[OperadorAritmetico["MOD"] = 4] = "MOD";
     OperadorAritmetico[OperadorAritmetico["UMENOS"] = 5] = "UMENOS";
+    OperadorAritmetico[OperadorAritmetico["CONCATENAR"] = 6] = "CONCATENAR";
+    OperadorAritmetico[OperadorAritmetico["REPETIR"] = 7] = "REPETIR";
+    OperadorAritmetico[OperadorAritmetico["MASMAS"] = 8] = "MASMAS";
+    OperadorAritmetico[OperadorAritmetico["MENOSMENOS"] = 9] = "MENOSMENOS";
 })(OperadorAritmetico = exports.OperadorAritmetico || (exports.OperadorAritmetico = {}));
 var OperadorRelacional;
 (function (OperadorRelacional) {

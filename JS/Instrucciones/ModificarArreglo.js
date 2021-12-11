@@ -1,0 +1,65 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ModificarArreglo = void 0;
+const Excepcion_1 = require("../AST/Excepcion");
+const Tipo_1 = require("../AST/Tipo");
+class ModificarArreglo {
+    constructor(identificador, expresiones, valor, fila, columna) {
+        this.identificador = identificador;
+        this.expresiones = expresiones;
+        this.valor = valor;
+        this.fila = fila;
+        this.columna = columna;
+    }
+    interpretar(tree, table) {
+        let value = this.valor.interpretar(tree, table);
+        if (value instanceof Excepcion_1.Excepcion)
+            return value;
+        let simbolo = table.getSimbolo(this.identificador);
+        if (simbolo === null)
+            return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + " no encontrada.", this.fila, this.columna);
+        if (simbolo.getTipo() !== Tipo_1.Tipo.ARRAY)
+            return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + " no es un arreglo.", this.fila, this.columna);
+        if (simbolo.getTipoArreglo() !== this.valor.tipo)
+            return new Excepcion_1.Excepcion("Semantico", "Tipo de dato a asignar difente al tipo del arreglo", this.fila, this.columna);
+        let listaPos = [];
+        for (let expresion of this.expresiones) {
+            let temp = expresion.interpretar(tree, table);
+            if (temp instanceof Excepcion_1.Excepcion)
+                return temp;
+            listaPos.push(temp);
+        }
+        let interpretar = !(String(typeof value) === "number") && !(String(typeof value) === "string") && !(String(typeof value) === "boolean") && !(value instanceof Array);
+        while (interpretar) {
+            value = value.interpretar(tree, table);
+            if (value instanceof Excepcion_1.Excepcion)
+                return value;
+            interpretar = !(String(typeof value) === "number") && !(String(typeof value) === "string") && !(String(typeof value) === "boolean") && !(value instanceof Array);
+        }
+        let val = this.modificarDimensiones(tree, table, listaPos.slice(), simbolo.getValor(), value);
+        //if(val instanceof Excepcion) return val;
+        return val;
+    }
+    modificarDimensiones(tree, table, expresiones, arreglo, valor) {
+        let posiciones = expresiones.length;
+        for (let pos in expresiones) {
+            console.log(posiciones);
+            console.log(pos);
+        }
+        // if(expresiones.length === 0){
+        //     if(arreglo instanceof Array) return new Excepcion("Semantico", "Modificacion a Arreglo incompleta", this.fila, this.columna);
+        //     return valor
+        // }
+        // if(!(arreglo instanceof Array)) return new Excepcion("Semantico", " Acceso de mas al Arreglo", this.fila, this.columna);
+        // let dimension = expresiones.shift()
+        // try {
+        //     var value = this.modificarDimensiones(tree, table, expresiones.slice(), arreglo[dimension],valor);
+        // } catch (error) {
+        //     return new Excepcion("Semantico", "La posicion dada es negativa o mayor que la dimension del arreglo", this.fila, this.columna);
+        // }
+        // if(value instanceof Excepcion) return value;
+        // if(value !== null) arreglo[dimension] = value
+        // return null
+    }
+}
+exports.ModificarArreglo = ModificarArreglo;

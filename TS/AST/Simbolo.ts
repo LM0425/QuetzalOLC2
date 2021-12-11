@@ -6,6 +6,7 @@ export class Simbolo {
     fila: number;
     columna: number;
     valor: any;
+    tipoArreglo:Tipo;
 
     constructor(identificador: string, tipo: Tipo, fila: number, columna: number, valor: any) {
         this.indentificador = identificador;
@@ -13,6 +14,7 @@ export class Simbolo {
         this.fila = fila;
         this.columna = columna;
         this.valor = valor;
+        this.tipoArreglo = null;
     }
 
     getId() {
@@ -37,6 +39,14 @@ export class Simbolo {
 
     setValor(valor: any) {
         this.valor = valor;
+    }
+
+    getTipoArreglo() {
+        return this.tipoArreglo;
+    }
+
+    setTipoArreglo(tipo: Tipo) {
+        this.tipoArreglo = tipo;
     }
 
     getFila() {

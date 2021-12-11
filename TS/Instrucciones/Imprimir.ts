@@ -1,6 +1,7 @@
 import { Instruccion } from "../Abstract/Instruccion";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
+import { Tipo } from "../AST/Tipo";
 
 export class Imprimir implements Instruccion {
     expresion: any;
@@ -15,8 +16,10 @@ export class Imprimir implements Instruccion {
 
     interpretar(tree: AST, table: Entorno) {
         let value = this.expresion.interpretar(tree, table);
-
-        tree.updateConsola(String(value))
+        if(this.expresion.tipo === Tipo.ARRAY){
+            value = "["+value+"]"
+        }
+        tree.updateConsola(value)
         return 0;
     }
 
