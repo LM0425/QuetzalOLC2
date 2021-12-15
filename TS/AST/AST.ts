@@ -2,18 +2,19 @@ import { Instruccion } from "../Abstract/Instruccion";
 import { Funcion } from "../Instrucciones/Funcion";
 import { Entorno } from "./Entorno";
 import { Excepcion } from "./Excepcion";
+import { Struct } from "../Instrucciones/struct";
 
 export class AST {
     instrucciones: Array<Instruccion>
-    // public structs:Array<Struct>;           //Pull de Strcuts
     public funciones:Array<Funcion>;        //Pull de Funciones
+    public structs:Array<Struct>;           //Pull de Strcuts
     excepciones: Array<Excepcion>;    //Pull de Excepciones
     consola: string;
-    TSGlobal: Entorno
+    TSGlobal: Entorno;
 
     constructor(instrucciones: Array<Instruccion>) {
         this.instrucciones = instrucciones;
-        // this.structs = []
+        this.structs = []
         this.funciones = []
         this.excepciones = []
         this.consola = "";
@@ -26,6 +27,32 @@ export class AST {
 
     getExcepciones() {
         return this.excepciones;
+    }
+
+    getStructs() {
+        return this.structs;
+    }
+
+    getStrut(nombre: any){
+        //console.log(this.structs)
+        let estructura:any;
+        this.structs.forEach(element => {
+            if (nombre == element.identificador) {
+                //console.log('existe la estructura ', element);
+                estructura=element
+            }
+            
+        });
+
+        return estructura;
+    }
+    
+
+    mostrarStruct(){
+        console.log('las estructuras son: ')
+        this.structs.forEach(element => {
+            console.log(element);
+        });
     }
 
     setExcepciones(excepciones: Array<Excepcion>) {

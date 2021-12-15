@@ -8,7 +8,11 @@ class Simbolo {
         this.fila = fila;
         this.columna = columna;
         this.valor = valor;
+<<<<<<< Updated upstream
         this.tipoArreglo = null;
+=======
+        this.tSt = "";
+>>>>>>> Stashed changes
     }
     getId() {
         return this.indentificador;
@@ -39,6 +43,9 @@ class Simbolo {
     }
     getColumna() {
         return this.columna;
+    }
+    setTipoStruct(tipo) {
+        this.tSt = tipo;
     }
 }
 exports.Simbolo = Simbolo;

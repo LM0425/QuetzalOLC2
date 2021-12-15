@@ -9,12 +9,16 @@ export class Imprimir implements Instruccion {
     expresion: any;
     fila: number;
     columna: number;
+    atributo:any;
+    salto:boolean;
 
     constructor(salto: boolean, expresion: any, fila: number, columna: number) {
         this.salto = salto;
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
+        this.atributo=atributo;
+        this.salto=salto;
     }
 
     interpretar(tree: AST, table: Entorno) {

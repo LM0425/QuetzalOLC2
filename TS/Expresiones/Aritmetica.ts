@@ -259,6 +259,8 @@ export class Aritmetica implements Instruccion{
                 //console.log("iterar:", der);
                 return resultado;
             }
+        }else if(this.operador === OperadorAritmetico.MASMAS){
+            
         }else{
             return new Excepcion("Semantico", "Tipo de dato erroneo para operacion +", this.fila, this.columna);
         }

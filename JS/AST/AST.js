@@ -4,8 +4,13 @@ exports.AST = void 0;
 class AST {
     constructor(instrucciones) {
         this.instrucciones = instrucciones;
+<<<<<<< Updated upstream
         // this.structs = []
         this.funciones = [];
+=======
+        this.structs = [];
+        // this.funciones = []
+>>>>>>> Stashed changes
         this.excepciones = [];
         this.consola = "";
         this.TSGlobal = null;
@@ -15,6 +20,26 @@ class AST {
     }
     getExcepciones() {
         return this.excepciones;
+    }
+    getStructs() {
+        return this.structs;
+    }
+    getStrut(nombre) {
+        //console.log(this.structs)
+        let estructura;
+        this.structs.forEach(element => {
+            if (nombre == element.identificador) {
+                //console.log('existe la estructura ', element);
+                estructura = element;
+            }
+        });
+        return estructura;
+    }
+    mostrarStruct() {
+        console.log('las estructuras son: ');
+        this.structs.forEach(element => {
+            console.log(element);
+        });
     }
     setExcepciones(excepciones) {
         this.excepciones = excepciones;

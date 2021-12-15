@@ -95,6 +95,7 @@ export class Entorno {
         let id = simbolo.indentificador.toLowerCase();
         for (let e: Entorno = this; e != null; e = e.anterior) {
             const value = e.tabla[id];
+            //console.log('e es igual a ', value)
             if (value !== undefined) {
                 if (value.getTipo() === simbolo.getTipo()) {
                     //console.log("Modificando simbolo");
