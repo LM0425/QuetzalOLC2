@@ -10,9 +10,9 @@ export class Imprimir implements Instruccion {
     fila: number;
     columna: number;
     atributo:any;
-    salto:boolean;
+    //salto:boolean;
 
-    constructor(salto: boolean, expresion: any, fila: number, columna: number) {
+    constructor(salto: boolean, expresion: any, fila: number, columna: number,atributo:any) {
         this.salto = salto;
         this.expresion = expresion;
         this.fila = fila;
