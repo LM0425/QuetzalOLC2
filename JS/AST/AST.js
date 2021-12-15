@@ -4,13 +4,8 @@ exports.AST = void 0;
 class AST {
     constructor(instrucciones) {
         this.instrucciones = instrucciones;
-<<<<<<< Updated upstream
-        // this.structs = []
-        this.funciones = [];
-=======
         this.structs = [];
-        // this.funciones = []
->>>>>>> Stashed changes
+        this.funciones = [];
         this.excepciones = [];
         this.consola = "";
         this.TSGlobal = null;
@@ -20,6 +15,21 @@ class AST {
     }
     getExcepciones() {
         return this.excepciones;
+    }
+    setExcepciones(excepciones) {
+        this.excepciones = excepciones;
+    }
+    getConsola() {
+        return this.consola;
+    }
+    updateConsola(cadena) {
+        this.consola += cadena;
+    }
+    getTSglobal() {
+        return this.TSGlobal;
+    }
+    setTSglobal(TSglobal) {
+        this.TSGlobal = TSglobal;
     }
     getStructs() {
         return this.structs;
@@ -36,25 +46,10 @@ class AST {
         return estructura;
     }
     mostrarStruct() {
-        console.log('las estructuras son: ');
+        // console.log('las estructuras son: ')
         this.structs.forEach(element => {
             console.log(element);
         });
-    }
-    setExcepciones(excepciones) {
-        this.excepciones = excepciones;
-    }
-    getConsola() {
-        return this.consola;
-    }
-    updateConsola(cadena) {
-        this.consola += cadena;
-    }
-    getTSglobal() {
-        return this.TSGlobal;
-    }
-    setTSglobal(TSglobal) {
-        this.TSGlobal = TSglobal;
     }
     getFunciones() {
         return this.funciones;

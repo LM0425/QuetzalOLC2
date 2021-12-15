@@ -72,18 +72,7 @@ class Aritmetica {
                 return Number(ascii) + parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
-<<<<<<< Updated upstream
                 return izq.charCodeAt(0) + der.charCodeAt(0);
-=======
-                console.log('entro a char y char');
-                this.tipo = Tipo_1.Tipo.INT;
-                var aux = izq;
-                var ascii = aux.charCodeAt(0);
-                var aux2 = der;
-                var ascii2 = aux2.charCodeAt(0);
-                console.log(ascii, ascii2);
-                return Number(ascii) + Number(ascii2);
->>>>>>> Stashed changes
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
                 this.tipo = Tipo_1.Tipo.STRING;
@@ -158,7 +147,6 @@ class Aritmetica {
                 return Number(ascii) - parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
-<<<<<<< Updated upstream
                 return izq.charCodeAt(0) - der.charCodeAt(0);
             }
         }
@@ -210,73 +198,6 @@ class Aritmetica {
         else if (this.operador === Tipo_1.OperadorAritmetico.DIV) {
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
                 this.tipo = Tipo_1.Tipo.INT;
-=======
-                console.log('entro a char y char');
-                this.tipo = Tipo_1.Tipo.INT;
-                var aux = izq;
-                var ascii = aux.charCodeAt(0);
-                var aux2 = der;
-                var ascii2 = aux2.charCodeAt(0);
-                console.log(ascii, ascii2);
-                return Number(ascii) - Number(ascii2);
-            }
-        }
-        else if (this.operador === Tipo_1.OperadorAritmetico.POR) {
-            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
-                this.tipo = Tipo_1.Tipo.INT;
-                return Number(izq) * Number(der);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
-                this.tipo = Tipo_1.Tipo.DOUBLE;
-                return Number(izq) * parseFloat(der);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
-                this.tipo = Tipo_1.Tipo.INT;
-                var aux = der;
-                var ascii = aux.charCodeAt(0);
-                return Number(izq) * Number(ascii);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
-                this.tipo = Tipo_1.Tipo.DOUBLE;
-                return parseFloat(izq) * Number(der);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
-                this.tipo = Tipo_1.Tipo.DOUBLE;
-                return parseFloat(izq) * parseFloat(der);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
-                this.tipo = Tipo_1.Tipo.DOUBLE;
-                var aux = der;
-                var ascii = aux.charCodeAt(0);
-                return parseFloat(izq) * parseFloat(ascii);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
-                this.tipo = Tipo_1.Tipo.INT;
-                var aux = izq;
-                var ascii = aux.charCodeAt(0);
-                return Number(ascii) * Number(der);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
-                this.tipo = Tipo_1.Tipo.DOUBLE;
-                var aux = izq;
-                var ascii = aux.charCodeAt(0);
-                return Number(ascii) * parseFloat(der);
-            }
-            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
-                console.log('entro a char y char');
-                this.tipo = Tipo_1.Tipo.INT;
-                var aux = izq;
-                var ascii = aux.charCodeAt(0);
-                var aux2 = der;
-                var ascii2 = aux2.charCodeAt(0);
-                console.log(ascii, ascii2);
-                return Number(ascii) * Number(ascii2);
-            }
-        }
-        else if (this.operador === Tipo_1.OperadorAritmetico.DIV) {
-            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
-                this.tipo = Tipo_1.Tipo.INT;
->>>>>>> Stashed changes
                 return Number(izq) / Number(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
@@ -316,18 +237,7 @@ class Aritmetica {
                 return Number(ascii) / parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
-<<<<<<< Updated upstream
                 return izq.charCodeAt(0) / der.charCodeAt(0);
-=======
-                console.log('entro a char y char');
-                this.tipo = Tipo_1.Tipo.INT;
-                var aux = izq;
-                var ascii = aux.charCodeAt(0);
-                var aux2 = der;
-                var ascii2 = aux2.charCodeAt(0);
-                console.log(ascii, ascii2);
-                return Number(ascii) / Number(ascii2);
->>>>>>> Stashed changes
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.MOD) {
@@ -372,18 +282,7 @@ class Aritmetica {
                 return Number(ascii) % parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
-<<<<<<< Updated upstream
                 return izq.charCodeAt(0) % der.charCodeAt(0);
-=======
-                console.log('entro a char y char');
-                this.tipo = Tipo_1.Tipo.INT;
-                var aux = izq;
-                var ascii = aux.charCodeAt(0);
-                var aux2 = der;
-                var ascii2 = aux2.charCodeAt(0);
-                console.log(ascii, ascii2);
-                return Number(ascii) % Number(ascii2);
->>>>>>> Stashed changes
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.CONCATENAR) {
@@ -400,11 +299,8 @@ class Aritmetica {
                 return resultado;
             }
         }
-<<<<<<< Updated upstream
-=======
         else if (this.operador === Tipo_1.OperadorAritmetico.MASMAS) {
         }
->>>>>>> Stashed changes
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion +", this.fila, this.columna);
         }

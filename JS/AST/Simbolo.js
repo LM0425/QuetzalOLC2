@@ -8,11 +8,8 @@ class Simbolo {
         this.fila = fila;
         this.columna = columna;
         this.valor = valor;
-<<<<<<< Updated upstream
         this.tipoArreglo = null;
-=======
         this.tSt = "";
->>>>>>> Stashed changes
     }
     getId() {
         return this.indentificador;

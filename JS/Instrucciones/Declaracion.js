@@ -54,7 +54,6 @@ class Declaracion {
                     return result;
             }
         }
-<<<<<<< Updated upstream
         else {
             let value = null;
             if (this.expresion !== null) {
@@ -70,16 +69,6 @@ class Declaracion {
                 if (result instanceof Excepcion_1.Excepcion)
                     return result;
             }
-=======
-        for (let id of this.identificador) {
-            if (value instanceof Excepcion_1.Excepcion)
-                return value;
-            let simbolo = new Simbolo_1.Simbolo(id, this.tipo, this.fila, this.columna, value);
-            //console.log('el simbolo a insertar es: ', simbolo);
-            let result = table.agregarSimbolo(simbolo);
-            if (result instanceof Excepcion_1.Excepcion)
-                return result;
->>>>>>> Stashed changes
         }
         return null;
     }

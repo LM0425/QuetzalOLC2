@@ -8,6 +8,7 @@ const { Asignacion } = require("./JS/Instrucciones/Asignacion");
 const { ModificarArreglo } = require("./JS/Instrucciones/ModificarArreglo");
 const { Main } = require("./JS/Instrucciones/Main");
 const { Imprimir } = require("./JS/Instrucciones/Imprimir");
+const { Struct } = require("./JS/Instrucciones/struct");
 
 document.getElementById("eventoAnalizar").addEventListener("click", displayDate);
 
@@ -27,7 +28,7 @@ function displayDate() {
             continue;
         }
 
-        if ((instruccion instanceof Declaracion) || (instruccion instanceof Asignacion) || (instruccion instanceof ModificarArreglo)) {
+        if ((instruccion instanceof Declaracion) || (instruccion instanceof Asignacion) || (instruccion instanceof ModificarArreglo) || (instruccion instanceof Struct)) {
             let value = instruccion.interpretar(ast, entornoGlobal);
 
             if (value instanceof Excepcion) {
@@ -65,7 +66,7 @@ function displayDate() {
     }
 
     for (let instruccion of ast.getInstrucciones()) { // Tercera Pasada
-        if (!((instruccion instanceof Funcion) || (instruccion instanceof Main) || (instruccion instanceof Declaracion) || (instruccion instanceof Asignacion) || (instruccion instanceof ModificarArreglo))) {
+        if (!((instruccion instanceof Funcion) || (instruccion instanceof Main) || (instruccion instanceof Declaracion) || (instruccion instanceof Asignacion) || (instruccion instanceof ModificarArreglo) || (instruccion instanceof Struct))) {
             let err = new Excepcion("Semantico", "Sentencia fuera de Main", instruccion.fila, instruccion.columna);
             ast.getExcepciones().push(err);
             ast.updateConsola(err.toString());

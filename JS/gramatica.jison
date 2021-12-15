@@ -162,29 +162,29 @@ ini
 ;
 
 instrucciones
-	: instrucciones instruccion { $1.push($2); $$ = $1;}
-	| instruccion  { $$ = [$1]; }
-	| error { console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
+	: instrucciones instruccion	{ $1.push($2); $$ = $1;}
+	| instruccion  				{ $$ = [$1]; }
+	| error 					{ console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
 ;
 
 instruccion
-	: variables PTCOMA	{ $$ = $1; }
-	| imprimir PTCOMA 	{ $$ = $1; }
-	| if 				{ $$ = $1; }
-	| switch			{ $$ = $1; }
-	| break PTCOMA		{ $$ = $1; }
-	| incr_decr	PTCOMA	{ $$ = $1; }
-	| while_instruccion { $$ = $1; }
+	: variables PTCOMA		{ $$ = $1; }
+	| imprimir PTCOMA 		{ $$ = $1; }
+	| if 					{ $$ = $1; }
+	| switch				{ $$ = $1; }
+	| break PTCOMA			{ $$ = $1; }
+	| incr_decr	PTCOMA		{ $$ = $1; }
+	| while_instruccion 	{ $$ = $1; }
 	| do_instruccion PTCOMA	{ $$ = $1; }
-	| struct_crear PTCOMA { $$ = $1; }
-	| for_simple		{$$ = $1;}
+	| struct_crear PTCOMA 	{ $$ = $1; }
+	| for_simple			{$$ = $1;}
 	| llamada_struct PTCOMA	{$$ = $1;}
 	// | continue PTCOMA	{ $$ = $1; }
-	| return PTCOMA		{ $$ = $1; }
-	| modificarArreglo	{ $$ = $1; }
-	| main				{ $$ = $1; }
-	| funcion			{ $$ = $1; }
-	| llamada ptc	 	{ $$ = $1; }
+	| return PTCOMA			{ $$ = $1; }
+	| modificarArreglo		{ $$ = $1; }
+	| main					{ $$ = $1; }
+	| funcion				{ $$ = $1; }
+	| llamada ptc	 		{ $$ = $1; }
 ;
 
 ptc
@@ -200,12 +200,12 @@ variables
 	| tipo CORIZQ CORDER ID IGUAL NUMERAL ID	{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $7, true, false, true); }
 	| tipo CORIZQ CORDER ID IGUAL expresion		{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $6, true, false, false); }
 	
-	| expresion PUNTO expresion IGUAL expresion 		{ $$ = new Asignacion_atributo($1, $3, $5, @1.first_line, @1.first_column); }
+	| expresion PUNTO expresion IGUAL expresion	{ $$ = new Asignacion_atributo($1, $3, $5, @1.first_line, @1.first_column); }
 ;
 
 listaid
-	: listaid COMA ID {$$ = $1; $$.push($3); }
-	| ID { $$ = new Array(); $$.push($1); }
+	: listaid COMA ID	{$$ = $1; $$.push($3); }
+	| ID 				{ $$ = new Array(); $$.push($1); }
 ;
 
 tipo
@@ -243,12 +243,12 @@ expresion
 	| ID								{ $$ = new Identificador(String($1), @1.first_line, @1.first_column); }
 	| PARIZQ expresion PARDER       	{ $$ = $2; }
 
-	| declaracionArregloT1							{ $$ = new Primitivos(Tipo.ARRAY, $1, @1.first_line, @1.first_column); }
-	| ID listaExpresiones							{ $$ = new AccesoArreglo($1, $2, null, null, @1.first_line, @1.first_column); }
-	| ID CORIZQ posicion DOSPT posicion CORDER		{ $$ = new AccesoArreglo($1, null, $3, $5, @1.first_line, @1.first_column); }
+	| declaracionArregloT1						{ $$ = new Primitivos(Tipo.ARRAY, $1, @1.first_line, @1.first_column); }
+	| ID listaExpresiones						{ $$ = new AccesoArreglo($1, $2, null, null, @1.first_line, @1.first_column); }
+	| ID CORIZQ posicion DOSPT posicion CORDER	{ $$ = new AccesoArreglo($1, null, $3, $5, @1.first_line, @1.first_column); }
 
 	| llamada							{ $$ = $1; }
-	| incr_decr						{ $$ = $1; }
+	| incr_decr							{ $$ = $1; }
 ;
 
 posicion
@@ -263,12 +263,12 @@ declaracionArregloT1
 
 listaValores
 	: listaValores COMA valores { $1.push($3); $$ = $1 }
-	| valores { $$ = [$1]; }
+	| valores 					{ $$ = [$1]; }
 ;
 
 valores
-	: declaracionArregloT1 { $$ = $1; }
-	| expresion { $$ = $1; }
+	: declaracionArregloT1	{ $$ = $1; }
+	| expresion 			{ $$ = $1; }
 ;
 
 modificarArreglo
@@ -281,9 +281,9 @@ listaExpresiones
 ;
 
 if
-	: RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, null, null, @1.first_line, @1.first_column); }
-	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE LLAVEIZQ instrucciones LLAVEDER { $$ = new If($3, $6, $10, null, @1.first_line, @1.first_column); }
-	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE if { $$ = new If($3, $6, null, $9, @1.first_line, @1.first_column); }
+	: RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER 										{ $$ = new If($3, $6, null, null, @1.first_line, @1.first_column); }
+	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE LLAVEIZQ instrucciones LLAVEDER	{ $$ = new If($3, $6, $10, null, @1.first_line, @1.first_column); }
+	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE if 								{ $$ = new If($3, $6, null, $9, @1.first_line, @1.first_column); }
 ;
 
 switch
@@ -346,23 +346,28 @@ main
 ;
 
 imprimir
-	: RPRINT PARIZQ listaImprimir PARDER { $$ = new Imprimir(false, $3, @1.first_line, @1.first_column); }
-	| RPRINTLN PARIZQ listaImprimir PARDER { $$ = new Imprimir(true, $3, @1.first_line, @1.first_column); }
-	: RPRINT PARIZQ expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,null,false); }
-	| RPRINT PARIZQ expresion PUNTO expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,$5,false); }
-	| RPRINTLN PARIZQ expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,null,true); }
-	| RPRINTLN PARIZQ expresion PUNTO expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,$5,true); }
+	: RPRINT PARIZQ listaImprimir PARDER 	{ $$ = new Imprimir(false, $3, @1.first_line, @1.first_column); }
+	| RPRINTLN PARIZQ listaImprimir PARDER	{ $$ = new Imprimir(true, $3, @1.first_line, @1.first_column); }
+// 	| RPRINT PARIZQ expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,null,false); }
+// 	| RPRINT PARIZQ expresion PUNTO expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,$5,false); }
+// 	| RPRINTLN PARIZQ expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,null,true); }
+// 	| RPRINTLN PARIZQ expresion PUNTO expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column,$5,true); }
 ;
 
 listaImprimir
-	: listaImprimir COMA expresion	{ $1.push($3); $$ = $1; }
-	| expresion						{ $$ = [$1]; }
-	|								{ $$ = []; }
+	: listaImprimir COMA expresion accesoStruct	{ $1.push({'expresion':$3, 'acceso': $4['acceso']}); $$ = $1; }
+	| expresion accesoStruct					{ $$ = [{'expresion':$1, 'acceso': $2['acceso']}]; }
+	|											{ $$ = []; }
+;
+
+accesoStruct
+	: PUNTO expresion	{ $$ = {'acceso': $2}; }
+	|					{ $$ = {'acceso': null}; }
 ;
 
 incr_decr
-	: expresion MAS MAS	{$$ = new inc_dec(OperadorAritmetico.MAS,$1,@1.first_line, @1.first_column);}	
-	| expresion MENOS MENOS {$$ = new inc_dec(OperadorAritmetico.MENOS,$1,@1.first_line, @1.first_column);}
+	: expresion MAS MAS		{$$ = new inc_dec(OperadorAritmetico.MAS,$1,@1.first_line, @1.first_column);}	
+	| expresion MENOS MENOS	{$$ = new inc_dec(OperadorAritmetico.MENOS,$1,@1.first_line, @1.first_column);}
 ;
 
 while_instruccion
@@ -383,7 +388,7 @@ l_atributos
 ;
 
 atributo
-	: tipo ID	 { $$ = new Declaracion_atributo($1, $2, @1.first_line, @1.first_column, null); }
+	: tipo ID { $$ = new Declaracion_atributo($1, $2, @1.first_line, @1.first_column, null); }
 	//| falta llamada de struct 
 	//| falta llamada de arreglo
 ;
@@ -394,9 +399,9 @@ for_simple
 
 l_expresiones
 	: l_expresiones COMA expresion	{ $1.push($3); $$ = $1; }
-	| expresion			{ $$ = [$1]; }
+	| expresion						{ $$ = [$1]; }
 ;
 
 llamada_struct
-	: ID ID IGUAL ID PARIZQ l_expresiones PARDER	{ $$ = new Llamada_struct($1,$2,$4,[$6], @1.first_line, @1.first_column); }
+	: ID ID IGUAL ID PARIZQ l_expresiones PARDER { $$ = new Llamada_struct($1,$2,$4,[$6], @1.first_line, @1.first_column); }
 ;

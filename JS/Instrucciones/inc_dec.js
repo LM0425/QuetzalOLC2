@@ -27,7 +27,7 @@ class inc_dec {
                 return aux;
             }
             else {
-                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no INT en inc_dec.", this.fila, this.columna);
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no INT en Incremento.", this.fila, this.columna);
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
@@ -41,11 +41,11 @@ class inc_dec {
                 return aux;
             }
             else {
-                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no INT en inc_dec.", this.fila, this.columna);
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no INT en Decremento.", this.fila, this.columna);
             }
         }
         else {
-            return new Excepcion_1.Excepcion("Semantico", "Tipo de operador en inc_dec.", this.fila, this.columna);
+            return new Excepcion_1.Excepcion("Semantico", "Tipo erroneo de operador en Incremento/Decremento.", this.fila, this.columna);
         }
     }
 }

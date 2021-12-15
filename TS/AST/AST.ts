@@ -6,9 +6,9 @@ import { Struct } from "../Instrucciones/struct";
 
 export class AST {
     instrucciones: Array<Instruccion>
-    public funciones:Array<Funcion>;        //Pull de Funciones
-    public structs:Array<Struct>;           //Pull de Strcuts
-    excepciones: Array<Excepcion>;    //Pull de Excepciones
+    public funciones: Array<Funcion>;   //Pull de Funciones
+    public structs: Array<Struct>;      //Pull de Strcuts
+    excepciones: Array<Excepcion>;      //Pull de Excepciones
     consola: string;
     TSGlobal: Entorno;
 
@@ -27,32 +27,6 @@ export class AST {
 
     getExcepciones() {
         return this.excepciones;
-    }
-
-    getStructs() {
-        return this.structs;
-    }
-
-    getStrut(nombre: any){
-        //console.log(this.structs)
-        let estructura:any;
-        this.structs.forEach(element => {
-            if (nombre == element.identificador) {
-                //console.log('existe la estructura ', element);
-                estructura=element
-            }
-            
-        });
-
-        return estructura;
-    }
-    
-
-    mostrarStruct(){
-        console.log('las estructuras son: ')
-        this.structs.forEach(element => {
-            console.log(element);
-        });
     }
 
     setExcepciones(excepciones: Array<Excepcion>) {
@@ -75,20 +49,44 @@ export class AST {
         this.TSGlobal = TSglobal;
     }
 
-    getFunciones(){
+    getStructs() {
+        return this.structs;
+    }
+
+    getStrut(nombre: any) {
+        //console.log(this.structs)
+        let estructura: any;
+        this.structs.forEach(element => {
+            if (nombre == element.identificador) {
+                //console.log('existe la estructura ', element);
+                estructura = element
+            }
+        });
+
+        return estructura;
+    }
+
+    mostrarStruct() {
+        // console.log('las estructuras son: ')
+        this.structs.forEach(element => {
+            console.log(element);
+        });
+    }
+
+    getFunciones() {
         return this.funciones;
     }
 
-    getFuncion(nombre:string){
-        for(let funcion of this.funciones){
-            if(funcion.nombre === nombre){
+    getFuncion(nombre: string) {
+        for (let funcion of this.funciones) {
+            if (funcion.nombre === nombre) {
                 return funcion;
             }
         }
         return null;
     }
 
-    addFuncion(funcion:Funcion){
+    addFuncion(funcion: Funcion) {
         this.funciones.push(funcion);
     }
 }
