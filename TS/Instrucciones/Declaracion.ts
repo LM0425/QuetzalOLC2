@@ -29,7 +29,7 @@ export class Declaracion implements Instruccion {
     interpretar(tree: AST, table: Entorno) {
         if (this.decArreglo === true) {
             if (this.porReferencia) {
-                let simbolo = table.getSimbolo(this.expresion);
+                let simbolo = table.getTabla(this.expresion);
                 if (simbolo === null) return new Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
 
                 if(this.tipo !== simbolo.getTipoArreglo()) return new Excepcion("Semantico", "Tipo de arreglo diferente al tipo de variable", this.fila, this.columna);
@@ -39,7 +39,7 @@ export class Declaracion implements Instruccion {
                 if (result instanceof Excepcion) return result;
 
             } else if (this.copia) {
-                let simbolo = table.getSimbolo(this.expresion);
+                let simbolo = table.getTabla(this.expresion);
                 if (simbolo === null) return new Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
 
                 if(this.tipo !== simbolo.getTipoArreglo()) return new Excepcion("Semantico", "Tipo de arreglo diferente al tipo de variable", this.fila, this.columna);

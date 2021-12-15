@@ -18,7 +18,7 @@ class Declaracion {
     interpretar(tree, table) {
         if (this.decArreglo === true) {
             if (this.porReferencia) {
-                let simbolo = table.getSimbolo(this.expresion);
+                let simbolo = table.getTabla(this.expresion);
                 if (simbolo === null)
                     return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
                 if (this.tipo !== simbolo.getTipoArreglo())
@@ -29,7 +29,7 @@ class Declaracion {
                     return result;
             }
             else if (this.copia) {
-                let simbolo = table.getSimbolo(this.expresion);
+                let simbolo = table.getTabla(this.expresion);
                 if (simbolo === null)
                     return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
                 if (this.tipo !== simbolo.getTipoArreglo())

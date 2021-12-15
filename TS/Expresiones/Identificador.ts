@@ -17,8 +17,8 @@ export class Identificador implements Instruccion {
     }
 
     interpretar(tree: AST, table: Entorno) {
-        let simbolo = table.getSimbolo(this.identificador);
-        if (simbolo === null) return new Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
+        let simbolo = table.getTabla(this.identificador);
+        if (simbolo === null) return new Excepcion("Semantico", "Variable " + this.identificador + " no encontrada", this.fila, this.columna);
 
         this.tipo = simbolo.getTipo();
 

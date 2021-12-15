@@ -15,7 +15,7 @@ class ModificarArreglo {
         let value = this.valor.interpretar(tree, table);
         if (value instanceof Excepcion_1.Excepcion)
             return value;
-        let simbolo = table.getSimbolo(this.identificador);
+        let simbolo = table.getTabla(this.identificador);
         if (simbolo === null)
             return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + " no encontrada.", this.fila, this.columna);
         if (simbolo.getTipo() !== Tipo_1.Tipo.ARRAY)
@@ -37,29 +37,30 @@ class ModificarArreglo {
             interpretar = !(String(typeof value) === "number") && !(String(typeof value) === "string") && !(String(typeof value) === "boolean") && !(value instanceof Array);
         }
         let val = this.modificarDimensiones(tree, table, listaPos.slice(), simbolo.getValor(), value);
-        //if(val instanceof Excepcion) return val;
+        if (val instanceof Excepcion_1.Excepcion)
+            return val;
         return val;
     }
     modificarDimensiones(tree, table, expresiones, arreglo, valor) {
-        let posiciones = expresiones.length;
-        for (let pos in expresiones) {
-            console.log(posiciones);
-            console.log(pos);
+        if (expresiones.length === 0) {
+            if (arreglo instanceof Array)
+                return new Excepcion_1.Excepcion("Semantico", "Modificacion a Arreglo incompleta", this.fila, this.columna);
+            return valor;
         }
-        // if(expresiones.length === 0){
-        //     if(arreglo instanceof Array) return new Excepcion("Semantico", "Modificacion a Arreglo incompleta", this.fila, this.columna);
-        //     return valor
-        // }
-        // if(!(arreglo instanceof Array)) return new Excepcion("Semantico", " Acceso de mas al Arreglo", this.fila, this.columna);
-        // let dimension = expresiones.shift()
-        // try {
-        //     var value = this.modificarDimensiones(tree, table, expresiones.slice(), arreglo[dimension],valor);
-        // } catch (error) {
-        //     return new Excepcion("Semantico", "La posicion dada es negativa o mayor que la dimension del arreglo", this.fila, this.columna);
-        // }
-        // if(value instanceof Excepcion) return value;
-        // if(value !== null) arreglo[dimension] = value
-        // return null
+        if (!(arreglo instanceof Array))
+            return new Excepcion_1.Excepcion("Semantico", "Acceso de mas al Arreglo", this.fila, this.columna);
+        let dimension = expresiones.shift();
+        try {
+            var value = this.modificarDimensiones(tree, table, expresiones.slice(), arreglo[dimension], valor);
+        }
+        catch (error) {
+            return new Excepcion_1.Excepcion("Semantico", "La posicion dada es negativa o mayor que la dimension del arreglo", this.fila, this.columna);
+        }
+        if (value instanceof Excepcion_1.Excepcion)
+            return value;
+        if (value !== null)
+            arreglo[dimension] = value;
+        return null;
     }
 }
 exports.ModificarArreglo = ModificarArreglo;

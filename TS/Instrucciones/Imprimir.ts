@@ -1,26 +1,43 @@
 import { Instruccion } from "../Abstract/Instruccion";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
+import { Excepcion } from "../AST/Excepcion";
 import { Tipo } from "../AST/Tipo";
 
 export class Imprimir implements Instruccion {
+    salto: boolean;
     expresion: any;
     fila: number;
     columna: number;
 
-    constructor(expresion: any, fila: number, columna: number) {
+    constructor(salto: boolean, expresion: any, fila: number, columna: number) {
+        this.salto = salto;
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
     }
 
     interpretar(tree: AST, table: Entorno) {
-        let value = this.expresion.interpretar(tree, table);
-        if(this.expresion.tipo === Tipo.ARRAY){
-            value = "["+value+"]"
+        let cadena = "";
+
+        for (let imprimir of this.expresion) {
+            let value = imprimir.interpretar(tree, table);
+            if(value instanceof Excepcion) return value;
+
+            // Agregar ciclo interpretar
+
+            if (imprimir.tipo === Tipo.ARRAY) {
+                cadena += "[" + value + "]"
+            }else{
+                cadena += value
+            }
         }
-        tree.updateConsola(value)
-        return 0;
+
+        tree.updateConsola(cadena)
+
+        if(this.salto === true)  tree.updateConsola('\n');
+        
+        return this;
     }
 
 }

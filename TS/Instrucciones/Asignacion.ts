@@ -22,7 +22,7 @@ export class Asignacion implements Instruccion {
         if (value instanceof Excepcion) return value;
 
         let simbolo = new Simbolo(this.identificador, this.expresion.tipo, this.fila, this.columna, value);
-        let result = table.actualizarSimbolo(simbolo);
+        let result = table.actualizarTabla(simbolo);
 
         if (result instanceof Excepcion) return result;
 

@@ -9,9 +9,9 @@ class Identificador {
         this.columna = columna;
     }
     interpretar(tree, table) {
-        let simbolo = table.getSimbolo(this.identificador);
+        let simbolo = table.getTabla(this.identificador);
         if (simbolo === null)
-            return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
+            return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + " no encontrada", this.fila, this.columna);
         this.tipo = simbolo.getTipo();
         return simbolo.getValor();
     }

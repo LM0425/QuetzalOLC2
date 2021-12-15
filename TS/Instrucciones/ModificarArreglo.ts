@@ -24,7 +24,7 @@ export class ModificarArreglo implements Instruccion{
         let value = this.valor.interpretar(tree, table);
         if(value instanceof Excepcion) return value;
 
-        let simbolo = table.getSimbolo(this.identificador);
+        let simbolo = table.getTabla(this.identificador);
         if(simbolo === null) return new Excepcion("Semantico", "Variable " + this.identificador + " no encontrada.", this.fila, this.columna);
 
         if(simbolo.getTipo() !== Tipo.ARRAY) return new Excepcion("Semantico", "Variable " + this.identificador + " no es un arreglo.", this.fila, this.columna);
@@ -46,23 +46,17 @@ export class ModificarArreglo implements Instruccion{
         }
 
         let val = this.modificarDimensiones(tree, table, listaPos.slice(), simbolo.getValor(), value);
-        //if(val instanceof Excepcion) return val;
+        if(val instanceof Excepcion) return val;
 
         return val;
     }
 
     modificarDimensiones(tree: AST, table:Entorno, expresiones:any, arreglo:any, valor:any){
-        // let posiciones = expresiones.length;
-        // let tempArreglo = []
-        // for(let pos in expresiones){
-        //     tempArreglo = arreglo[pos];
-        //     // if(posiciones)
-        // }
         if(expresiones.length === 0){
             if(arreglo instanceof Array) return new Excepcion("Semantico", "Modificacion a Arreglo incompleta", this.fila, this.columna);
             return valor
         }
-        if(!(arreglo instanceof Array)) return new Excepcion("Semantico", " Acceso de mas al Arreglo", this.fila, this.columna);
+        if(!(arreglo instanceof Array)) return new Excepcion("Semantico", "Acceso de mas al Arreglo", this.fila, this.columna);
         let dimension = expresiones.shift()
 
         try {

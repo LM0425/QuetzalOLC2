@@ -3,6 +3,7 @@ import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { Break } from "./Break";
+import { Return } from "./Return";
 
 export class Switch implements Instruccion{
 
@@ -50,6 +51,11 @@ export class Switch implements Instruccion{
                                 cumple = true;
                                 return null;
                             }
+
+                            if(result instanceof Return){
+                                cumple = true;
+                                return result;
+                            }
                         }
                     }
                 }
@@ -67,6 +73,9 @@ export class Switch implements Instruccion{
                     }
 
                     if(result instanceof Break) return null;
+                    if(result instanceof Return){
+                        return result;
+                    }
                 }
             }
         }

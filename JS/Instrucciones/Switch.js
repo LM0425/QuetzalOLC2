@@ -4,6 +4,7 @@ exports.Switch = void 0;
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Break_1 = require("./Break");
+const Return_1 = require("./Return");
 class Switch {
     constructor(expresion, cases, porDefecto, fila, columna) {
         this.expresion = expresion;
@@ -38,6 +39,10 @@ class Switch {
                                 cumple = true;
                                 return null;
                             }
+                            if (result instanceof Return_1.Return) {
+                                cumple = true;
+                                return result;
+                            }
                         }
                     }
                 }
@@ -54,6 +59,9 @@ class Switch {
                     }
                     if (result instanceof Break_1.Break)
                         return null;
+                    if (result instanceof Return_1.Return) {
+                        return result;
+                    }
                 }
             }
         }

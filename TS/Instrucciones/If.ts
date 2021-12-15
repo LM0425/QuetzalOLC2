@@ -3,6 +3,7 @@ import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { Tipo } from "../AST/Tipo";
+import { Return } from "./Return";
 
 export class If implements Instruccion {
 
@@ -27,9 +28,9 @@ export class If implements Instruccion {
         if (condicionIf instanceof Excepcion) return condicionIf;
 
         if (this.condicion.tipo === Tipo.BOOL) {
-            console.log("Condicion - " + condicionIf)
+           // console.log("Condicion - " + condicionIf)
             if (condicionIf === true) {
-                console.log("Entrando a if")
+                //console.log("Entrando a if")
                 let nuevaTabla = new Entorno(table);
                 for (let instruccion of this.instruccionesIf) {
                     let result = instruccion.interpretar(tree, nuevaTabla);
@@ -37,22 +38,29 @@ export class If implements Instruccion {
                         tree.getExcepciones().push(result);
                         tree.updateConsola(result.toString());
                     }
+                    if(result instanceof Return){
+                        return result;
+                    }
                 }
             } else {
                 if (this.instruccionesElse !== null) {
-                    console.log("Entrando a Else")
+                    //console.log("Entrando a Else")
                     let nuevaTabla = new Entorno(table);
                     for (let instruccion of this.instruccionesElse) {
                         let result = instruccion.interpretar(tree, nuevaTabla);
                         if (result instanceof Excepcion) {
                             tree.getExcepciones().push(result);
                             tree.updateConsola(result.toString());
-                        };
+                        }
+                        if(result instanceof Return){
+                            return result;
+                        }
                     }
                 } else if (this.elseIf !== null) {
-                    console.log("Entrando a else if")
+                    //console.log("Entrando a else if")
                     let result = this.elseIf.interpretar(tree, table);
                     if (result instanceof Excepcion) return result;
+                    if(result instanceof Return) return result;
                 }
             }
         } else {

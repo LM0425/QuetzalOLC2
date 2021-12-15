@@ -15,7 +15,7 @@ class Asignacion {
         if (value instanceof Excepcion_1.Excepcion)
             return value;
         let simbolo = new Simbolo_1.Simbolo(this.identificador, this.expresion.tipo, this.fila, this.columna, value);
-        let result = table.actualizarSimbolo(simbolo);
+        let result = table.actualizarTabla(simbolo);
         if (result instanceof Excepcion_1.Excepcion)
             return result;
         return null;

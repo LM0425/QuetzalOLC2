@@ -72,15 +72,19 @@ charLiteral             \'{stringDouble}\'
 'else'				return 'RELSE';
 'switch'			return 'RSWITCH';
 'case'				return 'RCASE';
+'begin'				return 'RBEGIN';
+'end'				return 'REND';
 'default'			return 'RDEFAULT';
 'break'				return 'RBREAK';
+'continue'			return 'RCONTINUE';
+'return'			return 'RRETURN';
 
 /* Espacios en blanco */
 [ \r\t]+            {}
 \n                  {}
 
 /* comentarios */
-[//.*]             	{}
+[//.*[^\n]]        	{}
 [/\*(.|\n)*?\*/]    {}
 
 [0-9]+\.[0-9]+\b    return 'DECIMAL';
@@ -88,7 +92,7 @@ charLiteral             \'{stringDouble}\'
 [a-zA-Z][a-zA-Z_0-9]*   return 'ID';
 // [\"[^\']*?\"]    		return  'CADENA';
 // [\'[^\'\\]\'] 			return 'CARACTER';
-[\"]((\\\")|(\\\')|(\\\n)|[^\"])+[\"]         {
+[\"]((\\\")|(\\\')|(\\\n)|[^\"])*[\"]         {
                             yytext = yytext.substr(1, yyleng - 2)
                             return 'CADENA'
                         }
@@ -119,7 +123,13 @@ charLiteral             \'{stringDouble}\'
 	const { Case } = require("./Instrucciones/Case");
 	const { Default } = require("./Instrucciones/Default");
 	const { Break } = require("./Instrucciones/Break");
+	// const { Continue } = require("./Instrucciones/Continue");
+	const { Return } = require("./Instrucciones/Return");
 	const { ModificarArreglo } = require("./Instrucciones/ModificarArreglo");
+	const { AccesoArreglo } = require("./Expresiones/AccesoArreglo");
+	const { Main } = require("./Instrucciones/Main");
+	const { Funcion } = require("./Instrucciones/Funcion");
+	const { Llamada } = require("./Instrucciones/Llamada");
 	
 %}
 /* Asociación de operadores y precedencia */
@@ -127,7 +137,7 @@ charLiteral             \'{stringDouble}\'
 %left 'AND'
 %left 'UNOT'
 %left 'IGUALIGUAL' 'DIFERENTE' 'MENOR' 'MAYOR' 'MENORIGUAL' 'MAYORIGUAL'
-%left 'MAS' 'MENOS'
+%left 'MAS' 'MENOS' 'CONCATENAR' 'REPETICION'
 %left 'POR' 'DIVIDIDO' 'MODULO'
 %left UMENOS
 
@@ -148,11 +158,20 @@ instrucciones
 instruccion
 	: variables PTCOMA	{ $$ = $1; }
 	| imprimir PTCOMA 	{ $$ = $1; }
-	| llamada PTCOMA 	{ $$ = $1; }
 	| if 				{ $$ = $1; }
 	| switch			{ $$ = $1; }
 	| break PTCOMA		{ $$ = $1; }
+	// | continue PTCOMA	{ $$ = $1; }
+	| return PTCOMA		{ $$ = $1; }
 	| modificarArreglo	{ $$ = $1; }
+	| main				{ $$ = $1; }
+	| funcion			{ $$ = $1; }
+	| llamada ptc	 	{ $$ = $1; }
+;
+
+ptc
+	: PTCOMA
+	|
 ;
 
 variables
@@ -176,6 +195,7 @@ tipo
 	| RSTRING	{ $$ = Tipo.STRING; }
 	| RCHAR		{ $$ = Tipo.CHAR; }
 	| RBOOLEAN	{ $$ = Tipo.BOOL; }
+	| RVOID		{ $$ = Tipo.VOID; }
 ;
 
 expresion
@@ -184,6 +204,8 @@ expresion
 	| expresion MENOS expresion     	{ $$ = new Aritmetica(OperadorAritmetico.MENOS, $1, $3, @1.first_line, @1.first_column); }
 	| expresion POR expresion       	{ $$ = new Aritmetica(OperadorAritmetico.POR, $1, $3, @1.first_line, @1.first_column); }
 	| expresion DIVIDIDO expresion  	{ $$ = new Aritmetica(OperadorAritmetico.DIV, $1, $3, @1.first_line, @1.first_column); }
+	| expresion CONCATENAR expresion	{ $$ = new Aritmetica(OperadorAritmetico.CONCATENAR, $1, $3, @1.first_line, @1.first_column); }
+	| expresion REPETICION expresion	{ $$ = new Aritmetica(OperadorAritmetico.REPETIR, $1, $3, @1.first_line, @1.first_column); }
 	| expresion MENOR expresion			{ $$ = new Relacional(OperadorRelacional.MENORQUE, $1, $3, @1.first_line, @1.first_column); }
 	| expresion MAYOR expresion			{ $$ = new Relacional(OperadorRelacional.MAYORQUE, $1, $3, @1.first_line, @1.first_column); }
 	| expresion MENORIGUAL expresion	{ $$ = new Relacional(OperadorRelacional.MENORIGUAL, $1, $3, @1.first_line, @1.first_column); }
@@ -202,9 +224,17 @@ expresion
 	| ID								{ $$ = new Identificador(String($1), @1.first_line, @1.first_column); }
 	| PARIZQ expresion PARDER       	{ $$ = $2; }
 
-	| declaracionArregloT1				{ $$ = new Primitivos(Tipo.ARRAY, $1, @1.first_line, @1.first_column); }
+	| declaracionArregloT1							{ $$ = new Primitivos(Tipo.ARRAY, $1, @1.first_line, @1.first_column); }
+	| ID listaExpresiones							{ $$ = new AccesoArreglo($1, $2, null, null, @1.first_line, @1.first_column); }
+	| ID CORIZQ posicion DOSPT posicion CORDER		{ $$ = new AccesoArreglo($1, null, $3, $5, @1.first_line, @1.first_column); }
 
-	| llamada						{ $$ = $1; }
+	| llamada							{ $$ = $1; }
+;
+
+posicion
+	: expresion { $$ = $1; }
+	| RBEGIN    { $$ = true; }
+	| REND		{ $$ = true; }
 ;
 
 declaracionArregloT1
@@ -257,20 +287,51 @@ break
 	: RBREAK { $$ = new Break(@1.first_line, @1.first_column); }
 ;
 
+// continue
+// 	: RCONTINUE { $$ = new Continue(@1.first_line, @1.first_column); }
+// ;
+
+return
+	: RRETURN expresion { $$ = new Return($2, @1.first_line, @1.first_column); }
+	// | RRETURN			{ $$ = new Return(null, @1.first_line, @1.first_column); }
+;
+
+funcion
+	: tipo ID PARIZQ parametros PARDER LLAVEIZQ instrucciones LLAVEDER	{ $$ = new Funcion($1, $2, $4, $7, @1.first_line, @1.first_column); }
+	| tipo ID PARIZQ PARDER LLAVEIZQ instrucciones LLAVEDER				{ $$ = new Funcion($1, $2, [], $6, @1.first_line, @1.first_column); }
+;
+
+parametros
+	: parametros COMA parametro	{ $1.push($3); $$ = $1; }
+	| parametro					{ $$ = [$1]; }
+;
+
+parametro
+	: tipo CORIZQ CORDER ID { $$ = {'tipo': $1, 'identificador': $3, 'arreglo':true}; }
+	| tipo ID				{ $$ = {'tipo': $1, 'identificador': $2, 'arreglo':false}; }
+;
+
 llamada
-	: ID PARIZQ parametrosLlamada PARDER 	{  }
-	| ID PARIZQ PARDER						{  }
+	: ID PARIZQ parametrosLlamada PARDER 	{ $$ = new Llamada($1, $3, @1.first_line, @1.first_column); }
+	| ID PARIZQ PARDER						{ $$ = new Llamada($1, [], @1.first_line, @1.first_column); }
 ;
 
 parametrosLlamada
-	: parametrosLlamada COMA parametroLlamada 	{ $1.push($3); $$ = $1; }
-	| parametroLlamada 							{ $$ = [$1]; }
+	: parametrosLlamada COMA expresion 	{ $1.push($3); $$ = $1; }
+	| expresion 						{ $$ = [$1]; }
 ;
 
-parametroLlamada
-	: expresion { $$ = $1 }
+main
+	: RVOID RMAIN PARIZQ PARDER LLAVEIZQ instrucciones LLAVEDER { $$ = new Main($6, @1.first_line, @1.first_column); }
 ;
 
 imprimir
-	: RPRINT PARIZQ expresion PARDER { $$ = new Imprimir($3, @1.first_line, @1.first_column); }
+	: RPRINT PARIZQ listaImprimir PARDER { $$ = new Imprimir(false, $3, @1.first_line, @1.first_column); }
+	| RPRINTLN PARIZQ listaImprimir PARDER { $$ = new Imprimir(true, $3, @1.first_line, @1.first_column); }
+;
+
+listaImprimir
+	: listaImprimir COMA expresion	{ $1.push($3); $$ = $1; }
+	| expresion						{ $$ = [$1]; }
+	|								{ $$ = []; }
 ;
