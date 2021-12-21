@@ -9,7 +9,7 @@ class Excepcion {
         this.columna = columna;
     }
     toString() {
-        return this.tipo + " - " + this.descripcion + " [" + String(this.fila) + "," + String(this.columna) + "]";
+        return this.tipo + " - " + this.descripcion + " [" + String(this.fila) + "," + String(this.columna) + "] \n";
     }
 }
 exports.Excepcion = Excepcion;

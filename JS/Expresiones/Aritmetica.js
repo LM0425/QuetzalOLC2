@@ -22,7 +22,6 @@ class Aritmetica {
                 return der;
         }
         if (this.operador === Tipo_1.OperadorAritmetico.MAS) {
-            //console.log('entrando a suma',this.opIzquierdo.tipo,this.opDerecho.tipo)
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
                 this.tipo = Tipo_1.Tipo.INT;
                 return Number(izq) + Number(der);
@@ -72,6 +71,7 @@ class Aritmetica {
                 return Number(ascii) + parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
                 return izq.charCodeAt(0) + der.charCodeAt(0);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
@@ -103,6 +103,9 @@ class Aritmetica {
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
                 this.tipo = Tipo_1.Tipo.STRING;
                 return izq + der;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion +", this.fila, this.columna);
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
@@ -147,7 +150,11 @@ class Aritmetica {
                 return Number(ascii) - parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
                 return izq.charCodeAt(0) - der.charCodeAt(0);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion -", this.fila, this.columna);
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.POR) {
@@ -192,7 +199,11 @@ class Aritmetica {
                 return Number(ascii) * parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
                 return izq.charCodeAt(0) * der.charCodeAt(0);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion *", this.fila, this.columna);
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.DIV) {
@@ -237,7 +248,11 @@ class Aritmetica {
                 return Number(ascii) / parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
                 return izq.charCodeAt(0) / der.charCodeAt(0);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion /", this.fila, this.columna);
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.MOD) {
@@ -282,13 +297,33 @@ class Aritmetica {
                 return Number(ascii) % parseFloat(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.CHAR && this.opDerecho.tipo === Tipo_1.Tipo.CHAR) {
+                this.tipo = Tipo_1.Tipo.INT;
                 return izq.charCodeAt(0) % der.charCodeAt(0);
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion %", this.fila, this.columna);
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.UMENOS) {
+            if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT) {
+                this.tipo = Tipo_1.Tipo.INT;
+                return izq * -1;
+            }
+            else if (this.opIzquierdo.tipo === Tipo_1.Tipo.DOUBLE) {
+                this.tipo = Tipo_1.Tipo.DOUBLE;
+                return izq * -1;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion (-)", this.fila, this.columna);
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.CONCATENAR) {
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
                 this.tipo = Tipo_1.Tipo.STRING;
                 return izq + der;
+            }
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion de Concatenacion", this.fila, this.columna);
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.REPETIR) {
@@ -298,11 +333,12 @@ class Aritmetica {
                 //console.log("iterar:", der);
                 return resultado;
             }
-        }
-        else if (this.operador === Tipo_1.OperadorAritmetico.MASMAS) {
+            else {
+                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion de Repeticion", this.fila, this.columna);
+            }
         }
         else {
-            return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion +", this.fila, this.columna);
+            return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
         }
     }
 }

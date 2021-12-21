@@ -7,8 +7,6 @@
 /* Definición Léxica */
 %lex
 
-%options case-insensitive
-
 escapeChar              [\'\"\\bfnrtv]
 escape                  \\{escapeChar}
 acceptedCharDouble      [^\"\\]+
@@ -19,7 +17,16 @@ acceptedCharSingle      [^\'\\]
 stringSingle            {escape}|{acceptedCharDouble}
 charLiteral             \'{stringDouble}\'
 
+BSL                                 "\\".
+%s                                  comment
+
 %%
+
+"//".*                              /* skip comments */
+"/*"                                this.begin('comment');
+<comment>"*/"                       this.popState();
+<comment>.                          /* skip comment content*/
+\s+                                 /* skip whitespace */
 
 ";"                 return 'PTCOMA';
 ","					return 'COMA';
@@ -80,8 +87,31 @@ charLiteral             \'{stringDouble}\'
 'do'				return 'RDO';
 'struct'			return 'RSTRUCT';
 'for'				return	'RFOR';
+'in'				return 'RIN';
 'continue'			return 'RCONTINUE';
 'return'			return 'RRETURN';
+
+'pow'				return 'RPOW';
+'sqrt'				return 'RRAIZ';
+'sin'				return 'RSIN';
+'cos'				return 'RCOS';
+'tan'				return 'RTAN';
+'log10'				return 'RLOG';
+
+'caracterOfPosition'	return 'RCARACTEROFPOSITION';
+'subString'				return 'RSUBSTRING';
+'toUppercase'			return 'RTOUPPERCASE';
+'toLowercase'			return 'RTOLOWERCASE';
+
+'parse'				return 'RPARSE';
+'toInt'				return 'RTOINT';
+'toDouble'			return 'RTODOUBLE';
+'string'			return 'RSSTRING';
+'typeof'			return 'RTYPEOF';
+
+'push'				return 'RPUSH';
+'pop'				return 'RPOP';
+'length'			return 'RLENGTH';
 
 /* Espacios en blanco */
 [ \r\t]+            {}
@@ -132,18 +162,38 @@ charLiteral             \'{stringDouble}\'
 	const { inc_dec } = require("./Instrucciones/inc_dec");
 	const { Struct } = require("./Instrucciones/struct");
 	const { For } = require("./Instrucciones/For");
+	const { ForIn } = require("./Instrucciones/ForIn");
 	const { Llamada_struct } = require("./Instrucciones/llamada_struct");
 	const { Declaracion_atributo } = require("./Instrucciones/Declaracion_atributo");
 	const { Asignacion_atributo } = require("./Instrucciones/Asignacion_atributo");
-	// const { Continue } = require("./Instrucciones/Continue");
+	const { Continue } = require("./Instrucciones/Continue");
 	const { Return } = require("./Instrucciones/Return");
 	const { ModificarArreglo } = require("./Instrucciones/ModificarArreglo");
 	const { AccesoArreglo } = require("./Expresiones/AccesoArreglo");
 	const { Main } = require("./Instrucciones/Main");
 	const { Funcion } = require("./Instrucciones/Funcion");
 	const { Llamada } = require("./Instrucciones/Llamada");
+	const { Caracter } = require("./Nativas/Caracter");
+	const { Length } = require("./Nativas/Length");
+	const { Parse } = require("./Nativas/Parse");
+	const { SubString } = require("./Nativas/SubString");
+	const { ToLowerCase } = require("./Nativas/ToLowerCase");
+	const { ToUpperCase } = require("./Nativas/ToUpperCase");
+	const { Pow } = require("./Nativas/Pow");
+	const { Raiz } = require("./Nativas/Raiz");
+	const { Seno } = require("./Nativas/Seno");
+	const { Coseno } = require("./Nativas/Coseno");
+	const { Tangente } = require("./Nativas/Tangente");
+	const { Log } = require("./Nativas/Log");
+	const { ToInt } = require("./Nativas/ToInt");
+	const { ToDouble } = require("./Nativas/ToDouble");
+	const { SString } = require("./Nativas/SString");
+	const { TypeOf } = require("./Nativas/TypeOf");
+	const { Push } = require("./Nativas/Push");
+	const { Pop } = require("./Nativas/Pop");
 	
 %}
+
 /* Asociación de operadores y precedencia */
 %left 'OR'
 %left 'AND'
@@ -177,9 +227,9 @@ instruccion
 	| while_instruccion 	{ $$ = $1; }
 	| do_instruccion PTCOMA	{ $$ = $1; }
 	| struct_crear PTCOMA 	{ $$ = $1; }
-	| for_simple			{$$ = $1;}
-	| llamada_struct PTCOMA	{$$ = $1;}
-	// | continue PTCOMA	{ $$ = $1; }
+	| for					{ $$ = $1; }
+	| llamada_struct PTCOMA	{ $$ = $1; }
+	| continue PTCOMA		{ $$ = $1; }
 	| return PTCOMA			{ $$ = $1; }
 	| modificarArreglo		{ $$ = $1; }
 	| main					{ $$ = $1; }
@@ -223,6 +273,7 @@ expresion
 	| expresion MENOS expresion     	{ $$ = new Aritmetica(OperadorAritmetico.MENOS, $1, $3, @1.first_line, @1.first_column); }
 	| expresion POR expresion       	{ $$ = new Aritmetica(OperadorAritmetico.POR, $1, $3, @1.first_line, @1.first_column); }
 	| expresion DIVIDIDO expresion  	{ $$ = new Aritmetica(OperadorAritmetico.DIV, $1, $3, @1.first_line, @1.first_column); }
+	| expresion MODULO expresion  		{ $$ = new Aritmetica(OperadorAritmetico.MOD, $1, $3, @1.first_line, @1.first_column); }
 	| expresion CONCATENAR expresion	{ $$ = new Aritmetica(OperadorAritmetico.CONCATENAR, $1, $3, @1.first_line, @1.first_column); }
 	| expresion REPETICION expresion	{ $$ = new Aritmetica(OperadorAritmetico.REPETIR, $1, $3, @1.first_line, @1.first_column); }
 	| expresion MENOR expresion			{ $$ = new Relacional(OperadorRelacional.MENORQUE, $1, $3, @1.first_line, @1.first_column); }
@@ -249,6 +300,28 @@ expresion
 
 	| llamada							{ $$ = $1; }
 	| incr_decr							{ $$ = $1; }
+
+	| RPOW PARIZQ expresion COMA expresion PARDER	{ $$ = new Pow($3, $5, @1.first_line, @1.first_column); }
+	| RRAIZ PARIZQ expresion PARDER					{ $$ = new Raiz($3, @1.first_line, @1.first_column); }
+	| RSIN PARIZQ expresion PARDER					{ $$ = new Seno($3, @1.first_line, @1.first_column); }
+	| RCOS PARIZQ expresion PARDER					{ $$ = new Coseno($3, @1.first_line, @1.first_column); }
+	| RTAN PARIZQ expresion PARDER					{ $$ = new Tangente($3, @1.first_line, @1.first_column); }
+	| RLOG PARIZQ expresion PARDER					{ $$ = new Log($3, @1.first_line, @1.first_column); }
+	
+
+	| expresion PUNTO RCARACTEROFPOSITION PARIZQ expresion PARDER		{ $$ = new Caracter($1, $5, @1.first_line, @1.first_column); }
+	| expresion PUNTO RSUBSTRING PARIZQ expresion COMA expresion PARDER	{ $$ = new SubString($1, $5, $7, @1.first_line, @1.first_column); }
+	| expresion PUNTO RTOUPPERCASE PARIZQ PARDER						{ $$ = new ToUpperCase($1, @1.first_line, @1.first_column); }
+	| expresion PUNTO RTOLOWERCASE PARIZQ PARDER						{ $$ = new ToLowerCase($1, @1.first_line, @1.first_column); }
+
+	| tipo PUNTO RPARSE PARIZQ expresion PARDER	{ $$ = new Parse($1, $5, @1.first_line, @1.first_column); }
+	| RTOINT PARIZQ expresion PARDER			{ $$ = new ToInt($3, @1.first_line, @1.first_column); }
+	| RDOUBLE PARIZQ expresion PARDER			{ $$ = new ToDouble($3, @1.first_line, @1.first_column); }
+	| RSSTRING PARIZQ expresion PARDER			{ $$ = new SString($3, @1.first_line, @1.first_column); }
+	| RTYPEOF PARIZQ expresion PARDER			{ $$ = new TypeOf($3, @1.first_line, @1.first_column); }
+
+	| expresion PUNTO RPOP PARIZQ PARDER	{ $$ = new Pop($1, @1.first_line, @1.first_column); } 
+	| expresion PUNTO RLENGTH PARIZQ PARDER	{ $$ = new Length($1, @1.first_line, @1.first_column); }
 ;
 
 posicion
@@ -284,6 +357,7 @@ if
 	: RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER 										{ $$ = new If($3, $6, null, null, @1.first_line, @1.first_column); }
 	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE LLAVEIZQ instrucciones LLAVEDER	{ $$ = new If($3, $6, $10, null, @1.first_line, @1.first_column); }
 	| RIF PARIZQ expresion PARDER LLAVEIZQ instrucciones LLAVEDER RELSE if 								{ $$ = new If($3, $6, null, $9, @1.first_line, @1.first_column); }
+	| RIF PARIZQ expresion PARDER instruccion															{ $$ = new If($3, [$5], null, null, @1.first_line, @1.first_column); }
 ;
 
 switch
@@ -393,8 +467,9 @@ atributo
 	//| falta llamada de arreglo
 ;
 
-for_simple
-	: RFOR PARIZQ variables PTCOMA expresion PTCOMA expresion PARDER LLAVEIZQ instrucciones LLAVEDER { $$ = new For($3,$5,$7,$10, @1.first_line, @1.first_column);}
+for
+	: RFOR PARIZQ variables PTCOMA expresion PTCOMA expresion PARDER LLAVEIZQ instrucciones LLAVEDER	{ $$ = new For($3, $5, $7, $10, @1.first_line, @1.first_column); }
+	| RFOR ID RIN expresion LLAVEIZQ instrucciones LLAVEDER 											{ $$ = new ForIn($2, $4, $6, @1.first_line, @1.first_column); }
 ;
 
 l_expresiones

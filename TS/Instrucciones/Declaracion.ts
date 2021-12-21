@@ -66,7 +66,12 @@ export class Declaracion implements Instruccion {
             let value = null;
             if (this.expresion !== null) {
                 value = this.expresion.interpretar(tree, table); // Valor a asignar a la variable
-                if (this.tipo !== this.expresion.tipo) return new Excepcion("Semantico", "Tipo de dato difente al tipo de la variable.", this.fila, this.columna);
+                if(this.tipo === Tipo.DOUBLE && this.expresion.tipo === Tipo.INT){
+
+                }else if (this.tipo !== this.expresion.tipo) return new Excepcion("Semantico", "Tipo de dato difente al tipo de la variable.", this.fila, this.columna);
+            }else{
+                if((this.tipo === Tipo.INT) || (this.tipo === Tipo.DOUBLE) || (this.tipo === Tipo.CHAR)) value = 0;
+                if(this.tipo === Tipo.BOOL) value = false;
             }
 
             for (let id of this.identificador) {

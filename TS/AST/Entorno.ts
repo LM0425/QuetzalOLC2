@@ -119,11 +119,11 @@ export class Entorno {
         while (tablaActual !== null) {
             if (tablaActual.tabla.hasOwnProperty(id)) {
                 if (tablaActual.tabla[id].getTipo() === simbolo.getTipo()) {
-                    console.log("Modificando simbolo");
+                    //console.log("Modificando simbolo");
                     tablaActual.tabla[id].setValor(simbolo.getValor())
                     return null;
                 } else {
-                    console.log("Tipo diferente en modificacion");
+                    //console.log("Tipo diferente en modificacion");
                     return new Excepcion("Semantico", "Tipo de valor difente al tipo del simbolo a modificar", simbolo.getFila(), simbolo.getColumna());
                 }
 

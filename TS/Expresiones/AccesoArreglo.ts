@@ -42,7 +42,7 @@ export class AccesoArreglo implements Instruccion {
             let value = this.buscarDimensiones(tree, table, listaPos.slice(), simbolo.getValor());
             if(value instanceof Excepcion) return value;
 
-            // Definir el tipo de dato que estoy retornando
+            this.tipo = simbolo.getTipoArreglo();
 
             return value;
         } else {
@@ -60,7 +60,7 @@ export class AccesoArreglo implements Instruccion {
                 if(posInicial > longitud) return new Excepcion("Semantico","Posicion final mayor que la longitud del arreglo", this.fila, this.columna);
             }
 
-            // Definir el tipo de dato que estoy retornando
+            // Definir el tipo de dato que estoy retornando (Pense agregar tipo y tipo arreglo (?))
 
             return simbolo.getValor().slice(posInicial, posFinal)
         }

@@ -12,7 +12,7 @@ export class Excepcion {
     }
 
     toString() {
-        return this.tipo + " - " + this.descripcion + " [" + String(this.fila) + "," + String(this.columna) + "]";
+        return this.tipo + " - " + this.descripcion + " [" + String(this.fila) + "," + String(this.columna) + "] \n";
     }
 
 }

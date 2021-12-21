@@ -58,8 +58,16 @@ class Declaracion {
             let value = null;
             if (this.expresion !== null) {
                 value = this.expresion.interpretar(tree, table); // Valor a asignar a la variable
-                if (this.tipo !== this.expresion.tipo)
+                if (this.tipo === Tipo_1.Tipo.DOUBLE && this.expresion.tipo === Tipo_1.Tipo.INT) {
+                }
+                else if (this.tipo !== this.expresion.tipo)
                     return new Excepcion_1.Excepcion("Semantico", "Tipo de dato difente al tipo de la variable.", this.fila, this.columna);
+            }
+            else {
+                if ((this.tipo === Tipo_1.Tipo.INT) || (this.tipo === Tipo_1.Tipo.DOUBLE) || (this.tipo === Tipo_1.Tipo.CHAR))
+                    value = 0;
+                if (this.tipo === Tipo_1.Tipo.BOOL)
+                    value = false;
             }
             for (let id of this.identificador) {
                 if (value instanceof Excepcion_1.Excepcion)
