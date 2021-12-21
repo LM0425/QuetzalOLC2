@@ -11,6 +11,9 @@ class Asignacion_atributo {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let entorno = this.identificador.interpretar(tree, table);
         /* console.log('el atributo es:',this.atributo)

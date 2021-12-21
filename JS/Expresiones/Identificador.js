@@ -8,6 +8,9 @@ class Identificador {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        return this.identificador;
+    }
     interpretar(tree, table) {
         let simbolo = table.getTabla(this.identificador);
         if (simbolo === null)

@@ -13,6 +13,9 @@ class AccesoArreglo {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.NULL;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let simbolo = table.getTabla(this.identificador);
         if (simbolo === null)

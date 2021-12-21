@@ -3,6 +3,7 @@ import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { Tipo, OperadorRelacional } from "../AST/Tipo";
+import {  TemporalAux } from "../AST/temporalAux";
 
 export class Relacional implements Instruccion {
     operador: OperadorRelacional;
@@ -19,6 +20,52 @@ export class Relacional implements Instruccion {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo.BOOL;
+    }
+    traducir(tree: AST, table: Entorno) {
+        var izq = this.opIzquierdo.traducir(tree, table);
+        if (izq instanceof Excepcion) return izq;
+        var der = this.opDerecho.traducir(tree, table);
+        if (der instanceof Excepcion) return der;
+        /* console.log(tree.getTabla());
+        console.log(tree.getStack()); */
+        if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+            let posStack=tree.getValorTablaByIdentificador(izq);
+            //let value=tree.getValorPosStack(Number(posStack)).toString()
+            let temporal=tree.generarTemporal();
+            let texto3d=tree.generarInstruccion(temporal+" = stack[(int)"+posStack+"]")
+            let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStack+"]");
+            tree.addTemporalClase(temporalAux);
+            return temporal +this.getSigno(this.operador)+der.toString();;
+        } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+            let posStack=tree.getValorTablaByIdentificador(der);
+            let temporal=tree.generarTemporal();
+            let value=tree.getValorPosStack(posStack).toString()
+            let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+this.getSigno(this.operador)+value);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
+            let posStackIzq=tree.getValorTablaByIdentificador(izq);
+            let temporal=tree.generarTemporal();
+            let valueIzq=tree.getValorPosStack(posStackIzq).toString()
+
+            let posStackDer=tree.getValorTablaByIdentificador(der);
+            let valueDer=tree.getValorPosStack(posStackDer).toString()
+
+            let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,valueIzq+this.getSigno(this.operador)+valueDer);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+
+
+        }else{
+            let temporal =tree.generarTemporal()
+            //let texto3d= tree.generarInstruccion(temporal+"="+izq+"+"+der);
+            //tree.updateConsola(texto3d);
+            let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+this.getSigno(this.operador)+der);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }
+
+        //return izq.toString() +this.getSigno(this.operador)+der.toString();
     }
 
     interpretar(tree: AST, table: Entorno) {
@@ -129,6 +176,22 @@ export class Relacional implements Instruccion {
             }
         } else {
             return new Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
+        }
+    }
+
+    getSigno(operador){
+        if (operador===OperadorRelacional.DIFERENTE) {
+            return "!="
+        }else if(operador===OperadorRelacional.MENORQUE){
+            return "<"
+        }else if(operador===OperadorRelacional.MAYORQUE){
+            return ">"
+        }else if(operador===OperadorRelacional.MENORIGUAL){
+            return "<="
+        }else if(operador===OperadorRelacional.MAYORIGUAL){
+            return ">="
+        }else if(operador===OperadorRelacional.IGUALIGUAL){
+            return "=="
         }
     }
 

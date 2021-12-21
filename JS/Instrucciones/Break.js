@@ -6,6 +6,9 @@ class Break {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         return this;
     }

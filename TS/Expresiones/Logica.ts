@@ -20,6 +20,9 @@ export class Logica implements Instruccion {
         this.columna = columna;
         this.tipo = Tipo.BOOL;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         var izq = this.opIzquierdo.interpretar(tree, table);

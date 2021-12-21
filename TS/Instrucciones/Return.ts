@@ -17,6 +17,9 @@ export class Return implements Instruccion{
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let result = this.expresion.interpretar(tree, table);

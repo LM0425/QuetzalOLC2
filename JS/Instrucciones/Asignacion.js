@@ -11,6 +11,22 @@ class Asignacion {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        let valor = this.expresion.traducir(tree, table);
+        let texto3d = "";
+        let lista = tree.getListaTemporalClase();
+        let posStack = tree.getValorTablaByIdentificador(this.identificador);
+        let value = tree.getValorPosStack(posStack).toString();
+        if (this.expresion.valor) {
+            texto3d = tree.generarInstruccion("stack[(int)" + posStack + "] = " + this.expresion.valor);
+        }
+        else {
+            texto3d = tree.generarInstruccion("stack[(int)" + posStack + "] = " + valor);
+        }
+        tree.limpiartemporalClase();
+        console.log(lista + texto3d);
+        return "\n//-------------------Asignacion\n" + lista + texto3d;
+    }
     interpretar(tree, table) {
         let value = this.expresion.interpretar(tree, table);
         if (value instanceof Excepcion_1.Excepcion)

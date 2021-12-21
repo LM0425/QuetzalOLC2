@@ -10,6 +10,18 @@ class AST {
         this.excepciones = [];
         this.consola = "";
         this.TSGlobal = null;
+        this.contadores = [];
+        this.contadorTemporal = 0;
+        this.posicionContador = 0;
+        this.stack = [];
+        this.heap = [];
+        this.temporalesAux = [];
+        this.apuntadorStack = 0;
+        this.apuntadorHeap = 0;
+        this.contadorEtiquetas = 0;
+        this.tabla = [];
+        this.casos = [];
+        this.funciones3D = [];
     }
     getInstrucciones() {
         return this.instrucciones;
@@ -66,10 +78,240 @@ class AST {
     addFuncion(funcion) {
         this.funciones.push(funcion);
     }
+    addFuncion3D(funcion) {
+        this.funciones3D.push(funcion);
+    }
+    getListaFunciones3D() {
+        let funciones = "";
+        this.funciones3D.forEach(element => {
+            funciones += "\n" + element + "\n";
+        });
+        return funciones;
+    }
+    generarEtiquetas() {
+        let etiqueta = "L" + this.contadorEtiquetas.toString();
+        this.contadorEtiquetas++;
+        return etiqueta;
+    }
+    generarTemporal() {
+        let temporal = "T" + this.contadorTemporal.toString();
+        this.contadores.push(temporal);
+        this.contadorTemporal++;
+        return temporal;
+    }
+    getUltimoTemporal() {
+        let temporal;
+        this.contadores.forEach(element => {
+            temporal = element;
+        });
+        return temporal;
+    }
+    getApuntadorStack() {
+        return this.apuntadorStack;
+    }
+    addStack(valor) {
+        this.stack.push(valor);
+        this.apuntadorStack++;
+    }
+    addHeap(valor) {
+        this.heap.push(Number(valor));
+        this.apuntadorHeap++;
+    }
+    getHeap() {
+        return this.heap;
+    }
+    getApuntadorHeap() {
+        return this.apuntadorHeap;
+    }
+    getStack() {
+        return this.stack;
+    }
+    getValorPosStack(pos) {
+        return this.stack[pos];
+    }
+    addTabla(valor) {
+        this.tabla.push(valor);
+    }
+    getTabla() {
+        return this.tabla;
+    }
+    getValorTablaByIdentificador(identificador) {
+        let tipo;
+        this.tabla.forEach(element => {
+            if (element.indentificador === identificador) {
+                tipo = element.valor;
+            }
+        });
+        return tipo;
+    }
+    getTipoTablaByIdentificador(identificador) {
+        let tipo;
+        this.tabla.forEach(element => {
+            if (element.indentificador === identificador) {
+                tipo = element.tipo;
+            }
+        });
+        return tipo;
+    }
+    addTemporalClase(valor) {
+        this.temporalesAux.push(valor);
+    }
+    getTemporalClase() {
+        return this.temporalesAux;
+    }
+    getTipoTemporalClase(identificador) {
+        let tipo;
+        this.temporalesAux.forEach(element => {
+            if (element.indentificador === identificador) {
+                tipo = element.tipo;
+            }
+        });
+        return tipo;
+    }
+    getValueTemporalClase(identificador) {
+        let value;
+        this.temporalesAux.forEach(element => {
+            if (element.indentificador === identificador) {
+                value = element.valor;
+            }
+        });
+        return value;
+    }
+    getListaTemporalClase() {
+        let value = "";
+        this.temporalesAux.forEach(element => {
+            value += element.indentificador + " = " + element.valor + ";\n";
+        });
+        return value;
+    }
+    limpiartemporalClase() {
+        this.temporalesAux = [];
+    }
+    generarInstruccion(cadena) {
+        return "\n" + cadena + ";";
+    }
+    getMain(instrucciones) {
+        let main = "\n\n/*------MAIN------*/\nvoid main() {\n" + instrucciones + "return;\n}";
+        let funciones = this.getListaFunciones3D();
+        return funciones + main;
+    }
+    getValueByTemporal(temporal) {
+        let value;
+        this.temporalesAux.forEach(element => {
+            if (element.indentificador === temporal) {
+                value = element.valor;
+            }
+        });
+        return value;
+    }
+    getListaTemporales() {
+        let lista = "";
+        for (let i = 0; i < this.contadores.length; i++) {
+            const element = this.contadores[i];
+            if (i === 0) {
+                lista = element;
+            }
+            else {
+                lista += "," + element;
+            }
+        }
+        return lista;
+    }
+    getEncabezado() {
+        let header = "#include <stdio.h>\n#include <math.h>  \ndouble heap[30101999];\ndouble stack[30101999];\ndouble P;\ndouble H;";
+        return header;
+    }
+    getCasos() {
+        return this.casos;
+    }
+    addCaso(value) {
+        this.casos.push(value);
+    }
+    //---------------------------IF
+    getIf(condicion, verdadero, falso) {
+        let etiquetaTrue = this.generarEtiquetas();
+        let etiquetaFalse = this.generarEtiquetas();
+        let texto3d = "";
+        texto3d += "if(" + condicion + ") goto " + etiquetaTrue + ";\n";
+        texto3d += "goto " + etiquetaFalse + ";\n";
+        texto3d += etiquetaTrue + ":" + verdadero + "\n";
+        texto3d += etiquetaFalse + ":" + falso + "\n";
+        return texto3d;
+    }
+    //---------------------------while
+    getWhile(condicion, instrucciones) {
+        let etiquetaRetorno = this.generarEtiquetas();
+        let etiquetaEntrada = this.generarEtiquetas();
+        let etiquetaSalida = this.generarEtiquetas();
+        let texto3d = "";
+        texto3d += "if(" + condicion + ") goto " + etiquetaEntrada + ";\n";
+        texto3d += "goto " + etiquetaSalida + ";\n";
+        texto3d += etiquetaEntrada + ":\n";
+        texto3d += instrucciones + "\n";
+        texto3d += "goto " + etiquetaRetorno + ";\n";
+        texto3d += etiquetaSalida + ":";
+        return texto3d;
+    }
+    //--------------------------------do while
+    getDoWhile(condicion, instrucciones) {
+        let etiquetaRetorno = this.generarEtiquetas();
+        let etiquetaEntrada = this.generarEtiquetas();
+        let etiquetaSalida = this.generarEtiquetas();
+        let texto3d = "";
+        texto3d += etiquetaRetorno + ":\n";
+        texto3d += instrucciones + "\n";
+        texto3d += "if(" + condicion + ") goto " + etiquetaEntrada + ";\n";
+        texto3d += "goto " + etiquetaSalida + ";\n";
+        texto3d += etiquetaEntrada + ":\n";
+        texto3d += "  goto " + etiquetaRetorno + ";\n";
+        texto3d += etiquetaSalida + ":\n";
+        return texto3d;
+    }
+    //--------------------------FOR
+    getFor() {
+    }
+    //-------------switch
+    getSwitch() { }
+    //--------------------imprimir cadena
+    getPrintString(identficador) {
+        let posStack = this.getValorTablaByIdentificador(identficador);
+        if (posStack) {
+            //let apuntador=this.getApuntadorStack()-1;
+            let temporalA = this.generarTemporal();
+            let texto3d = this.generarInstruccion("P = " + posStack.toString());
+            texto3d += this.generarInstruccion(temporalA + " = P");
+            let temporalS = this.generarTemporal();
+            texto3d += this.generarInstruccion(temporalS + " = stack[(int)" + temporalA + "]");
+            let etiquetaEntrada = this.generarEtiquetas();
+            let etiquetaRegreso = this.generarEtiquetas();
+            texto3d += "\n" + etiquetaRegreso + ":";
+            let temporalH = this.generarTemporal();
+            texto3d += this.generarInstruccion(temporalH + " = heap[(int)" + temporalS + "]");
+            texto3d += this.generarInstruccion("if(" + temporalH + " == -1) goto " + etiquetaEntrada);
+            texto3d += this.generarInstruccion("printf(\"%c\", (char)" + temporalH + ")");
+            texto3d += this.generarInstruccion(temporalS + " = " + temporalS + "+1");
+            texto3d += "\ngoto " + etiquetaRegreso + ";\n" + etiquetaEntrada + ":\n";
+            return texto3d;
+        }
+        else {
+        }
+    }
 }
 exports.AST = AST;
 
 },{}],2:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Case3d = void 0;
+class Case3d {
+    constructor(identificador, instrucciones) {
+        this.identificador = identificador;
+        this.instrucciones = instrucciones;
+    }
+}
+exports.Case3d = Case3d;
+
+},{}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Entorno = void 0;
@@ -195,7 +437,7 @@ class Entorno {
 }
 exports.Entorno = Entorno;
 
-},{"./Excepcion":3}],3:[function(require,module,exports){
+},{"./Excepcion":4}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Excepcion = void 0;
@@ -212,7 +454,7 @@ class Excepcion {
 }
 exports.Excepcion = Excepcion;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Simbolo = void 0;
@@ -262,7 +504,7 @@ class Simbolo {
 }
 exports.Simbolo = Simbolo;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OperadorLogico = exports.OperadorRelacional = exports.OperadorAritmetico = exports.Tipo = void 0;
@@ -307,7 +549,46 @@ var OperadorLogico;
     OperadorLogico[OperadorLogico["NOT"] = 2] = "NOT";
 })(OperadorLogico = exports.OperadorLogico || (exports.OperadorLogico = {}));
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TemporalAux = void 0;
+class TemporalAux {
+    constructor(identificador, tipo, fila, columna, valor) {
+        this.indentificador = identificador;
+        this.tipo = tipo;
+        this.fila = fila;
+        this.columna = columna;
+        this.valor = valor;
+    }
+    getId() {
+        return this.indentificador;
+    }
+    setId(identificador) {
+        this.indentificador = identificador;
+    }
+    getTipo() {
+        return this.tipo;
+    }
+    setTipo(tipo) {
+        this.tipo = tipo;
+    }
+    getValor() {
+        return this.valor;
+    }
+    setValor(valor) {
+        this.valor = valor;
+    }
+    getFila() {
+        return this.fila;
+    }
+    getColumna() {
+        return this.columna;
+    }
+}
+exports.TemporalAux = TemporalAux;
+
+},{}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccesoArreglo = void 0;
@@ -322,6 +603,9 @@ class AccesoArreglo {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.NULL;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let simbolo = table.getTabla(this.identificador);
@@ -384,12 +668,13 @@ class AccesoArreglo {
 }
 exports.AccesoArreglo = AccesoArreglo;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],7:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Aritmetica = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
+const temporalAux_1 = require("../AST/temporalAux");
 class Aritmetica {
     constructor(operador, opIzquierdo, opDerecho, fila, columna) {
         this.operador = operador;
@@ -398,6 +683,197 @@ class Aritmetica {
         this.fila = fila;
         this.columna = columna;
         this.tipo = null;
+    }
+    traducir(tree, table) {
+        //console.log("el izquierdo es: ",this.opIzquierdo);
+        var izq = this.opIzquierdo.traducir(tree, table);
+        if (izq instanceof Excepcion_1.Excepcion)
+            return izq;
+        if (this.opDerecho !== null) {
+            var der = this.opDerecho.traducir(tree, table);
+            if (der instanceof Excepcion_1.Excepcion)
+                return der;
+        }
+        if (this.operador === Tipo_1.OperadorAritmetico.MAS) {
+            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "stack[(int)" + posStack + "]+" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(der);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "+" + "stack[(int)" + posStack + "]");
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opIzquierdo.identificador && this.opDerecho.identificador) {
+                let posStackIzq = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let valueIzq = tree.getValorPosStack(posStackIzq).toString();
+                let posStackDer = tree.getValorTablaByIdentificador(der);
+                let valueDer = tree.getValorPosStack(posStackDer).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "stack[(int)" + posStackIzq + "]+" + "stack[(int)" + posStackDer + "]");
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else {
+                let temporal = tree.generarTemporal();
+                let texto3d = tree.generarInstruccion(temporal + "=" + izq + "+" + der);
+                //tree.updateConsola(texto3d);
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "+" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
+            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, value + "-" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(der);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "-" + value);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opIzquierdo.identificador && this.opDerecho.identificador) {
+                let posStackIzq = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let valueIzq = tree.getValorPosStack(posStackIzq).toString();
+                let posStackDer = tree.getValorTablaByIdentificador(der);
+                let valueDer = tree.getValorPosStack(posStackDer).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, valueIzq + "-" + valueDer);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else {
+                let temporal = tree.generarTemporal();
+                let texto3d = tree.generarInstruccion(temporal + "=" + izq + "-" + der);
+                //tree.updateConsola(texto3d);
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "-" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.POR) {
+            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, value + "*" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(der);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "*" + value);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opIzquierdo.identificador && this.opDerecho.identificador) {
+                let posStackIzq = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let valueIzq = tree.getValorPosStack(posStackIzq).toString();
+                let posStackDer = tree.getValorTablaByIdentificador(der);
+                let valueDer = tree.getValorPosStack(posStackDer).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, valueIzq + "*" + valueDer);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else {
+                let temporal = tree.generarTemporal();
+                let texto3d = tree.generarInstruccion(temporal + "=" + izq + "*" + der);
+                //tree.updateConsola(texto3d);
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "*" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.DIV) {
+            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, value + "/" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(der);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "/" + value);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opIzquierdo.identificador && this.opDerecho.identificador) {
+                let posStackIzq = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let valueIzq = tree.getValorPosStack(posStackIzq).toString();
+                let posStackDer = tree.getValorTablaByIdentificador(der);
+                let valueDer = tree.getValorPosStack(posStackDer).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, valueIzq + "/" + valueDer);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else {
+                let temporal = tree.generarTemporal();
+                let texto3d = tree.generarInstruccion(temporal + "=" + izq + "/" + der);
+                //tree.updateConsola(texto3d);
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + "/" + der);
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.MOD) {
+            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "fmod(" + value + "," + der + ")");
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                let posStack = tree.getValorTablaByIdentificador(der);
+                let temporal = tree.generarTemporal();
+                let value = tree.getValorPosStack(posStack).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "fmod(" + izq + "," + value + ")");
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else if (this.opIzquierdo.identificador && this.opDerecho.identificador) {
+                let posStackIzq = tree.getValorTablaByIdentificador(izq);
+                let temporal = tree.generarTemporal();
+                let valueIzq = tree.getValorPosStack(posStackIzq).toString();
+                let posStackDer = tree.getValorTablaByIdentificador(der);
+                let valueDer = tree.getValorPosStack(posStackDer).toString();
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "fmod(" + valueIzq + "," + valueDer + ")");
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+            else {
+                let temporal = tree.generarTemporal();
+                //let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
+                //tree.updateConsola(texto3d);
+                let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "fmod(" + izq + "," + der + ")");
+                tree.addTemporalClase(temporalAux);
+                return temporal;
+            }
+        }
     }
     interpretar(tree, table) {
         var izq = this.opIzquierdo.interpretar(tree, table);
@@ -731,7 +1207,7 @@ class Aritmetica {
 }
 exports.Aritmetica = Aritmetica;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],8:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Identificador = void 0;
@@ -741,6 +1217,9 @@ class Identificador {
         this.identificador = identificador;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        return this.identificador;
     }
     interpretar(tree, table) {
         let simbolo = table.getTabla(this.identificador);
@@ -752,7 +1231,7 @@ class Identificador {
 }
 exports.Identificador = Identificador;
 
-},{"../AST/Excepcion":3}],9:[function(require,module,exports){
+},{"../AST/Excepcion":4}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Logica = void 0;
@@ -766,6 +1245,9 @@ class Logica {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.BOOL;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         var izq = this.opIzquierdo.interpretar(tree, table);
@@ -807,7 +1289,7 @@ class Logica {
 }
 exports.Logica = Logica;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],10:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],12:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Primitivos = void 0;
@@ -820,6 +1302,13 @@ class Primitivos {
         this.fila = fila;
         this.columna = columna;
         this.tipoArreglo = null;
+    }
+    traducir(tree, table) {
+        if (this.tipo === Tipo_1.Tipo.ARRAY) {
+        }
+        else {
+            return this.valor;
+        }
     }
     interpretar(tree, table) {
         if (this.tipo === Tipo_1.Tipo.ARRAY) {
@@ -870,12 +1359,13 @@ class Primitivos {
 }
 exports.Primitivos = Primitivos;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],11:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Relacional = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
+const temporalAux_1 = require("../AST/temporalAux");
 class Relacional {
     constructor(operador, opIzquierdo, opDerecho, fila, columna) {
         this.operador = operador;
@@ -884,6 +1374,53 @@ class Relacional {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.BOOL;
+    }
+    traducir(tree, table) {
+        var izq = this.opIzquierdo.traducir(tree, table);
+        if (izq instanceof Excepcion_1.Excepcion)
+            return izq;
+        var der = this.opDerecho.traducir(tree, table);
+        if (der instanceof Excepcion_1.Excepcion)
+            return der;
+        /* console.log(tree.getTabla());
+        console.log(tree.getStack()); */
+        if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+            let posStack = tree.getValorTablaByIdentificador(izq);
+            //let value=tree.getValorPosStack(Number(posStack)).toString()
+            let temporal = tree.generarTemporal();
+            let texto3d = tree.generarInstruccion(temporal + " = stack[(int)" + posStack + "]");
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "stack[(int)" + posStack + "]");
+            tree.addTemporalClase(temporalAux);
+            return temporal + this.getSigno(this.operador) + der.toString();
+            ;
+        }
+        else if (this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+            let posStack = tree.getValorTablaByIdentificador(der);
+            let temporal = tree.generarTemporal();
+            let value = tree.getValorPosStack(posStack).toString();
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + this.getSigno(this.operador) + value);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }
+        else if (this.opIzquierdo.identificador && this.opDerecho.identificador) {
+            let posStackIzq = tree.getValorTablaByIdentificador(izq);
+            let temporal = tree.generarTemporal();
+            let valueIzq = tree.getValorPosStack(posStackIzq).toString();
+            let posStackDer = tree.getValorTablaByIdentificador(der);
+            let valueDer = tree.getValorPosStack(posStackDer).toString();
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, valueIzq + this.getSigno(this.operador) + valueDer);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }
+        else {
+            let temporal = tree.generarTemporal();
+            //let texto3d= tree.generarInstruccion(temporal+"="+izq+"+"+der);
+            //tree.updateConsola(texto3d);
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + this.getSigno(this.operador) + der);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }
+        //return izq.toString() +this.getSigno(this.operador)+der.toString();
     }
     interpretar(tree, table) {
         var izq = this.opIzquierdo.interpretar(tree, table);
@@ -1040,10 +1577,30 @@ class Relacional {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
         }
     }
+    getSigno(operador) {
+        if (operador === Tipo_1.OperadorRelacional.DIFERENTE) {
+            return "!=";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MENORQUE) {
+            return "<";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MAYORQUE) {
+            return ">";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MENORIGUAL) {
+            return "<=";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MAYORIGUAL) {
+            return ">=";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.IGUALIGUAL) {
+            return "==";
+        }
+    }
 }
 exports.Relacional = Relacional;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],12:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Asignacion = void 0;
@@ -1056,6 +1613,22 @@ class Asignacion {
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        let valor = this.expresion.traducir(tree, table);
+        let texto3d = "";
+        let lista = tree.getListaTemporalClase();
+        let posStack = tree.getValorTablaByIdentificador(this.identificador);
+        let value = tree.getValorPosStack(posStack).toString();
+        if (this.expresion.valor) {
+            texto3d = tree.generarInstruccion("stack[(int)" + posStack + "] = " + this.expresion.valor);
+        }
+        else {
+            texto3d = tree.generarInstruccion("stack[(int)" + posStack + "] = " + valor);
+        }
+        tree.limpiartemporalClase();
+        console.log(lista + texto3d);
+        return "\n//-------------------Asignacion\n" + lista + texto3d;
     }
     interpretar(tree, table) {
         let value = this.expresion.interpretar(tree, table);
@@ -1080,7 +1653,11 @@ class Asignacion {
 }
 exports.Asignacion = Asignacion;
 
+<<<<<<< Updated upstream
 },{"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],13:[function(require,module,exports){
+=======
+},{"../AST/Excepcion":4,"../AST/Simbolo":5}],15:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Asignacion_atributo = void 0;
@@ -1093,6 +1670,9 @@ class Asignacion_atributo {
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let entorno = this.identificador.interpretar(tree, table);
@@ -1112,7 +1692,7 @@ class Asignacion_atributo {
 }
 exports.Asignacion_atributo = Asignacion_atributo;
 
-},{"../AST/Excepcion":3,"../AST/Simbolo":4}],14:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Simbolo":5}],16:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Break = void 0;
@@ -1121,16 +1701,20 @@ class Break {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         return this;
     }
 }
 exports.Break = Break;
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Case = void 0;
+const Case3d_1 = require("../AST/Case3d");
 class Case {
     constructor(expresion, instrucciones, fila, columna) {
         this.expresion = expresion;
@@ -1138,13 +1722,21 @@ class Case {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        let valor = this.expresion.traducir(tree, table);
+        let ins = this.instrucciones; //.traducir(tree,table);
+        let caso = new Case3d_1.Case3d(valor, ins);
+        //console.log("el caso a ingresar es: ",caso);
+        //tree.addCaso(caso);
+        return caso;
+    }
     interpretar(tree, table) {
         return this;
     }
 }
 exports.Case = Case;
 
-},{}],16:[function(require,module,exports){
+},{"../AST/Case3d":2}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Continue = void 0;
@@ -1166,6 +1758,7 @@ exports.Declaracion = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
 const Tipo_1 = require("../AST/Tipo");
+const temporalAux_1 = require("../AST/temporalAux");
 class Declaracion {
     constructor(tipo, identficador, fila, columna, expresion, decArreglo, porRefencia, copia) {
         this.tipo = tipo;
@@ -1176,6 +1769,97 @@ class Declaracion {
         this.decArreglo = decArreglo;
         this.porReferencia = porRefencia;
         this.copia = copia;
+    }
+    traducir(tree, table) {
+        //console.log('la expresion es: ',this.expresion);
+        /* console.log('la el tipo: ',this.tipo); */
+        if (this.decArreglo === true) {
+        }
+        else {
+            if (this.expresion != null) {
+                if (this.tipo === Tipo_1.Tipo.INT || this.tipo === Tipo_1.Tipo.DOUBLE) {
+                    if (this.expresion.valor || this.expresion.valor === 0) {
+                        //console.log("se fue para int con valor")
+                        let value = this.expresion.traducir(tree, table);
+                        if (value instanceof Excepcion_1.Excepcion)
+                            return value;
+                        //let temporal=tree.getUltimoTemporal();
+                        let apuntador = tree.getApuntadorStack().toString();
+                        let texto3d = tree.generarInstruccion("stack[(int)" + apuntador + "] = " + this.expresion.valor);
+                        tree.addStack(this.expresion.valor);
+                        let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], this.tipo, this.fila, this.columna, apuntador);
+                        tree.addTabla(temporalAux);
+                        let lista = tree.getListaTemporalClase();
+                        console.log(texto3d + "\n");
+                        return "\n//-------------------------Declaracion\n" + texto3d + "\n";
+                    }
+                    else {
+                        //console.log("se fue para int sen valor")
+                        //console.log(tree.getTemporalClase());
+                        let ultimoTemporal = this.expresion.traducir(tree, table);
+                        if (ultimoTemporal instanceof Excepcion_1.Excepcion)
+                            return ultimoTemporal;
+                        let temporal = tree.getUltimoTemporal();
+                        let apuntador = tree.getApuntadorStack().toString();
+                        let texto3d = "";
+                        texto3d += tree.generarInstruccion("stack[(int)" + apuntador + "] = " + temporal);
+                        /* tree.updateConsola(texto3d);
+                        tree.updateConsola("\n"); */
+                        //let valorTemporal=tree.getValueByTemporal(temporal);
+                        tree.addStack(temporal);
+                        let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], this.tipo, this.fila, this.columna, apuntador);
+                        tree.addTabla(temporalAux);
+                        //console.log(tree.getListaTemporalClase()+ texto3d);
+                        texto3d = "\n//-------------------------Declaracion\n" + tree.getListaTemporalClase() + texto3d;
+                        /*  console.log(tree.getTemporalClase());
+                         console.log(tree.getStack()); */
+                        tree.limpiartemporalClase();
+                        console.log(texto3d + "\n");
+                        return texto3d + "\n";
+                    }
+                }
+                else if (this.tipo === Tipo_1.Tipo.STRING) {
+                    let exp = this.expresion.traducir(tree, table);
+                    let temporal = tree.generarTemporal();
+                    let texto3d = "\n//-------------------------Declaracion\n" + tree.generarInstruccion(temporal + " = H");
+                    let apuntadorHeap = tree.getApuntadorHeap();
+                    for (let i = 0; i < exp.length; i++) {
+                        const element = exp[i];
+                        let value = element.charCodeAt(0);
+                        tree.addHeap(value);
+                        texto3d += tree.generarInstruccion("heap[(int)H] = " + value);
+                        texto3d += tree.generarInstruccion('H = H + 1');
+                    }
+                    tree.addHeap(-1);
+                    texto3d += tree.generarInstruccion("heap[(int)H] = -1");
+                    texto3d += tree.generarInstruccion('H = H + 1');
+                    let apuntador = tree.getApuntadorStack().toString();
+                    texto3d += tree.generarInstruccion("stack[(int)" + apuntador + "] = " + temporal);
+                    /* tree.updateConsola(texto3d);
+                    tree.updateConsola("\n");
+ */
+                    tree.addStack(apuntadorHeap);
+                    let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], this.tipo, this.fila, this.columna, apuntadorHeap.toString());
+                    tree.addTabla(temporalAux);
+                    console.log(texto3d);
+                    return texto3d;
+                }
+            }
+            else {
+                if (this.tipo === Tipo_1.Tipo.INT || this.tipo === Tipo_1.Tipo.DOUBLE) {
+                    let texto3d = "";
+                    for (let id of this.identificador) {
+                        let apuntador = tree.getApuntadorStack().toString();
+                        texto3d += tree.generarInstruccion("stack[(int)" + apuntador + "] = " + 0);
+                        tree.addStack(0);
+                        let temporalAux = new temporalAux_1.TemporalAux(id, this.tipo, this.fila, this.columna, apuntador);
+                        tree.addTabla(temporalAux);
+                    }
+                    console.log(texto3d + "\n");
+                    return "\n//-------------------------Declaracion\n" + texto3d + "\n";
+                }
+            }
+        }
     }
     interpretar(tree, table) {
         if (this.decArreglo === true) {
@@ -1245,7 +1929,11 @@ class Declaracion {
 }
 exports.Declaracion = Declaracion;
 
+<<<<<<< Updated upstream
 },{"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],18:[function(require,module,exports){
+=======
+},{"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6,"../AST/temporalAux":7}],19:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Declaracion_atributo = void 0;
@@ -1258,6 +1946,9 @@ class Declaracion_atributo {
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let value = null;
@@ -1280,15 +1971,28 @@ class Declaracion_atributo {
 }
 exports.Declaracion_atributo = Declaracion_atributo;
 
+<<<<<<< Updated upstream
 },{"../AST/Excepcion":3,"../AST/Simbolo":4}],19:[function(require,module,exports){
+=======
+},{"../AST/Excepcion":4,"../AST/Simbolo":5}],20:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Default = void 0;
+const Case3d_1 = require("../AST/Case3d");
 class Default {
     constructor(instrucciones, fila, columna) {
         this.instrucciones = instrucciones;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        //let valor=this.expresion.traducir(tree,table);
+        let ins = this.instrucciones; //.traducir(tree,table);
+        let caso = new Case3d_1.Case3d('default', ins);
+        //console.log("el caso a ingresar es: ",caso);
+        //tree.addCaso(caso);
+        return caso;
     }
     interpretar(tree, table) {
         return this;
@@ -1296,7 +2000,11 @@ class Default {
 }
 exports.Default = Default;
 
+<<<<<<< Updated upstream
 },{}],20:[function(require,module,exports){
+=======
+},{"../AST/Case3d":2}],21:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoW = void 0;
@@ -1310,6 +2018,28 @@ class DoW {
         this.instruccionesIf = instruccionesIf;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        let nuevaTabla = new Entorno_1.Entorno(table);
+        let texto3dVerdadero = "";
+        let instrucion = "";
+        //console.log("la condicion es:",this.condicion);
+        let cond = this.condicion.traducir(tree, nuevaTabla); //.split("$");
+        //let condicion=cond[0];
+        let lista = tree.getListaTemporalClase();
+        tree.limpiartemporalClase();
+        for (let instruccion of this.instruccionesIf) {
+            let result = instruccion.traducir(tree, nuevaTabla);
+            if (result instanceof Excepcion_1.Excepcion) {
+                tree.getExcepciones().push(result);
+                tree.updateConsola(result.toString());
+            }
+            //console.log('la instruccion es: ', result);
+            texto3dVerdadero += result;
+        }
+        instrucion = tree.getDoWhile(cond, texto3dVerdadero);
+        console.log(lista + "\n" + instrucion);
+        return lista + "\n" + instrucion;
     }
     interpretar(tree, table) {
         do {
@@ -1342,7 +2072,11 @@ class DoW {
 }
 exports.DoW = DoW;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Break":14}],21:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Break":16}],22:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.For = void 0;
@@ -1360,6 +2094,36 @@ class For {
         this.instrucciones = instrucciones;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        let variable = this.variable.traducir(tree, table);
+        let condicion = this.condicion.traducir(tree, table);
+        let lista = tree.getListaTemporalClase();
+        let expre = this.expresion.traducir(tree, table);
+        console.log("la variable es \n", variable);
+        console.log("la lista es  \n", lista);
+        console.log("la consicion es  \n", condicion);
+        console.log("la expresion  es \n", expre);
+        let instrucciones = "";
+        this.instrucciones.forEach(element => {
+            instrucciones += element.traducir(tree, table);
+        });
+        let temporalRetorno = tree.generarTemporal();
+        let temporalEntrada = tree.generarTemporal();
+        let temporalSalida = tree.generarTemporal();
+        let texto3d = "\n//-------------------FOR\n";
+        texto3d += variable;
+        texto3d += temporalRetorno + ":\n";
+        texto3d += lista;
+        texto3d += tree.generarInstruccion("if(" + condicion + ") goto " + temporalEntrada);
+        texto3d += tree.generarInstruccion("goto " + temporalSalida);
+        texto3d += "\n" + temporalEntrada + ":\n";
+        texto3d += instrucciones + "\n";
+        texto3d += expre;
+        texto3d += tree.generarInstruccion("goto " + temporalRetorno);
+        texto3d += "\n" + temporalSalida + ":\n";
+        console.log(texto3d);
+        return texto3d;
     }
     interpretar(tree, table) {
         let entornoFor = new Entorno_1.Entorno(table);
@@ -1402,6 +2166,7 @@ class For {
 }
 exports.For = For;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Break":14,"./Continue":16,"./Return":29}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1458,12 +2223,17 @@ class ForIn {
 exports.ForIn = ForIn;
 
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5,"./Break":14,"./Continue":16,"./Return":29}],23:[function(require,module,exports){
+=======
+},{}],23:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Funcion = void 0;
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
+const Tipo_1 = require("../AST/Tipo");
 const Return_1 = require("./Return");
+const temporalAux_1 = require("../AST/temporalAux");
 class Funcion {
     constructor(tipo, nombre, parametros, instrucciones, fila, columna) {
         this.tipo = tipo;
@@ -1472,6 +2242,37 @@ class Funcion {
         this.instrucciones = instrucciones;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        let texto3d = "\n//-----------------Funcion " + this.nombre + "\n";
+        let instrucciones = "";
+        let cantidadParametros = this.parametros.length;
+        let id = this.nombre;
+        let apuntador = tree.getApuntadorStack().toString();
+        tree.addStack(0);
+        let temporalAux = new temporalAux_1.TemporalAux(id, Tipo_1.Tipo.VOID, this.fila, this.columna, apuntador);
+        tree.addTabla(temporalAux);
+        this.parametros.forEach(element => {
+            if (element["arreglo"] === false) {
+                console.log("no es un array");
+                //validacion de tipo
+                let apuntador = tree.getApuntadorStack().toString();
+                //texto3d+=tree.generarInstruccion("stack[(int)"+apuntador+"] = "+0);
+                tree.addStack(0);
+                let temporalAux = new temporalAux_1.TemporalAux(element["identificador"], this.tipo, this.fila, this.columna, apuntador);
+                tree.addTabla(temporalAux);
+            }
+            else {
+                console.log("SI es un array");
+            }
+        });
+        for (let instruccion of this.instrucciones) {
+            let value = instruccion.traducir(tree, table);
+            instrucciones += value;
+        }
+        texto3d += "\nvoid " + id + "(){\n" + instrucciones + "\n}\n";
+        console.log(texto3d);
+        tree.addFuncion3D(texto3d);
     }
     interpretar(tree, table) {
         let entornoFuncion = new Entorno_1.Entorno(table);
@@ -1490,7 +2291,11 @@ class Funcion {
 }
 exports.Funcion = Funcion;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"./Return":29}],24:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"./Return":29}],24:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.If = void 0;
@@ -1506,6 +2311,58 @@ class If {
         this.elseIf = elseIf;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        //sconsole.log('el true es',this.instruccionesIf.traducir(tree,table));
+        let nuevaTabla = new Entorno_1.Entorno(table);
+        let texto3dVerdadero = "";
+        let textoFalso = "";
+        let instrucion = "";
+        //console.log("la condicion es:",this.condicion);
+        let cond = this.condicion.traducir(tree, nuevaTabla); //.split("$");
+        //let condicion=cond[0];
+        let lista = tree.getListaTemporalClase();
+        tree.limpiartemporalClase();
+        for (let instruccion of this.instruccionesIf) {
+            let result = instruccion.traducir(tree, nuevaTabla);
+            if (result instanceof Excepcion_1.Excepcion) {
+                tree.getExcepciones().push(result);
+                //tree.updateConsola(result.toString());
+            }
+            if (result instanceof Return_1.Return) {
+                return result;
+            }
+            //console.log('la instruccion es: ', result);
+            texto3dVerdadero += result;
+        }
+        if (this.instruccionesElse) {
+            for (let instruccion of this.instruccionesElse) {
+                let result = instruccion.traducir(tree, nuevaTabla);
+                if (result instanceof Excepcion_1.Excepcion) {
+                    tree.getExcepciones().push(result);
+                    //tree.updateConsola(result.toString());
+                }
+                if (result instanceof Return_1.Return) {
+                    return result;
+                }
+                //console.log('la instruccion es: ', result);
+                textoFalso += result;
+            }
+        }
+        instrucion = tree.getIf(cond, texto3dVerdadero, textoFalso);
+        if (this.elseIf) {
+            instrucion += this.elseIf.traducir(tree, table);
+        }
+        /* if (this.elseIf==null) {
+            instrucion=tree.getIf(cond,texto3dVerdadero,textoFalso);
+        }else{
+            console.log('el else if es: ',this.elseIf);
+            console.log('la traducion es: ',this.elseIf.traducir(tree,table))
+
+        } */
+        console.log(lista + "\n" + instrucion);
+        return lista + "\n" + instrucion;
+        //console.log('la lista de instrucciones es: ',texto3dVerdadero);
     }
     interpretar(tree, table) {
         let condicionIf = this.condicion.interpretar(tree, table);
@@ -1559,7 +2416,11 @@ class If {
 }
 exports.If = If;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Return":29}],25:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Return":29}],25:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Imprimir = void 0;
@@ -1572,6 +2433,52 @@ class Imprimir {
         this.fila = fila;
         this.columna = columna;
         this.atributo = null;
+    }
+    traducir(tree, table) {
+        //console.log('la tabla tiene: ', tree.getTemporalClase());
+        let textoFinal = "";
+        for (let imprimir of this.expresion) {
+            if (imprimir['acceso'] === null) {
+                //console.log('imprimir lleva: ',imprimir['expresion'].identificador);
+                //console.log("la tabal tiene:",tree.getTabla());
+                console.log("la impresion lleva: ", imprimir['expresion']);
+                let tipo = tree.getTipoTablaByIdentificador(imprimir['expresion'].identificador);
+                if (tipo === Tipo_1.Tipo.INT || tipo === Tipo_1.Tipo.DOUBLE) {
+                    let value = tree.getValorTablaByIdentificador(imprimir['expresion'].identificador);
+                    //console.log('el valor es: ',value);
+                    let nuevoTemporal = tree.generarTemporal();
+                    let texto3d = tree.generarInstruccion(nuevoTemporal + " = stack[(int)" + value + "]");
+                    texto3d += tree.generarInstruccion("printf(\"%f\", (double)" + nuevoTemporal + ")");
+                    texto3d += tree.generarInstruccion("printf(\"%c\", (char)10)");
+                    textoFinal = "\n" + texto3d + "\n";
+                    /* tree.updateConsola(texto3d);
+                    tree.updateConsola("\n"); */
+                    //console.log(texto3d+"\n");
+                    //return texto3d+"\n"
+                }
+                else if (tipo === Tipo_1.Tipo.STRING) {
+                    console.log("Stack", tree.getStack());
+                    console.log("heap", tree.getHeap());
+                    let texto3d = tree.getPrintString(imprimir['expresion'].identificador);
+                    //console.log(texto3d+"\n");
+                    textoFinal = texto3d + "\n";
+                }
+                else {
+                    /* let izq=imprimir['expresion'].opIzquierdo.traducir(tree,table);
+                    let der=imprimir['expresion'].opDerecho.traducir(tree,table);
+                    console.log(lista+"\n"+izq+"\n"+der) */
+                    let expre = imprimir['expresion'].traducir(tree, table);
+                    let lista = tree.getListaTemporalClase();
+                    let texto3d = "printf(\"%f\", (double)" + expre + ");\nprintf(\"%c\", (char)10);\n";
+                    //console.log(lista+"\n"+texto3d);
+                    textoFinal = lista + "\n" + texto3d;
+                }
+            }
+            else {
+            }
+        }
+        console.log(textoFinal);
+        return textoFinal;
     }
     interpretar(tree, table) {
         let cadena = "";
@@ -1648,7 +2555,11 @@ class Imprimir {
 }
 exports.Imprimir = Imprimir;
 
+<<<<<<< Updated upstream
 },{"../AST/Excepcion":3,"../AST/Tipo":5}],26:[function(require,module,exports){
+=======
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],26:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Llamada = void 0;
@@ -1663,6 +2574,27 @@ class Llamada {
         this.parametros = parametros;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        console.log("la tabla es: ", tree.getTabla());
+        console.log("el stak es ", tree.getStack());
+        let posApuntador = tree.getValorTablaByIdentificador(this.nombre);
+        console.log("la pos es: ", posApuntador);
+        let texto3d = "";
+        texto3d += tree.generarInstruccion("P = 1 +" + posApuntador);
+        this.parametros.forEach(element => {
+            let variable = element.traducir(tree, table);
+            let posAux = tree.getValorTablaByIdentificador(variable);
+            let valorStack = tree.getValorPosStack(posAux);
+            let temporal = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporal + " = P");
+            texto3d += tree.generarInstruccion("P = P + 1");
+            texto3d += tree.generarInstruccion("stack[(int)" + temporal + "] = " + valorStack);
+        });
+        texto3d += tree.generarInstruccion(this.nombre + "()") + "\n";
+        let lista = tree.getListaFunciones3D();
+        console.log(lista + "\n" + texto3d);
+        return "\n//------------llamado de funion " + this.nombre + "\n" + texto3d;
     }
     interpretar(tree, table) {
         let result = tree.getFuncion(this.nombre);
@@ -1699,7 +2631,11 @@ class Llamada {
 }
 exports.Llamada = Llamada;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],27:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],27:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Main = void 0;
@@ -1710,6 +2646,9 @@ class Main {
         this.instrucciones = instrucciones;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let entornoMain = new Entorno_1.Entorno(table);
@@ -1724,7 +2663,11 @@ class Main {
 }
 exports.Main = Main;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3}],28:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4}],28:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModificarArreglo = void 0;
@@ -1737,6 +2680,9 @@ class ModificarArreglo {
         this.valor = valor;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let value = this.valor.interpretar(tree, table);
@@ -1792,7 +2738,11 @@ class ModificarArreglo {
 }
 exports.ModificarArreglo = ModificarArreglo;
 
+<<<<<<< Updated upstream
 },{"../AST/Excepcion":3,"../AST/Tipo":5}],29:[function(require,module,exports){
+=======
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],29:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Return = void 0;
@@ -1802,6 +2752,9 @@ class Return {
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let result = this.expresion.interpretar(tree, table);
@@ -1814,7 +2767,11 @@ class Return {
 }
 exports.Return = Return;
 
+<<<<<<< Updated upstream
 },{"../AST/Excepcion":3}],30:[function(require,module,exports){
+=======
+},{"../AST/Excepcion":4}],30:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Switch = void 0;
@@ -1829,6 +2786,46 @@ class Switch {
         this.porDefecto = porDefecto;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        let variable = this.expresion.traducir(tree, table);
+        console.log("la tabla tiene: ", tree.getTabla());
+        let posStack = tree.getValorTablaByIdentificador(variable);
+        let temporal = tree.generarTemporal();
+        let etiquetaSalida = tree.generarEtiquetas();
+        let texto3d = "\n//-----------------switch\n";
+        texto3d += tree.generarInstruccion(temporal + " = stack[(int)" + posStack + "]");
+        let etiquetaDefault;
+        for (let k = 0; k < this.cases.length; k++) {
+            const caso = this.cases[k];
+            let expresionCaso = caso.traducir(tree, table);
+            let etiquetainstruccion = tree.generarEtiquetas();
+            let etiquetaSalidaAux = tree.generarEtiquetas();
+            etiquetaDefault = etiquetaSalidaAux;
+            //console.log("el caso es: ",expresionCaso)
+            //console.log("el id es ",expresionCaso.identificador);            
+            texto3d += tree.generarInstruccion("if(" + temporal + "==" + expresionCaso.identificador + ") goto " + etiquetainstruccion);
+            texto3d += tree.generarInstruccion("goto " + etiquetaSalidaAux);
+            texto3d += "\n" + etiquetainstruccion + ":\n";
+            for (let i = 0; i < expresionCaso.instrucciones.length; i++) {
+                const element = expresionCaso.instrucciones[i];
+                //console.log('las intrucciones del caso son: ',element.traducir(tree,table));
+                texto3d += element.traducir(tree, table);
+            }
+            texto3d += tree.generarInstruccion("goto " + etiquetaSalida);
+            if (this.cases[k + 1]) {
+                //let temporalSiguiente=tree.generarEtiquetas();
+                texto3d += "\n" + etiquetaSalidaAux + ":";
+            }
+        }
+        texto3d += "\n" + etiquetaDefault + ":\n";
+        for (let i = 0; i < this.porDefecto.instrucciones.length; i++) {
+            const element = this.porDefecto.instrucciones[i];
+            texto3d += element.traducir(tree, table);
+        }
+        texto3d += "\n" + etiquetaSalida + ":\n";
+        console.log(texto3d);
+        return texto3d;
     }
     interpretar(tree, table) {
         let condicion = this.expresion.interpretar(tree, table);
@@ -1886,7 +2883,11 @@ class Switch {
 }
 exports.Switch = Switch;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"./Break":14,"./Return":29}],31:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"./Break":16,"./Return":29}],31:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.inc_dec = void 0;
@@ -1900,6 +2901,33 @@ class inc_dec {
         this.columna = columna;
         this.operador = operador;
         this.tipo = null;
+    }
+    traducir(tree, table) {
+        console.log(tree.getTabla());
+        if (this.operador === Tipo_1.OperadorAritmetico.MAS) {
+            let valor = this.expresion.traducir(tree, table);
+            let texto3d = "";
+            let posStack = tree.getValorTablaByIdentificador(valor);
+            let temporal = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporal + " = stack[(int)" + posStack + "]");
+            let temporalMas = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporalMas + " = " + temporal + " + 1");
+            texto3d += tree.generarInstruccion("stack[(int)" + posStack + "] = " + temporalMas);
+            console.log(texto3d);
+            return texto3d;
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
+            let valor = this.expresion.traducir(tree, table);
+            let texto3d = "";
+            let posStack = tree.getValorTablaByIdentificador(valor);
+            let temporal = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporal + " = stack[(int)" + posStack + "]");
+            let temporalMas = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporalMas + " = " + temporal + " - 1");
+            texto3d += tree.generarInstruccion("stack[(int)" + posStack + "] = " + temporalMas);
+            console.log(texto3d);
+            return texto3d;
+        }
     }
     interpretar(tree, table) {
         let id = this.expresion.interpretar(tree, table);
@@ -1940,7 +2968,11 @@ class inc_dec {
 }
 exports.inc_dec = inc_dec;
 
+<<<<<<< Updated upstream
 },{"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],32:[function(require,module,exports){
+=======
+},{"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],32:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Llamada_struct = void 0;
@@ -1956,6 +2988,9 @@ class Llamada_struct {
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         //console.log('el identificador es ', this.identificador)
@@ -2015,7 +3050,11 @@ class Llamada_struct {
 }
 exports.Llamada_struct = Llamada_struct;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],33:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],33:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Struct = void 0;
@@ -2029,6 +3068,9 @@ class Struct {
         this.fila = fila;
         this.columna = columna;
         this.tipoStruct = tipoStruct;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let value = null;
@@ -2058,7 +3100,11 @@ class Struct {
 }
 exports.Struct = Struct;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3}],34:[function(require,module,exports){
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4}],34:[function(require,module,exports){
+>>>>>>> Stashed changes
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.While = void 0;
@@ -2072,6 +3118,30 @@ class While {
         this.instruccionesIf = instruccionesIf;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        //sconsole.log('el true es',this.instruccionesIf.traducir(tree,table));
+        let nuevaTabla = new Entorno_1.Entorno(table);
+        let texto3dVerdadero = "";
+        let textoFalso = "";
+        let instrucion = "";
+        //console.log("la condicion es:",this.condicion);
+        let cond = this.condicion.traducir(tree, nuevaTabla); //.split("$");
+        //let condicion=cond[0];
+        let lista = tree.getListaTemporalClase();
+        tree.limpiartemporalClase();
+        for (let instruccion of this.instruccionesIf) {
+            let result = instruccion.traducir(tree, nuevaTabla);
+            if (result instanceof Excepcion_1.Excepcion) {
+                tree.getExcepciones().push(result);
+                tree.updateConsola(result.toString());
+            }
+            //console.log('la instruccion es: ', result);
+            texto3dVerdadero += result;
+        }
+        instrucion = tree.getWhile(cond, texto3dVerdadero);
+        console.log(lista + "\n" + instrucion);
+        return lista + "\n" + instrucion;
     }
     interpretar(tree, table) {
         while (true) {
@@ -2104,6 +3174,7 @@ class While {
 }
 exports.While = While;
 
+<<<<<<< Updated upstream
 },{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Break":14}],35:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -2129,6 +3200,17 @@ class Caracter {
     }
 }
 exports.Caracter = Caracter;
+=======
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Break":16}],35:[function(require,module,exports){
+(function (process){(function (){
+/* parser generated by jison 0.4.18 */
+/*
+  Returns a Parser object of the following structure:
+
+  Parser: {
+    yy: {}
+  }
+>>>>>>> Stashed changes
 
 },{"../AST/Excepcion":3,"../AST/Tipo":5}],36:[function(require,module,exports){
 "use strict";
@@ -3810,7 +4892,11 @@ if (typeof module !== 'undefined' && require.main === module) {
 }
 }
 }).call(this)}).call(this,require('_process'))
+<<<<<<< Updated upstream
 },{"./AST/Tipo":5,"./Expresiones/AccesoArreglo":6,"./Expresiones/Aritmetica":7,"./Expresiones/Identificador":8,"./Expresiones/Logica":9,"./Expresiones/Primitivos":10,"./Expresiones/Relacional":11,"./Instrucciones/Asignacion":12,"./Instrucciones/Asignacion_atributo":13,"./Instrucciones/Break":14,"./Instrucciones/Case":15,"./Instrucciones/Continue":16,"./Instrucciones/Declaracion":17,"./Instrucciones/Declaracion_atributo":18,"./Instrucciones/Default":19,"./Instrucciones/DoW":20,"./Instrucciones/For":21,"./Instrucciones/ForIn":22,"./Instrucciones/Funcion":23,"./Instrucciones/If":24,"./Instrucciones/Imprimir":25,"./Instrucciones/Llamada":26,"./Instrucciones/Main":27,"./Instrucciones/ModificarArreglo":28,"./Instrucciones/Return":29,"./Instrucciones/Switch":30,"./Instrucciones/inc_dec":31,"./Instrucciones/llamada_struct":32,"./Instrucciones/struct":33,"./Instrucciones/while":34,"./Nativas/Caracter":35,"./Nativas/Coseno":36,"./Nativas/Length":37,"./Nativas/Log":38,"./Nativas/Parse":39,"./Nativas/Pop":40,"./Nativas/Pow":41,"./Nativas/Push":42,"./Nativas/Raiz":43,"./Nativas/SString":44,"./Nativas/Seno":45,"./Nativas/SubString":46,"./Nativas/Tangente":47,"./Nativas/ToDouble":48,"./Nativas/ToInt":49,"./Nativas/ToLowerCase":50,"./Nativas/ToUpperCase":51,"./Nativas/TypeOf":52,"_process":57,"fs":55,"path":56}],54:[function(require,module,exports){
+=======
+},{"./AST/Tipo":6,"./Expresiones/AccesoArreglo":8,"./Expresiones/Aritmetica":9,"./Expresiones/Identificador":10,"./Expresiones/Logica":11,"./Expresiones/Primitivos":12,"./Expresiones/Relacional":13,"./Instrucciones/Asignacion":14,"./Instrucciones/Asignacion_atributo":15,"./Instrucciones/Break":16,"./Instrucciones/Case":17,"./Instrucciones/Declaracion":18,"./Instrucciones/Declaracion_atributo":19,"./Instrucciones/Default":20,"./Instrucciones/DoW":21,"./Instrucciones/For":22,"./Instrucciones/Funcion":23,"./Instrucciones/If":24,"./Instrucciones/Imprimir":25,"./Instrucciones/Llamada":26,"./Instrucciones/Main":27,"./Instrucciones/ModificarArreglo":28,"./Instrucciones/Return":29,"./Instrucciones/Switch":30,"./Instrucciones/inc_dec":31,"./Instrucciones/llamada_struct":32,"./Instrucciones/struct":33,"./Instrucciones/while":34,"_process":39,"fs":37,"path":38}],36:[function(require,module,exports){
+>>>>>>> Stashed changes
 const { AST } = require("./JS/AST/AST");
 const { Entorno } = require("./JS/AST/Entorno");
 const { Excepcion } = require("./JS/AST/Excepcion");
@@ -3824,6 +4910,41 @@ const { Imprimir } = require("./JS/Instrucciones/Imprimir");
 const { Struct } = require("./JS/Instrucciones/struct");
 
 document.getElementById("eventoAnalizar").addEventListener("click", displayDate);
+document.getElementById("eventoTraducir").addEventListener("click", traducirCodigo);
+
+
+function traducirCodigo() {
+    console.log("Traduciendo");
+    var instrucciones3D = "";
+    var textoIngresado = document.getElementById('txCodigo').value;
+
+    const instrucciones = parse(textoIngresado);
+    const ast = new AST(instrucciones);
+    const entornoGlobal = new Entorno(null);
+    ast.setTSglobal(entornoGlobal);
+    ast.getInstrucciones().forEach((element) => {
+        let value = element.traducir(ast, entornoGlobal);
+        if (value instanceof Excepcion) {
+            ast.getExcepciones().push(value);
+            ast.updateConsola(value.toString());
+        }
+        //console.log("el valor es ",value);
+        instrucciones3D += value;
+        //ast.getStructs().push(value);
+        //ast.getStrut('test');
+        /*if (value instanceof Struct) {
+            ast.getStructs().push(value)
+        }*/
+    });
+    //console.log(ast.getEncabezado());
+
+    //console.log(ast.getConsola());
+    //console.log(ast.getListaTemporales());
+   /*  console.log('el encabezado es: \n',ast.getEncabezado());
+    console.log('la lista de temporales es:\n' ,ast.getListaTemporales())
+    console.log("las instrucciones son \n", instrucciones3D); */
+    document.getElementById("editorSalida").value  = ast.getEncabezado()+"\ndouble "+ast.getListaTemporales()+";\n\n"+ast.getMain(instrucciones3D);
+}
 
 function displayDate() {
     console.log("Analizando");
@@ -3889,6 +5010,7 @@ function displayDate() {
     console.log(ast.getConsola());
 }
 
+<<<<<<< Updated upstream
 // function numeracion(e) {
 //     let eArea = document.getElementById('areaNumeracion');
 //     let eArea2 = document.getElementById('txCodigo');
@@ -3902,6 +5024,32 @@ function displayDate() {
 },{"./JS/AST/AST":1,"./JS/AST/Entorno":2,"./JS/AST/Excepcion":3,"./JS/Instrucciones/Asignacion":12,"./JS/Instrucciones/Declaracion":17,"./JS/Instrucciones/Funcion":23,"./JS/Instrucciones/Imprimir":25,"./JS/Instrucciones/Main":27,"./JS/Instrucciones/ModificarArreglo":28,"./JS/Instrucciones/struct":33,"./JS/gramatica":53}],55:[function(require,module,exports){
 
 },{}],56:[function(require,module,exports){
+=======
+/* function numeracion(e) {
+    let eArea = document.getElementById('areaNumeracion');
+     let eArea2 = document.getElementById('txCodigo');
+     let numeros = eArea2.value.split("\n").length;
+     let msj="";
+     for (let i = 0; i < numeros; i++) {
+         msj += i + "\n";
+     }
+     eArea.value=msj;
+ } 
+
+ function numeracion2(e) {
+    let eArea = document.getElementById('areaNumeracion2');
+     let eArea2 = document.getElementById('editorSalida');
+     let numeros = eArea2.value.split("\n").length;
+     let msj="";
+     for (let i = 1; i < numeros; i++) {
+         msj += i + "\n";
+     }
+     eArea.value=msj;
+ }*/
+},{"./JS/AST/AST":1,"./JS/AST/Entorno":3,"./JS/AST/Excepcion":4,"./JS/Instrucciones/Asignacion":14,"./JS/Instrucciones/Declaracion":18,"./JS/Instrucciones/Funcion":23,"./JS/Instrucciones/Imprimir":25,"./JS/Instrucciones/Main":27,"./JS/Instrucciones/ModificarArreglo":28,"./JS/Instrucciones/struct":33,"./JS/gramatica":35}],37:[function(require,module,exports){
+
+},{}],38:[function(require,module,exports){
+>>>>>>> Stashed changes
 (function (process){(function (){
 // 'path' module extracted from Node.js v8.11.1 (only the posix part)
 // transplited with Babel
@@ -4434,7 +5582,11 @@ posix.posix = posix;
 module.exports = posix;
 
 }).call(this)}).call(this,require('_process'))
+<<<<<<< Updated upstream
 },{"_process":57}],57:[function(require,module,exports){
+=======
+},{"_process":39}],39:[function(require,module,exports){
+>>>>>>> Stashed changes
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -4620,5 +5772,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
+<<<<<<< Updated upstream
 },{}]},{},[54])(54)
+=======
+},{}]},{},[36])(36)
+>>>>>>> Stashed changes
 });

@@ -12,6 +12,9 @@ class Logica {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.BOOL;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         var izq = this.opIzquierdo.interpretar(tree, table);
         if (izq instanceof Excepcion_1.Excepcion)

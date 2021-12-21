@@ -9,6 +9,9 @@ class Main {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let entornoMain = new Entorno_1.Entorno(table);
         for (let instruccion of this.instrucciones) {

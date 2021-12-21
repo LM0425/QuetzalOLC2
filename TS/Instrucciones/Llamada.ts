@@ -19,6 +19,30 @@ export class Llamada implements Instruccion {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        console.log("la tabla es: ",tree.getTabla());
+        console.log("el stak es ",tree.getStack());
+
+        let posApuntador=tree.getValorTablaByIdentificador(this.nombre);
+        console.log("la pos es: ",posApuntador);
+        let texto3d="";
+        texto3d+=tree.generarInstruccion("P = 1 +"+posApuntador);
+        this.parametros.forEach(element => {
+            let variable=element.traducir(tree,table);
+            let posAux=tree.getValorTablaByIdentificador(variable);
+            let valorStack=tree.getValorPosStack(posAux);
+            let temporal=tree.generarTemporal();
+            texto3d+=tree.generarInstruccion(temporal+" = P");
+            texto3d+=tree.generarInstruccion("P = P + 1");
+            texto3d+=tree.generarInstruccion("stack[(int)"+temporal+"] = "+valorStack);
+
+        });
+        texto3d+=tree.generarInstruccion(this.nombre+"()")+"\n"
+
+        let lista=tree.getListaFunciones3D();
+        console.log(lista+"\n"+texto3d);
+        return "\n//------------llamado de funion "+this.nombre+"\n"+texto3d
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let result = tree.getFuncion(this.nombre)

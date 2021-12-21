@@ -12,6 +12,30 @@ class While {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        //sconsole.log('el true es',this.instruccionesIf.traducir(tree,table));
+        let nuevaTabla = new Entorno_1.Entorno(table);
+        let texto3dVerdadero = "";
+        let textoFalso = "";
+        let instrucion = "";
+        //console.log("la condicion es:",this.condicion);
+        let cond = this.condicion.traducir(tree, nuevaTabla); //.split("$");
+        //let condicion=cond[0];
+        let lista = tree.getListaTemporalClase();
+        tree.limpiartemporalClase();
+        for (let instruccion of this.instruccionesIf) {
+            let result = instruccion.traducir(tree, nuevaTabla);
+            if (result instanceof Excepcion_1.Excepcion) {
+                tree.getExcepciones().push(result);
+                tree.updateConsola(result.toString());
+            }
+            //console.log('la instruccion es: ', result);
+            texto3dVerdadero += result;
+        }
+        instrucion = tree.getWhile(cond, texto3dVerdadero);
+        console.log(lista + "\n" + instrucion);
+        return lista + "\n" + instrucion;
+    }
     interpretar(tree, table) {
         while (true) {
             let condicion = this.condicion.interpretar(tree, table);

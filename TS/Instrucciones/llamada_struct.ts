@@ -22,6 +22,9 @@ export class Llamada_struct implements Instruccion {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         //console.log('el identificador es ', this.identificador)

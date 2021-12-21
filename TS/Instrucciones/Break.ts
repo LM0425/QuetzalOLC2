@@ -11,6 +11,9 @@ export class Break implements Instruccion {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         return this

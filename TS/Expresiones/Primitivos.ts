@@ -20,6 +20,13 @@ export class Primitivos implements Instruccion {
         this.columna = columna;
         this.tipoArreglo = null;
     }
+    traducir(tree: AST, table: Entorno) {
+        if (this.tipo===Tipo.ARRAY) {
+            
+        } else {
+            return this.valor;
+        }
+    }
 
     interpretar(tree: AST, table: Entorno) {
         if(this.tipo === Tipo.ARRAY){

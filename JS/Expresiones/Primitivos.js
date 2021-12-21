@@ -11,6 +11,13 @@ class Primitivos {
         this.columna = columna;
         this.tipoArreglo = null;
     }
+    traducir(tree, table) {
+        if (this.tipo === Tipo_1.Tipo.ARRAY) {
+        }
+        else {
+            return this.valor;
+        }
+    }
     interpretar(tree, table) {
         if (this.tipo === Tipo_1.Tipo.ARRAY) {
             let valTipo = this.defTipo(this.valor);

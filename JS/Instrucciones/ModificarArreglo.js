@@ -11,6 +11,9 @@ class ModificarArreglo {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let value = this.valor.interpretar(tree, table);
         if (value instanceof Excepcion_1.Excepcion)

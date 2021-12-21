@@ -18,6 +18,31 @@ export class While implements Instruccion {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        //sconsole.log('el true es',this.instruccionesIf.traducir(tree,table));
+        let nuevaTabla = new Entorno(table);
+        let texto3dVerdadero="";
+        let textoFalso="";
+        let instrucion="";
+        //console.log("la condicion es:",this.condicion);
+        let cond=this.condicion.traducir(tree, nuevaTabla)//.split("$");
+        //let condicion=cond[0];
+        let lista=tree.getListaTemporalClase();
+        tree.limpiartemporalClase()
+        for (let instruccion of this.instruccionesIf) {
+            let result = instruccion.traducir(tree, nuevaTabla);
+            if (result instanceof Excepcion) {
+                tree.getExcepciones().push(result);
+                tree.updateConsola(result.toString());
+            }
+            //console.log('la instruccion es: ', result);
+            texto3dVerdadero+=result;
+        }
+
+        instrucion=tree.getWhile(cond,texto3dVerdadero);
+        console.log(lista+"\n" + instrucion);
+        return lista+"\n" + instrucion;
+    }
 
     interpretar(tree: AST, table: Entorno) {
         while (true) {

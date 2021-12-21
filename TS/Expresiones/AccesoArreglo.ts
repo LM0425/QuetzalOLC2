@@ -23,6 +23,9 @@ export class AccesoArreglo implements Instruccion {
         this.columna = columna;
         this.tipo = Tipo.NULL;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let simbolo = table.getTabla(this.identificador);

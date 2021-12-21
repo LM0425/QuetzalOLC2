@@ -15,6 +15,9 @@ export class Identificador implements Instruccion {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        return this.identificador;
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let simbolo = table.getTabla(this.identificador);

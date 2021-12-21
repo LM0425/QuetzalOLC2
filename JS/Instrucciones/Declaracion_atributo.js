@@ -11,6 +11,9 @@ class Declaracion_atributo {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let value = null;
         if (this.expresion !== null) {

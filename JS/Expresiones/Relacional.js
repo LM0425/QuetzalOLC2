@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Relacional = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
+const temporalAux_1 = require("../AST/temporalAux");
 class Relacional {
     constructor(operador, opIzquierdo, opDerecho, fila, columna) {
         this.operador = operador;
@@ -11,6 +12,53 @@ class Relacional {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.BOOL;
+    }
+    traducir(tree, table) {
+        var izq = this.opIzquierdo.traducir(tree, table);
+        if (izq instanceof Excepcion_1.Excepcion)
+            return izq;
+        var der = this.opDerecho.traducir(tree, table);
+        if (der instanceof Excepcion_1.Excepcion)
+            return der;
+        /* console.log(tree.getTabla());
+        console.log(tree.getStack()); */
+        if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+            let posStack = tree.getValorTablaByIdentificador(izq);
+            //let value=tree.getValorPosStack(Number(posStack)).toString()
+            let temporal = tree.generarTemporal();
+            let texto3d = tree.generarInstruccion(temporal + " = stack[(int)" + posStack + "]");
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "stack[(int)" + posStack + "]");
+            tree.addTemporalClase(temporalAux);
+            return temporal + this.getSigno(this.operador) + der.toString();
+            ;
+        }
+        else if (this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+            let posStack = tree.getValorTablaByIdentificador(der);
+            let temporal = tree.generarTemporal();
+            let value = tree.getValorPosStack(posStack).toString();
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + this.getSigno(this.operador) + value);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }
+        else if (this.opIzquierdo.identificador && this.opDerecho.identificador) {
+            let posStackIzq = tree.getValorTablaByIdentificador(izq);
+            let temporal = tree.generarTemporal();
+            let valueIzq = tree.getValorPosStack(posStackIzq).toString();
+            let posStackDer = tree.getValorTablaByIdentificador(der);
+            let valueDer = tree.getValorPosStack(posStackDer).toString();
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, valueIzq + this.getSigno(this.operador) + valueDer);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }
+        else {
+            let temporal = tree.generarTemporal();
+            //let texto3d= tree.generarInstruccion(temporal+"="+izq+"+"+der);
+            //tree.updateConsola(texto3d);
+            let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, izq + this.getSigno(this.operador) + der);
+            tree.addTemporalClase(temporalAux);
+            return temporal;
+        }
+        //return izq.toString() +this.getSigno(this.operador)+der.toString();
     }
     interpretar(tree, table) {
         var izq = this.opIzquierdo.interpretar(tree, table);
@@ -165,6 +213,26 @@ class Relacional {
         }
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
+        }
+    }
+    getSigno(operador) {
+        if (operador === Tipo_1.OperadorRelacional.DIFERENTE) {
+            return "!=";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MENORQUE) {
+            return "<";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MAYORQUE) {
+            return ">";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MENORIGUAL) {
+            return "<=";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.MAYORIGUAL) {
+            return ">=";
+        }
+        else if (operador === Tipo_1.OperadorRelacional.IGUALIGUAL) {
+            return "==";
         }
     }
 }

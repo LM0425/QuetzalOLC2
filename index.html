@@ -1,73 +1,139 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Test</title>
-        <script src="codemirror/lib/codemirror.js"></script>
-        <link href="codemirror/lib/codemirror.css" rel="stylesheet"/>
-        <!--<script src="codemirror/mode/xml/xml.js"></script>-->
-        <script src="codemirror/mode/javascript/javascript.js"></script>
-        <link href="codemirror/theme/dracula.css" rel="stylesheet"/>
-        <link href="codemirror/theme/material-darker.css" rel="stylesheet"/>
-        <style>
-            .cols {
-            display: flex;
-            }
 
-            .cols div {
+<head>
+    <title>Test</title>
+    <script src="codemirror/lib/codemirror.js"></script>
+    <link href="codemirror/lib/codemirror.css" rel="stylesheet" />
+    <!--<script src="codemirror/mode/xml/xml.js"></script>-->
+    <script src="codemirror/mode/javascript/javascript.js"></script>
+    <link href="codemirror/theme/dracula.css" rel="stylesheet" />
+    <link href="codemirror/theme/material-darker.css" rel="stylesheet" />
+    <style>
+
+        body {
+        background-color: lightblue;
+        opacity: 0.7;
+        }
+        .cols {
+            display: flex;
+        }
+
+        .cols div {
             flex: 1;
-            }
-            ul {
+        }
+
+        ul {
             list-style-type: none;
             margin: 0;
             padding: 0;
             overflow: hidden;
             background-color: #333;
-            }
+        }
 
-            li {
+        li {
             float: left;
-            }
-            
+        }
 
-            li a {
+
+        li a {
             display: block;
             color: white;
             text-align: center;
             padding: 14px 16px;
             text-decoration: none;
-            }
+        }
 
-            /* Change the link c
+        /* Change the link c
             olor to #111 (black) on hover */
-            li a:hover {
+        li a:hover {
             background-color: #111;
-            }
-            
+        }
 
-            
-        </style>
-    </head>
-    <body>
-        <ul>
-            <li><a href="#home">Traducir</a></li>
-            <li><a id="eventoAnalizar">Interpretar_</a></li>
-            <li><a href="#contact">Reportes</a></li>
-            <li style="float:right"><a class="active" href="#about">Quetzal OCL2</a></li>
-          </ul> 
-          <br>
-        <div class="cols">
-            <div>
-                <!--<textarea name= "editorEntrada" id="editorEntrada"></textarea>-->
-                <textarea id="areaNumeracion" cols="1" rows="25" readonly></textarea>
-                <!--<textarea id="txCodigo" cols="70" rows="25" onkeyup="numeracion(event);"></textarea>-->
-                <textarea id="txCodigo" cols="70" rows="25" ></textarea>
-            </div>
-            <div>
-                <textarea id="editorSalida"></textarea>
-            </div>
+        :root {
+            --color1: rgb(229, 223, 207);
+            --color2: rgb(251, 248, 241);
+            --color3: rgb(228, 71, 82);
+            --color4: rgb(5, 51, 84);
+            --color5: rgb(0, 0, 0);
+            --color6: rgb(43, 42, 42);
+        }
+
+        textarea {
+            resize: none;
+            text-align: end;
+            border: 0;
+            outline: none;
+        }
+
+        #txCodigo {
+            text-align: start;
+            border-top: solid 2px var(--color5);
+            border-bottom: solid 2px var(--color5);
+            border-right: solid 2px var(--color5);
+            border-radius: 0 10px 10px 0;
+        }
+
+        #editorSalida {
+            text-align: start;
+            border-top: solid 2px var(--color5);
+            border-bottom: solid 2px var(--color5);
+            border-right: solid 2px var(--color5);
+            border-radius: 0 10px 10px 0;
+        }
+
+        #editorConsola{
+            text-align: start;
+            background: var(--color6);
+            border-radius: 0 10px 10px 0;
+            border-radius: 10px 0 0 10px;
+            width:95%;
+        }
+
+        #areaNumeracion {
+            margin: 0;
+            background: var(--color4);
+            color: var(--color1);
+            border: 0;
+            border-radius: 10px 0 0 10px;
+        }
+
+        #areaNumeracion2 {
+            margin: 0;
+            background: var(--color4);
+            color: var(--color1);
+            border: 0;
+            border-radius: 10px 0 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <ul>
+        <li><a id="eventoTraducir">Traducir</a></li>
+        <li><a id="eventoAnalizar">Interpretar_</a></li>
+        <li><a href="#contact">Reportes</a></li>
+        <li style="float:right"><a class="active" href="#about">Quetzal OCL2</a></li>
+    </ul>
+    <br>
+    <div class="cols">
+        <div>
+            <!--<textarea name= "editorEntrada" id="editorEntrada"></textarea>-->
+            <textarea id="areaNumeracion" cols="1" rows="25" readonly></textarea>
+            <textarea id="txCodigo" cols="70" rows="25" onkeyup="numeracion(event);"></textarea>
+            <!--<textarea id="txCodigo" cols="70" rows="25" ></textarea>-->
         </div>
-        
-        <!-- <script>
+        <div>
+            <textarea id="areaNumeracion2" cols="1" rows="25" readonly></textarea>
+            <textarea id="editorSalida" cols="70" rows="25" onkeyup="numeracion2(event);"></textarea>
+        </div>
+    </div>
+    <br>
+    <div>
+        <textarea id="editorConsola" ></textarea>
+    </div>
+
+    <!-- <script>
             var editor=CodeMirror.fromTextArea(document.getElementById('editorEntrada'),{
                 mode:"javascript",
                 theme:"dracula",
@@ -82,9 +148,12 @@
             });
             editor2.setSize("650","600")
         </script> -->
-        <!-- <script src="gramatica.js"></script> -->
-        <script src="bundle.js"></script>
-        
-        
-    </body>
+    <!-- <script src="gramatica.js"></script> 
+        <script src="index.js"></script>-->
+    <script src="bundle.js"></script>
+
+
+
+</body>
+
 </html>

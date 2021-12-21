@@ -21,6 +21,9 @@ export class Struct implements Instruccion {
         this.columna = columna;
         this.tipoStruct=tipoStruct;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let value = null;

@@ -14,6 +14,9 @@ class Llamada_struct {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         //console.log('el identificador es ', this.identificador)
         //let id = this.identificador.interpretar(tree, table);

@@ -11,6 +11,41 @@ const { Imprimir } = require("./JS/Instrucciones/Imprimir");
 const { Struct } = require("./JS/Instrucciones/struct");
 
 document.getElementById("eventoAnalizar").addEventListener("click", displayDate);
+document.getElementById("eventoTraducir").addEventListener("click", traducirCodigo);
+
+
+function traducirCodigo() {
+    console.log("Traduciendo");
+    var instrucciones3D = "";
+    var textoIngresado = document.getElementById('txCodigo').value;
+
+    const instrucciones = parse(textoIngresado);
+    const ast = new AST(instrucciones);
+    const entornoGlobal = new Entorno(null);
+    ast.setTSglobal(entornoGlobal);
+    ast.getInstrucciones().forEach((element) => {
+        let value = element.traducir(ast, entornoGlobal);
+        if (value instanceof Excepcion) {
+            ast.getExcepciones().push(value);
+            ast.updateConsola(value.toString());
+        }
+        //console.log("el valor es ",value);
+        instrucciones3D += value;
+        //ast.getStructs().push(value);
+        //ast.getStrut('test');
+        /*if (value instanceof Struct) {
+            ast.getStructs().push(value)
+        }*/
+    });
+    //console.log(ast.getEncabezado());
+
+    //console.log(ast.getConsola());
+    //console.log(ast.getListaTemporales());
+   /*  console.log('el encabezado es: \n',ast.getEncabezado());
+    console.log('la lista de temporales es:\n' ,ast.getListaTemporales())
+    console.log("las instrucciones son \n", instrucciones3D); */
+    document.getElementById("editorSalida").value  = ast.getEncabezado()+"\ndouble "+ast.getListaTemporales()+";\n\n"+ast.getMain(instrucciones3D);
+}
 
 function displayDate() {
     console.log("Analizando");
@@ -76,13 +111,24 @@ function displayDate() {
     console.log(ast.getConsola());
 }
 
-// function numeracion(e) {
-//     let eArea = document.getElementById('areaNumeracion');
-//     let eArea2 = document.getElementById('txCodigo');
-//     let numeros = eArea2.value.split("\n").length;
-//     let msj="";
-//     for (let i = 0; i < numeros; i++) {
-//         msj += i + "\n";
-//     }
-//     eArea.value=msj;
-// }
+/* function numeracion(e) {
+    let eArea = document.getElementById('areaNumeracion');
+     let eArea2 = document.getElementById('txCodigo');
+     let numeros = eArea2.value.split("\n").length;
+     let msj="";
+     for (let i = 0; i < numeros; i++) {
+         msj += i + "\n";
+     }
+     eArea.value=msj;
+ } 
+
+ function numeracion2(e) {
+    let eArea = document.getElementById('areaNumeracion2');
+     let eArea2 = document.getElementById('editorSalida');
+     let numeros = eArea2.value.split("\n").length;
+     let msj="";
+     for (let i = 1; i < numeros; i++) {
+         msj += i + "\n";
+     }
+     eArea.value=msj;
+ }*/

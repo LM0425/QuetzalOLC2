@@ -24,6 +24,43 @@ export class For implements Instruccion{
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        
+        let variable=this.variable.traducir(tree,table);
+        let condicion=this.condicion.traducir(tree,table);
+        let lista=tree.getListaTemporalClase();
+        let expre=this.expresion.traducir(tree,table);
+        console.log("la variable es \n",variable);
+        console.log("la lista es  \n",lista);        
+        console.log("la consicion es  \n",condicion);
+        console.log("la expresion  es \n",expre);
+        let instrucciones="";
+
+        this.instrucciones.forEach(element => {
+            instrucciones+=element.traducir(tree,table);
+        });
+
+        let temporalRetorno=tree.generarTemporal();
+        let temporalEntrada=tree.generarTemporal();
+        let temporalSalida=tree.generarTemporal();
+
+        let texto3d="\n//-------------------FOR\n";
+        texto3d+=variable;
+        
+        texto3d+=temporalRetorno+":\n";
+        texto3d+=lista;
+        texto3d+=tree.generarInstruccion("if("+condicion+") goto "+temporalEntrada)
+        texto3d+=tree.generarInstruccion("goto "+temporalSalida);
+        texto3d+="\n"+temporalEntrada+":\n";
+        texto3d+=instrucciones+"\n"
+        texto3d+=expre;
+        texto3d+=tree.generarInstruccion("goto "+temporalRetorno);
+        texto3d+="\n"+temporalSalida+":\n";
+
+        console.log(texto3d)
+        return texto3d;
+
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let entornoFor = new Entorno(table);

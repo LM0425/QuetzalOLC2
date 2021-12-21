@@ -12,6 +12,9 @@ class Struct {
         this.columna = columna;
         this.tipoStruct = tipoStruct;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let value = null;
         /*if (this.expresion !== null) {

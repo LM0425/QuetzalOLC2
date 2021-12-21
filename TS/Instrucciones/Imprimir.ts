@@ -19,9 +19,57 @@ export class Imprimir implements Instruccion {
         this.atributo = null;
     }
 
+
+    traducir(tree: AST, table: Entorno) {
+        //console.log('la tabla tiene: ', tree.getTemporalClase());
+        let textoFinal="";
+        for (let imprimir of this.expresion) { 
+            if (imprimir['acceso'] === null) {
+                //console.log('imprimir lleva: ',imprimir['expresion'].identificador);
+                //console.log("la tabal tiene:",tree.getTabla());
+                console.log("la impresion lleva: ",imprimir['expresion'])
+                let tipo=tree.getTipoTablaByIdentificador(imprimir['expresion'].identificador);
+                if (tipo===Tipo.INT || tipo===Tipo.DOUBLE) {
+                    let value=tree.getValorTablaByIdentificador(imprimir['expresion'].identificador);
+                    //console.log('el valor es: ',value);
+                    let nuevoTemporal=tree.generarTemporal();
+                    let texto3d= tree.generarInstruccion(nuevoTemporal+" = stack[(int)"+value+"]");
+                    texto3d+=tree.generarInstruccion("printf(\"%f\", (double)"+nuevoTemporal+")")
+                    texto3d+=tree.generarInstruccion("printf(\"%c\", (char)10)");
+                    textoFinal="\n"+texto3d+"\n";
+                    /* tree.updateConsola(texto3d);
+                    tree.updateConsola("\n"); */
+                    //console.log(texto3d+"\n");
+                    //return texto3d+"\n"
+                }else if (tipo===Tipo.STRING) {
+                    console.log("Stack",tree.getStack());
+                    console.log("heap",tree.getHeap());
+                    let texto3d=tree.getPrintString(imprimir['expresion'].identificador)
+                    //console.log(texto3d+"\n");
+                    textoFinal= texto3d+"\n"
+                }else{
+                    
+                    /* let izq=imprimir['expresion'].opIzquierdo.traducir(tree,table);
+                    let der=imprimir['expresion'].opDerecho.traducir(tree,table);
+                    console.log(lista+"\n"+izq+"\n"+der) */
+                    let expre=imprimir['expresion'].traducir(tree,table);
+                    let lista=tree.getListaTemporalClase();
+                    let texto3d="printf(\"%f\", (double)"+expre+");\nprintf(\"%c\", (char)10);\n"
+                    //console.log(lista+"\n"+texto3d);
+                    textoFinal= lista+"\n"+texto3d
+                }
+          
+            }else{
+
+            }
+        }
+        console.log(textoFinal)
+        return textoFinal;
+    }
+
     interpretar(tree: AST, table: Entorno) {
         let cadena = "";
-        for (let imprimir of this.expresion) {
+        for (let imprimir of this.expresion) {      
             if (imprimir['acceso'] === null) {
                 let value = imprimir['expresion'].interpretar(tree, table);
                 if (value instanceof Excepcion) return value;

@@ -6,5 +6,5 @@ export interface Instruccion {
     columna: number;
 
     interpretar(tree: AST, table: Entorno): any;
-    // traducir(tree: AST, table: Entorno):any;
+    traducir(tree: AST, table: Entorno):any;
 }

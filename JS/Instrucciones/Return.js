@@ -8,6 +8,9 @@ class Return {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let result = this.expresion.interpretar(tree, table);
         if (result instanceof Excepcion_1.Excepcion)

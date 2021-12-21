@@ -22,6 +22,61 @@ export class If implements Instruccion {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        //sconsole.log('el true es',this.instruccionesIf.traducir(tree,table));
+        let nuevaTabla = new Entorno(table);
+        let texto3dVerdadero="";
+        let textoFalso="";
+        let instrucion="";
+        //console.log("la condicion es:",this.condicion);
+        let cond=this.condicion.traducir(tree, nuevaTabla)//.split("$");
+        //let condicion=cond[0];
+        let lista=tree.getListaTemporalClase();
+        tree.limpiartemporalClase()
+        for (let instruccion of this.instruccionesIf) {
+            let result = instruccion.traducir(tree, nuevaTabla);
+            if (result instanceof Excepcion) {
+                tree.getExcepciones().push(result);
+                //tree.updateConsola(result.toString());
+            }
+            if(result instanceof Return){
+                return result;
+            }
+            //console.log('la instruccion es: ', result);
+            texto3dVerdadero+=result;
+        }
+
+        if (this.instruccionesElse) {
+            for (let instruccion of this.instruccionesElse) {
+                let result = instruccion.traducir(tree, nuevaTabla);
+                if (result instanceof Excepcion) {
+                    tree.getExcepciones().push(result);
+                    //tree.updateConsola(result.toString());
+                }
+                if(result instanceof Return){
+                    return result;
+                }
+                //console.log('la instruccion es: ', result);
+                textoFalso+=result;
+            }
+        }
+        
+        instrucion=tree.getIf(cond,texto3dVerdadero,textoFalso);
+        if (this.elseIf) {
+            instrucion+=this.elseIf.traducir(tree,table)
+        }
+        /* if (this.elseIf==null) {
+            instrucion=tree.getIf(cond,texto3dVerdadero,textoFalso);
+        }else{
+            console.log('el else if es: ',this.elseIf);
+            console.log('la traducion es: ',this.elseIf.traducir(tree,table))
+
+        } */
+        
+        console.log(lista+"\n" + instrucion);
+        return lista+"\n" + instrucion;
+        //console.log('la lista de instrucciones es: ',texto3dVerdadero);
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let condicionIf = this.condicion.interpretar(tree, table);

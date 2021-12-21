@@ -4,6 +4,7 @@ exports.Declaracion = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
 const Tipo_1 = require("../AST/Tipo");
+const temporalAux_1 = require("../AST/temporalAux");
 class Declaracion {
     constructor(tipo, identficador, fila, columna, expresion, decArreglo, porRefencia, copia) {
         this.tipo = tipo;
@@ -14,6 +15,97 @@ class Declaracion {
         this.decArreglo = decArreglo;
         this.porReferencia = porRefencia;
         this.copia = copia;
+    }
+    traducir(tree, table) {
+        //console.log('la expresion es: ',this.expresion);
+        /* console.log('la el tipo: ',this.tipo); */
+        if (this.decArreglo === true) {
+        }
+        else {
+            if (this.expresion != null) {
+                if (this.tipo === Tipo_1.Tipo.INT || this.tipo === Tipo_1.Tipo.DOUBLE) {
+                    if (this.expresion.valor || this.expresion.valor === 0) {
+                        //console.log("se fue para int con valor")
+                        let value = this.expresion.traducir(tree, table);
+                        if (value instanceof Excepcion_1.Excepcion)
+                            return value;
+                        //let temporal=tree.getUltimoTemporal();
+                        let apuntador = tree.getApuntadorStack().toString();
+                        let texto3d = tree.generarInstruccion("stack[(int)" + apuntador + "] = " + this.expresion.valor);
+                        tree.addStack(this.expresion.valor);
+                        let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], this.tipo, this.fila, this.columna, apuntador);
+                        tree.addTabla(temporalAux);
+                        let lista = tree.getListaTemporalClase();
+                        console.log(texto3d + "\n");
+                        return "\n//-------------------------Declaracion\n" + texto3d + "\n";
+                    }
+                    else {
+                        //console.log("se fue para int sen valor")
+                        //console.log(tree.getTemporalClase());
+                        let ultimoTemporal = this.expresion.traducir(tree, table);
+                        if (ultimoTemporal instanceof Excepcion_1.Excepcion)
+                            return ultimoTemporal;
+                        let temporal = tree.getUltimoTemporal();
+                        let apuntador = tree.getApuntadorStack().toString();
+                        let texto3d = "";
+                        texto3d += tree.generarInstruccion("stack[(int)" + apuntador + "] = " + temporal);
+                        /* tree.updateConsola(texto3d);
+                        tree.updateConsola("\n"); */
+                        //let valorTemporal=tree.getValueByTemporal(temporal);
+                        tree.addStack(temporal);
+                        let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], this.tipo, this.fila, this.columna, apuntador);
+                        tree.addTabla(temporalAux);
+                        //console.log(tree.getListaTemporalClase()+ texto3d);
+                        texto3d = "\n//-------------------------Declaracion\n" + tree.getListaTemporalClase() + texto3d;
+                        /*  console.log(tree.getTemporalClase());
+                         console.log(tree.getStack()); */
+                        tree.limpiartemporalClase();
+                        console.log(texto3d + "\n");
+                        return texto3d + "\n";
+                    }
+                }
+                else if (this.tipo === Tipo_1.Tipo.STRING) {
+                    let exp = this.expresion.traducir(tree, table);
+                    let temporal = tree.generarTemporal();
+                    let texto3d = "\n//-------------------------Declaracion\n" + tree.generarInstruccion(temporal + " = H");
+                    let apuntadorHeap = tree.getApuntadorHeap();
+                    for (let i = 0; i < exp.length; i++) {
+                        const element = exp[i];
+                        let value = element.charCodeAt(0);
+                        tree.addHeap(value);
+                        texto3d += tree.generarInstruccion("heap[(int)H] = " + value);
+                        texto3d += tree.generarInstruccion('H = H + 1');
+                    }
+                    tree.addHeap(-1);
+                    texto3d += tree.generarInstruccion("heap[(int)H] = -1");
+                    texto3d += tree.generarInstruccion('H = H + 1');
+                    let apuntador = tree.getApuntadorStack().toString();
+                    texto3d += tree.generarInstruccion("stack[(int)" + apuntador + "] = " + temporal);
+                    /* tree.updateConsola(texto3d);
+                    tree.updateConsola("\n");
+ */
+                    tree.addStack(apuntadorHeap);
+                    let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], this.tipo, this.fila, this.columna, apuntadorHeap.toString());
+                    tree.addTabla(temporalAux);
+                    console.log(texto3d);
+                    return texto3d;
+                }
+            }
+            else {
+                if (this.tipo === Tipo_1.Tipo.INT || this.tipo === Tipo_1.Tipo.DOUBLE) {
+                    let texto3d = "";
+                    for (let id of this.identificador) {
+                        let apuntador = tree.getApuntadorStack().toString();
+                        texto3d += tree.generarInstruccion("stack[(int)" + apuntador + "] = " + 0);
+                        tree.addStack(0);
+                        let temporalAux = new temporalAux_1.TemporalAux(id, this.tipo, this.fila, this.columna, apuntador);
+                        tree.addTabla(temporalAux);
+                    }
+                    console.log(texto3d + "\n");
+                    return "\n//-------------------------Declaracion\n" + texto3d + "\n";
+                }
+            }
+        }
     }
     interpretar(tree, table) {
         if (this.decArreglo === true) {

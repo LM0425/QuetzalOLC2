@@ -12,6 +12,33 @@ class inc_dec {
         this.operador = operador;
         this.tipo = null;
     }
+    traducir(tree, table) {
+        console.log(tree.getTabla());
+        if (this.operador === Tipo_1.OperadorAritmetico.MAS) {
+            let valor = this.expresion.traducir(tree, table);
+            let texto3d = "";
+            let posStack = tree.getValorTablaByIdentificador(valor);
+            let temporal = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporal + " = stack[(int)" + posStack + "]");
+            let temporalMas = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporalMas + " = " + temporal + " + 1");
+            texto3d += tree.generarInstruccion("stack[(int)" + posStack + "] = " + temporalMas);
+            console.log(texto3d);
+            return texto3d;
+        }
+        else if (this.operador === Tipo_1.OperadorAritmetico.MENOS) {
+            let valor = this.expresion.traducir(tree, table);
+            let texto3d = "";
+            let posStack = tree.getValorTablaByIdentificador(valor);
+            let temporal = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporal + " = stack[(int)" + posStack + "]");
+            let temporalMas = tree.generarTemporal();
+            texto3d += tree.generarInstruccion(temporalMas + " = " + temporal + " - 1");
+            texto3d += tree.generarInstruccion("stack[(int)" + posStack + "] = " + temporalMas);
+            console.log(texto3d);
+            return texto3d;
+        }
+    }
     interpretar(tree, table) {
         let id = this.expresion.interpretar(tree, table);
         if (id instanceof Excepcion_1.Excepcion)

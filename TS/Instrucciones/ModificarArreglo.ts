@@ -19,6 +19,9 @@ export class ModificarArreglo implements Instruccion{
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let value = this.valor.interpretar(tree, table);
