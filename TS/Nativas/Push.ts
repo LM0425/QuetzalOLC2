@@ -16,6 +16,9 @@ export class Push implements Instruccion{
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let expresion = this.expresion.interpretar(tree, table);

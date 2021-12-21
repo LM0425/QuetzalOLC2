@@ -16,6 +16,9 @@ class ForIn {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let entornoFor = new Entorno_1.Entorno(table);
         let expresion = this.expresion.interpretar(tree, entornoFor);

@@ -21,6 +21,9 @@ export class SubString implements Instruccion {
         this.columna = columna;
         this.tipo = Tipo.STRING;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let expresion = this.expresion.interpretar(tree, table);

@@ -108,7 +108,8 @@ function displayDate() {
         }
     }
 
-    console.log(ast.getConsola());
+    //console.log(ast.getConsola());
+    document.getElementById("editorSalida").value  =ast.getConsola();
 }
 
 /* function numeracion(e) {

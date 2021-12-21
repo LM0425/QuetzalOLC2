@@ -17,6 +17,9 @@ export class ToInt implements Instruccion {
         this.columna = columna;
         this.tipo = Tipo.INT;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let valor = this.valor.interpretar(tree, table);

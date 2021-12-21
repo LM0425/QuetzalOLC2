@@ -19,6 +19,9 @@ export class Caracter implements Instruccion {
         this.columna = columna;
         this.tipo = Tipo.CHAR;
     }
+    traducir(tree: AST, table: Entorno) {
+        throw new Error("Method not implemented.");
+    }
 
     interpretar(tree: AST, table: Entorno) {
         let expresion = this.expresion.interpretar(tree, table);

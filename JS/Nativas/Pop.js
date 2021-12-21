@@ -8,6 +8,9 @@ class Pop {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
         if (expresion instanceof Excepcion_1.Excepcion)

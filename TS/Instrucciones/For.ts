@@ -26,10 +26,10 @@ export class For implements Instruccion{
     }
     traducir(tree: AST, table: Entorno) {
         
-        let variable=this.variable.traducir(tree,table);
+        let variable=this.decAsig.traducir(tree,table);
         let condicion=this.condicion.traducir(tree,table);
         let lista=tree.getListaTemporalClase();
-        let expre=this.expresion.traducir(tree,table);
+        let expre=this.actualizacion.traducir(tree,table);
         console.log("la variable es \n",variable);
         console.log("la lista es  \n",lista);        
         console.log("la consicion es  \n",condicion);

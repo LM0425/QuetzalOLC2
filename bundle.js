@@ -1,3 +1,24 @@
+function numeracion(e) {
+    let eArea = document.getElementById('areaNumeracion');
+     let eArea2 = document.getElementById('txCodigo');
+     let numeros = eArea2.value.split("\n").length;
+     let msj="";
+     for (let i = 0; i < numeros; i++) {
+         msj += i + "\n";
+     }
+     eArea.value=msj;
+ } 
+
+ function numeracion2(e) {
+    let eArea = document.getElementById('areaNumeracion2');
+     let eArea2 = document.getElementById('editorSalida');
+     let numeros = eArea2.value.split("\n").length;
+     let msj="";
+     for (let i = 1; i < numeros; i++) {
+         msj += i + "\n";
+     }
+     eArea.value=msj;
+ }
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.load = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -194,6 +215,8 @@ class AST {
         let main = "\n\n/*------MAIN------*/\nvoid main() {\n" + instrucciones + "return;\n}";
         let funciones = this.getListaFunciones3D();
         return funciones + main;
+    }
+    getFunciones3D() {
     }
     getValueByTemporal(temporal) {
         let value;
@@ -1653,11 +1676,7 @@ class Asignacion {
 }
 exports.Asignacion = Asignacion;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],13:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Simbolo":5}],15:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Asignacion_atributo = void 0;
@@ -1745,13 +1764,16 @@ class Continue {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         return this;
     }
 }
 exports.Continue = Continue;
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Declaracion = void 0;
@@ -1929,11 +1951,7 @@ class Declaracion {
 }
 exports.Declaracion = Declaracion;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],18:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6,"../AST/temporalAux":7}],19:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6,"../AST/temporalAux":7}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Declaracion_atributo = void 0;
@@ -1971,11 +1989,7 @@ class Declaracion_atributo {
 }
 exports.Declaracion_atributo = Declaracion_atributo;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":3,"../AST/Simbolo":4}],19:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Simbolo":5}],20:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Simbolo":5}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Default = void 0;
@@ -2000,11 +2014,7 @@ class Default {
 }
 exports.Default = Default;
 
-<<<<<<< Updated upstream
-},{}],20:[function(require,module,exports){
-=======
-},{"../AST/Case3d":2}],21:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Case3d":2}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoW = void 0;
@@ -2072,11 +2082,7 @@ class DoW {
 }
 exports.DoW = DoW;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Break":14}],21:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Break":16}],22:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Break":16}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.For = void 0;
@@ -2096,10 +2102,10 @@ class For {
         this.columna = columna;
     }
     traducir(tree, table) {
-        let variable = this.variable.traducir(tree, table);
+        let variable = this.decAsig.traducir(tree, table);
         let condicion = this.condicion.traducir(tree, table);
         let lista = tree.getListaTemporalClase();
-        let expre = this.expresion.traducir(tree, table);
+        let expre = this.actualizacion.traducir(tree, table);
         console.log("la variable es \n", variable);
         console.log("la lista es  \n", lista);
         console.log("la consicion es  \n", condicion);
@@ -2166,8 +2172,7 @@ class For {
 }
 exports.For = For;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Break":14,"./Continue":16,"./Return":29}],22:[function(require,module,exports){
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Break":16,"./Continue":18,"./Return":31}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForIn = void 0;
@@ -2185,6 +2190,9 @@ class ForIn {
         this.instrucciones = instrucciones;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let entornoFor = new Entorno_1.Entorno(table);
@@ -2222,10 +2230,7 @@ class ForIn {
 }
 exports.ForIn = ForIn;
 
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5,"./Break":14,"./Continue":16,"./Return":29}],23:[function(require,module,exports){
-=======
-},{}],23:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6,"./Break":16,"./Continue":18,"./Return":31}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Funcion = void 0;
@@ -2291,11 +2296,7 @@ class Funcion {
 }
 exports.Funcion = Funcion;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"./Return":29}],24:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"./Return":29}],24:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"./Return":31}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.If = void 0;
@@ -2416,11 +2417,7 @@ class If {
 }
 exports.If = If;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Return":29}],25:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Return":29}],25:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Return":31}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Imprimir = void 0;
@@ -2555,11 +2552,7 @@ class Imprimir {
 }
 exports.Imprimir = Imprimir;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],26:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6}],26:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Llamada = void 0;
@@ -2631,11 +2624,7 @@ class Llamada {
 }
 exports.Llamada = Llamada;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],27:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],27:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],29:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Main = void 0;
@@ -2663,11 +2652,7 @@ class Main {
 }
 exports.Main = Main;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3}],28:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4}],28:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModificarArreglo = void 0;
@@ -2738,11 +2723,7 @@ class ModificarArreglo {
 }
 exports.ModificarArreglo = ModificarArreglo;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],29:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6}],29:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Return = void 0;
@@ -2767,11 +2748,7 @@ class Return {
 }
 exports.Return = Return;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":3}],30:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4}],30:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4}],32:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Switch = void 0;
@@ -2883,11 +2860,7 @@ class Switch {
 }
 exports.Switch = Switch;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"./Break":14,"./Return":29}],31:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"./Break":16,"./Return":29}],31:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"./Break":16,"./Return":31}],33:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.inc_dec = void 0;
@@ -2968,11 +2941,7 @@ class inc_dec {
 }
 exports.inc_dec = inc_dec;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],32:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],32:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],34:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Llamada_struct = void 0;
@@ -3050,11 +3019,7 @@ class Llamada_struct {
 }
 exports.Llamada_struct = Llamada_struct;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Simbolo":4,"../AST/Tipo":5}],33:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],33:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Simbolo":5,"../AST/Tipo":6}],35:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Struct = void 0;
@@ -3100,11 +3065,7 @@ class Struct {
 }
 exports.Struct = Struct;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3}],34:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4}],34:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4}],36:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.While = void 0;
@@ -3174,8 +3135,7 @@ class While {
 }
 exports.While = While;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":2,"../AST/Excepcion":3,"../AST/Tipo":5,"./Break":14}],35:[function(require,module,exports){
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Break":16}],37:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Caracter = void 0;
@@ -3189,6 +3149,9 @@ class Caracter {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.CHAR;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
         if (expresion instanceof Excepcion_1.Excepcion)
@@ -3200,19 +3163,8 @@ class Caracter {
     }
 }
 exports.Caracter = Caracter;
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"./Break":16}],35:[function(require,module,exports){
-(function (process){(function (){
-/* parser generated by jison 0.4.18 */
-/*
-  Returns a Parser object of the following structure:
 
-  Parser: {
-    yy: {}
-  }
->>>>>>> Stashed changes
-
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],36:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Coseno = void 0;
@@ -3225,6 +3177,9 @@ class Coseno {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.DOUBLE;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3234,7 +3189,7 @@ class Coseno {
 }
 exports.Coseno = Coseno;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],37:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],39:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Length = void 0;
@@ -3247,6 +3202,9 @@ class Length {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.INT;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
         if (expresion instanceof Excepcion_1.Excepcion)
@@ -3256,7 +3214,7 @@ class Length {
 }
 exports.Length = Length;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],38:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],40:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Log = void 0;
@@ -3269,6 +3227,9 @@ class Log {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.DOUBLE;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3278,7 +3239,7 @@ class Log {
 }
 exports.Log = Log;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],39:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],41:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parse = void 0;
@@ -3290,6 +3251,9 @@ class Parse {
         this.expresion = expresion;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
@@ -3311,7 +3275,7 @@ class Parse {
 }
 exports.Parse = Parse;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],40:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],42:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pop = void 0;
@@ -3322,6 +3286,9 @@ class Pop {
         this.fila = fila;
         this.columna = columna;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
         if (expresion instanceof Excepcion_1.Excepcion)
@@ -3331,7 +3298,7 @@ class Pop {
 }
 exports.Pop = Pop;
 
-},{"../AST/Excepcion":3}],41:[function(require,module,exports){
+},{"../AST/Excepcion":4}],43:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pow = void 0;
@@ -3344,6 +3311,9 @@ class Pow {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.INT;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let base = this.base.interpretar(tree, table);
@@ -3361,7 +3331,7 @@ class Pow {
 }
 exports.Pow = Pow;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],42:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],44:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Push = void 0;
@@ -3372,6 +3342,9 @@ class Push {
         this.valor = valor;
         this.fila = fila;
         this.columna = columna;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
@@ -3385,7 +3358,7 @@ class Push {
 }
 exports.Push = Push;
 
-},{"../AST/Excepcion":3}],43:[function(require,module,exports){
+},{"../AST/Excepcion":4}],45:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Raiz = void 0;
@@ -3398,6 +3371,9 @@ class Raiz {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.DOUBLE;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3407,7 +3383,7 @@ class Raiz {
 }
 exports.Raiz = Raiz;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],44:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],46:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SString = void 0;
@@ -3420,6 +3396,9 @@ class SString {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.STRING;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3431,7 +3410,7 @@ class SString {
 }
 exports.SString = SString;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],45:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Seno = void 0;
@@ -3444,6 +3423,9 @@ class Seno {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.DOUBLE;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3453,7 +3435,7 @@ class Seno {
 }
 exports.Seno = Seno;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],46:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],48:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubString = void 0;
@@ -3467,6 +3449,9 @@ class SubString {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.STRING;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
@@ -3483,7 +3468,7 @@ class SubString {
 }
 exports.SubString = SubString;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],47:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],49:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Tangente = void 0;
@@ -3496,6 +3481,9 @@ class Tangente {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.DOUBLE;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3505,7 +3493,7 @@ class Tangente {
 }
 exports.Tangente = Tangente;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],48:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],50:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToDouble = void 0;
@@ -3518,6 +3506,9 @@ class ToDouble {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.DOUBLE;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3529,7 +3520,7 @@ class ToDouble {
 }
 exports.ToDouble = ToDouble;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],49:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],51:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToInt = void 0;
@@ -3542,6 +3533,9 @@ class ToInt {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.INT;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)
@@ -3553,7 +3547,7 @@ class ToInt {
 }
 exports.ToInt = ToInt;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],50:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],52:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToLowerCase = void 0;
@@ -3566,6 +3560,9 @@ class ToLowerCase {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.STRING;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
         if (expresion instanceof Excepcion_1.Excepcion)
@@ -3577,7 +3574,7 @@ class ToLowerCase {
 }
 exports.ToLowerCase = ToLowerCase;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],51:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],53:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToUpperCase = void 0;
@@ -3590,6 +3587,9 @@ class ToUpperCase {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.STRING;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
         if (expresion instanceof Excepcion_1.Excepcion)
@@ -3601,7 +3601,7 @@ class ToUpperCase {
 }
 exports.ToUpperCase = ToUpperCase;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],52:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],54:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypeOf = void 0;
@@ -3613,6 +3613,9 @@ class TypeOf {
         this.fila = fila;
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.STRING;
+    }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
     }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
@@ -3643,7 +3646,7 @@ class TypeOf {
 }
 exports.TypeOf = TypeOf;
 
-},{"../AST/Excepcion":3,"../AST/Tipo":5}],53:[function(require,module,exports){
+},{"../AST/Excepcion":4,"../AST/Tipo":6}],55:[function(require,module,exports){
 (function (process){(function (){
 /* parser generated by jison 0.4.18 */
 /*
@@ -4892,11 +4895,7 @@ if (typeof module !== 'undefined' && require.main === module) {
 }
 }
 }).call(this)}).call(this,require('_process'))
-<<<<<<< Updated upstream
-},{"./AST/Tipo":5,"./Expresiones/AccesoArreglo":6,"./Expresiones/Aritmetica":7,"./Expresiones/Identificador":8,"./Expresiones/Logica":9,"./Expresiones/Primitivos":10,"./Expresiones/Relacional":11,"./Instrucciones/Asignacion":12,"./Instrucciones/Asignacion_atributo":13,"./Instrucciones/Break":14,"./Instrucciones/Case":15,"./Instrucciones/Continue":16,"./Instrucciones/Declaracion":17,"./Instrucciones/Declaracion_atributo":18,"./Instrucciones/Default":19,"./Instrucciones/DoW":20,"./Instrucciones/For":21,"./Instrucciones/ForIn":22,"./Instrucciones/Funcion":23,"./Instrucciones/If":24,"./Instrucciones/Imprimir":25,"./Instrucciones/Llamada":26,"./Instrucciones/Main":27,"./Instrucciones/ModificarArreglo":28,"./Instrucciones/Return":29,"./Instrucciones/Switch":30,"./Instrucciones/inc_dec":31,"./Instrucciones/llamada_struct":32,"./Instrucciones/struct":33,"./Instrucciones/while":34,"./Nativas/Caracter":35,"./Nativas/Coseno":36,"./Nativas/Length":37,"./Nativas/Log":38,"./Nativas/Parse":39,"./Nativas/Pop":40,"./Nativas/Pow":41,"./Nativas/Push":42,"./Nativas/Raiz":43,"./Nativas/SString":44,"./Nativas/Seno":45,"./Nativas/SubString":46,"./Nativas/Tangente":47,"./Nativas/ToDouble":48,"./Nativas/ToInt":49,"./Nativas/ToLowerCase":50,"./Nativas/ToUpperCase":51,"./Nativas/TypeOf":52,"_process":57,"fs":55,"path":56}],54:[function(require,module,exports){
-=======
-},{"./AST/Tipo":6,"./Expresiones/AccesoArreglo":8,"./Expresiones/Aritmetica":9,"./Expresiones/Identificador":10,"./Expresiones/Logica":11,"./Expresiones/Primitivos":12,"./Expresiones/Relacional":13,"./Instrucciones/Asignacion":14,"./Instrucciones/Asignacion_atributo":15,"./Instrucciones/Break":16,"./Instrucciones/Case":17,"./Instrucciones/Declaracion":18,"./Instrucciones/Declaracion_atributo":19,"./Instrucciones/Default":20,"./Instrucciones/DoW":21,"./Instrucciones/For":22,"./Instrucciones/Funcion":23,"./Instrucciones/If":24,"./Instrucciones/Imprimir":25,"./Instrucciones/Llamada":26,"./Instrucciones/Main":27,"./Instrucciones/ModificarArreglo":28,"./Instrucciones/Return":29,"./Instrucciones/Switch":30,"./Instrucciones/inc_dec":31,"./Instrucciones/llamada_struct":32,"./Instrucciones/struct":33,"./Instrucciones/while":34,"_process":39,"fs":37,"path":38}],36:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"./AST/Tipo":6,"./Expresiones/AccesoArreglo":8,"./Expresiones/Aritmetica":9,"./Expresiones/Identificador":10,"./Expresiones/Logica":11,"./Expresiones/Primitivos":12,"./Expresiones/Relacional":13,"./Instrucciones/Asignacion":14,"./Instrucciones/Asignacion_atributo":15,"./Instrucciones/Break":16,"./Instrucciones/Case":17,"./Instrucciones/Continue":18,"./Instrucciones/Declaracion":19,"./Instrucciones/Declaracion_atributo":20,"./Instrucciones/Default":21,"./Instrucciones/DoW":22,"./Instrucciones/For":23,"./Instrucciones/ForIn":24,"./Instrucciones/Funcion":25,"./Instrucciones/If":26,"./Instrucciones/Imprimir":27,"./Instrucciones/Llamada":28,"./Instrucciones/Main":29,"./Instrucciones/ModificarArreglo":30,"./Instrucciones/Return":31,"./Instrucciones/Switch":32,"./Instrucciones/inc_dec":33,"./Instrucciones/llamada_struct":34,"./Instrucciones/struct":35,"./Instrucciones/while":36,"./Nativas/Caracter":37,"./Nativas/Coseno":38,"./Nativas/Length":39,"./Nativas/Log":40,"./Nativas/Parse":41,"./Nativas/Pop":42,"./Nativas/Pow":43,"./Nativas/Push":44,"./Nativas/Raiz":45,"./Nativas/SString":46,"./Nativas/Seno":47,"./Nativas/SubString":48,"./Nativas/Tangente":49,"./Nativas/ToDouble":50,"./Nativas/ToInt":51,"./Nativas/ToLowerCase":52,"./Nativas/ToUpperCase":53,"./Nativas/TypeOf":54,"_process":59,"fs":57,"path":58}],56:[function(require,module,exports){
 const { AST } = require("./JS/AST/AST");
 const { Entorno } = require("./JS/AST/Entorno");
 const { Excepcion } = require("./JS/AST/Excepcion");
@@ -5007,24 +5006,10 @@ function displayDate() {
         }
     }
 
-    console.log(ast.getConsola());
+    //console.log(ast.getConsola());
+    document.getElementById("editorSalida").value  =ast.getConsola();
 }
 
-<<<<<<< Updated upstream
-// function numeracion(e) {
-//     let eArea = document.getElementById('areaNumeracion');
-//     let eArea2 = document.getElementById('txCodigo');
-//     let numeros = eArea2.value.split("\n").length;
-//     let msj="";
-//     for (let i = 0; i < numeros; i++) {
-//         msj += i + "\n";
-//     }
-//     eArea.value=msj;
-// }
-},{"./JS/AST/AST":1,"./JS/AST/Entorno":2,"./JS/AST/Excepcion":3,"./JS/Instrucciones/Asignacion":12,"./JS/Instrucciones/Declaracion":17,"./JS/Instrucciones/Funcion":23,"./JS/Instrucciones/Imprimir":25,"./JS/Instrucciones/Main":27,"./JS/Instrucciones/ModificarArreglo":28,"./JS/Instrucciones/struct":33,"./JS/gramatica":53}],55:[function(require,module,exports){
-
-},{}],56:[function(require,module,exports){
-=======
 /* function numeracion(e) {
     let eArea = document.getElementById('areaNumeracion');
      let eArea2 = document.getElementById('txCodigo');
@@ -5046,10 +5031,9 @@ function displayDate() {
      }
      eArea.value=msj;
  }*/
-},{"./JS/AST/AST":1,"./JS/AST/Entorno":3,"./JS/AST/Excepcion":4,"./JS/Instrucciones/Asignacion":14,"./JS/Instrucciones/Declaracion":18,"./JS/Instrucciones/Funcion":23,"./JS/Instrucciones/Imprimir":25,"./JS/Instrucciones/Main":27,"./JS/Instrucciones/ModificarArreglo":28,"./JS/Instrucciones/struct":33,"./JS/gramatica":35}],37:[function(require,module,exports){
+},{"./JS/AST/AST":1,"./JS/AST/Entorno":3,"./JS/AST/Excepcion":4,"./JS/Instrucciones/Asignacion":14,"./JS/Instrucciones/Declaracion":19,"./JS/Instrucciones/Funcion":25,"./JS/Instrucciones/Imprimir":27,"./JS/Instrucciones/Main":29,"./JS/Instrucciones/ModificarArreglo":30,"./JS/Instrucciones/struct":35,"./JS/gramatica":55}],57:[function(require,module,exports){
 
-},{}],38:[function(require,module,exports){
->>>>>>> Stashed changes
+},{}],58:[function(require,module,exports){
 (function (process){(function (){
 // 'path' module extracted from Node.js v8.11.1 (only the posix part)
 // transplited with Babel
@@ -5582,11 +5566,7 @@ posix.posix = posix;
 module.exports = posix;
 
 }).call(this)}).call(this,require('_process'))
-<<<<<<< Updated upstream
-},{"_process":57}],57:[function(require,module,exports){
-=======
-},{"_process":39}],39:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"_process":59}],59:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -5772,9 +5752,5 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-<<<<<<< Updated upstream
-},{}]},{},[54])(54)
-=======
-},{}]},{},[36])(36)
->>>>>>> Stashed changes
+},{}]},{},[56])(56)
 });

@@ -194,6 +194,8 @@ class AST {
         let funciones = this.getListaFunciones3D();
         return funciones + main;
     }
+    getFunciones3D() {
+    }
     getValueByTemporal(temporal) {
         let value;
         this.temporalesAux.forEach(element => {

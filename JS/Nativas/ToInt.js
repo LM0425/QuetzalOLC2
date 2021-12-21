@@ -10,6 +10,9 @@ class ToInt {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.INT;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);
         if (valor instanceof Excepcion_1.Excepcion)

@@ -11,6 +11,9 @@ class Caracter {
         this.columna = columna;
         this.tipo = Tipo_1.Tipo.CHAR;
     }
+    traducir(tree, table) {
+        throw new Error("Method not implemented.");
+    }
     interpretar(tree, table) {
         let expresion = this.expresion.interpretar(tree, table);
         if (expresion instanceof Excepcion_1.Excepcion)
