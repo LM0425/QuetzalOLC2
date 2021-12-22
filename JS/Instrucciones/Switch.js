@@ -51,7 +51,7 @@ class Switch {
             texto3d += element.traducir(tree, table);
         }
         texto3d += "\n" + etiquetaSalida + ":\n";
-        console.log(texto3d);
+        //console.log(texto3d);
         return texto3d;
     }
     interpretar(tree, table) {

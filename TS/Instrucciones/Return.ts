@@ -20,7 +20,9 @@ export class Return implements Instruccion {
     }
     
     traducir(tree: AST, table: Entorno) {
-        throw new Error("Method not implemented.");
+        let lista=tree.getListaTemporalClase();
+        let valor=this.expresion.traducir(tree,table);
+        return lista+"\n"+valor;
     }
 
     interpretar(tree: AST, table: Entorno) {

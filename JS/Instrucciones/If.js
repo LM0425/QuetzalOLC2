@@ -63,8 +63,8 @@ class If {
             console.log('la traducion es: ',this.elseIf.traducir(tree,table))
 
         } */
-        console.log(lista + "\n" + instrucion);
-        return lista + "\n" + instrucion;
+        //console.log(lista+"\n" + instrucion);
+        return "\n//---------------------IF\n" + lista + "\n" + instrucion;
         //console.log('la lista de instrucciones es: ',texto3dVerdadero);
     }
     interpretar(tree, table) {

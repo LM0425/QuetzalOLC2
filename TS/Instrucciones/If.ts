@@ -74,8 +74,8 @@ export class If implements Instruccion {
 
         } */
         
-        console.log(lista+"\n" + instrucion);
-        return lista+"\n" + instrucion;
+        //console.log(lista+"\n" + instrucion);
+        return "\n//---------------------IF\n"+lista+"\n" + instrucion;
         //console.log('la lista de instrucciones es: ',texto3dVerdadero);
     }
 

@@ -3,6 +3,8 @@ import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
+import {  TemporalAux } from "../AST/temporalAux";
+import { Tipo } from "../AST/Tipo";
 
 export class Main implements Instruccion{
 
@@ -16,7 +18,32 @@ export class Main implements Instruccion{
         this.columna = columna;
     }
     traducir(tree: AST, table: Entorno) {
-        throw new Error("Method not implemented.");
+        let texto3d="";//"\n//-----------------Funcion "+this.nombre+"\n"
+        let instrucciones="";
+        //let cantidadParametros=this.parametros.length;
+        
+
+        //let id:any=this.nombre;
+
+        
+
+        let apuntador=tree.getApuntadorStack().toString();
+        tree.addStack(0);
+        
+        let temporalAux = new TemporalAux("main",Tipo.VOID,this.fila,this.columna,apuntador);
+        tree.addTabla(temporalAux);
+
+
+        for (let instruccion of this.instrucciones) {
+            let value = instruccion.traducir(tree, table);
+            instrucciones+=value;
+        }
+
+        texto3d+=tree.setMain(instrucciones);
+
+        //console.log(texto3d);
+       
+
     }
 
     interpretar(tree: AST, table: Entorno) {

@@ -5,6 +5,7 @@ import { Excepcion } from "./Excepcion";
 import { Struct } from "../Instrucciones/struct";
 import { TemporalAux } from "./temporalAux";
 import { Case3d } from "./Case3d";
+import {Tipo} from "./Tipo"
 
 export class AST {
     instrucciones: Array<Instruccion>
@@ -31,6 +32,7 @@ export class AST {
     casos:Array<Case3d>
 
     funciones3D:Array<String>;
+    main3D:String;
 
 
 
@@ -58,6 +60,7 @@ export class AST {
         this.casos=[];
 
         this.funciones3D=[];
+        this.main3D="";
 
 
     }
@@ -243,6 +246,14 @@ export class AST {
         return tipo;
     }
 
+    actualizarValorTabla(identificador,nuevoValor){
+        this.tabla.forEach(element => {
+            if (element.indentificador===identificador) {
+                element.valor=nuevoValor
+            }
+        });
+    }
+
     addTemporalClase(valor:TemporalAux){
         this.temporalesAux.push(valor);
     }
@@ -288,14 +299,25 @@ export class AST {
         return "\n"+cadena+";";
     }
 
-    getMain(instrucciones){
-        let main="\n\n/*------MAIN------*/\nvoid main() {\n"+instrucciones+"return;\n}";
-        let funciones=this.getListaFunciones3D();
-        return funciones+main;
+
+    setMain(propias){
+        this.main3D=propias;
+        //this.main3D="\n\n/*------MAIN------*/\nvoid main() {\nP = 0; H = 0;\n"+ins+"return;\n}";
+        
+        return this.main3D;
+    }
+
+
+
+    getMain(){
+       
+        
+        return this.main3D;
     }
 
     getFunciones3D(){
-        
+        let funciones=this.getListaFunciones3D();
+        return funciones;
     }
 
     getValueByTemporal(temporal){
@@ -420,6 +442,44 @@ export class AST {
             
         }
         
+    }
+
+    getTipoString(tipo){
+        let convertido="";
+        if (tipo===Tipo.ARRAY) {
+            convertido="Array"
+        }else if (tipo==Tipo.BOOL) {
+            convertido="Bool"
+        }else if (tipo==Tipo.CHAR) {
+            convertido="Char"
+        }else if (tipo==Tipo.DOUBLE) {
+            convertido="Dobule"
+        }else if (tipo==Tipo.INT) {
+            convertido="int"
+        }else if (tipo==Tipo.STRING) {
+            convertido="String"
+        }else if (tipo==Tipo.STRUCT) {
+            convertido="Sruct"
+        }else if (tipo==Tipo.VOID) {
+            convertido="Void"
+        }
+
+        return convertido;
+    }
+
+
+    reporteTabla(){
+        let data ="<H1> REPORTE TABLA DE SIMBOLOS </H1> \n";
+        data+="<br>\n";
+        data += "<table WIDTH=\"70%\" border='1'style='margin: 0 auto;'>\n";
+        data+= "<tr>\n" + "<td>" + "Identificador" + "</td>"+ "<td>" + "Posicion Stack" + "</td>"+ "<td>" + "Tipo" + "</td>"+ "<td>" + "Fila" + "</td>"+ "<td>" + "Columna" + "</td>\n";
+        data+= "</tr>\n";
+        this.tabla.forEach(element => {
+            data+= "<tr>\n" + "<td>"+ element.indentificador + "</td>"+ "<td>"+ element.valor + "</td>"+ "<td>"+ this.getTipoString(element.tipo) + "</td>"+ "<td>"+ element.fila + "</td>"+ "<td>"+ element.columna + "</td>\n"
+			data+= "</tr>\n"
+        });
+        data+="</table>\n"
+        return data;
     }
 
 

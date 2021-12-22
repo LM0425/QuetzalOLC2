@@ -4,6 +4,7 @@ exports.Coseno = void 0;
 const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
+const temporalAux_1 = require("../AST/temporalAux");
 class Coseno {
     constructor(valor, fila, columna) {
         this.valor = valor;
@@ -12,7 +13,15 @@ class Coseno {
         this.tipo = Tipo_1.Tipo.DOUBLE;
     }
     traducir(tree, table) {
-        throw new Error("Method not implemented.");
+        var izq = this.valor.traducir(tree, table);
+        if (izq instanceof Excepcion_1.Excepcion)
+            return izq;
+        let temporal = tree.generarTemporal();
+        //let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
+        //tree.updateConsola(texto3d);
+        let temporalAux = new temporalAux_1.TemporalAux(temporal, Tipo_1.Tipo.INT, this.fila, this.columna, "cos(" + izq + ")");
+        tree.addTemporalClase(temporalAux);
+        return temporal;
     }
     interpretar(tree, table) {
         let valor = this.valor.interpretar(tree, table);

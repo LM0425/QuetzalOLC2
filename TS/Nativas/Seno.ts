@@ -4,6 +4,7 @@ import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { Tipo } from "../AST/Tipo";
+import {  TemporalAux } from "../AST/temporalAux";
 
 export class Seno implements Instruccion {
 
@@ -19,7 +20,15 @@ export class Seno implements Instruccion {
         this.tipo = Tipo.DOUBLE;
     }
     traducir(tree: AST, table: Entorno) {
-        throw new Error("Method not implemented.");
+        var izq = this.valor.traducir(tree, table);
+        if(izq instanceof Excepcion) return izq;
+
+        let temporal =tree.generarTemporal()
+        //let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
+        //tree.updateConsola(texto3d);
+        let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"sin("+izq+")");
+        tree.addTemporalClase(temporalAux);
+        return temporal;
     }
 
     interpretar(tree: AST, table: Entorno) {

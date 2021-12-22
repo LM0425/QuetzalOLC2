@@ -4,6 +4,7 @@ import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { Tipo } from "../AST/Tipo";
+import {  TemporalAux } from "../AST/temporalAux";
 
 export class Pow implements Instruccion {
 
@@ -21,7 +22,19 @@ export class Pow implements Instruccion {
         this.tipo = Tipo.INT;
     }
     traducir(tree: AST, table: Entorno) {
-        throw new Error("Method not implemented.");
+        var izq = this.base.traducir(tree, table);
+        if(izq instanceof Excepcion) return izq;
+        if(this.exponente !== null){
+            var der = this.exponente.traducir(tree, table);
+            if(der instanceof Excepcion) return der;
+        }
+       
+        let temporal =tree.generarTemporal()
+        //let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
+        //tree.updateConsola(texto3d);
+        let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"pow("+izq+","+der+")");
+        tree.addTemporalClase(temporalAux);
+        return temporal;
     }
 
     interpretar(tree: AST, table: Entorno) {

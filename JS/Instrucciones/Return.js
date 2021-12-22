@@ -11,7 +11,9 @@ class Return {
         this.columna = columna;
     }
     traducir(tree, table) {
-        throw new Error("Method not implemented.");
+        let lista = tree.getListaTemporalClase();
+        let valor = this.expresion.traducir(tree, table);
+        return lista + "\n" + valor;
     }
     interpretar(tree, table) {
         if (this.expresion !== null) {

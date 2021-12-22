@@ -42,7 +42,7 @@ export class Funcion implements Instruccion {
 
         this.parametros.forEach(element => {
             if (element["arreglo"]===false) {
-                console.log("no es un array")
+                //console.log("no es un array")
                 //validacion de tipo
                 let apuntador=tree.getApuntadorStack().toString();
                 //texto3d+=tree.generarInstruccion("stack[(int)"+apuntador+"] = "+0);
@@ -50,7 +50,7 @@ export class Funcion implements Instruccion {
                 let temporalAux = new TemporalAux(element["identificador"],this.tipo,this.fila,this.columna,apuntador);
                 tree.addTabla(temporalAux);
             } else {
-                console.log("SI es un array")
+                //console.log("SI es un array")
             }
             
         });
@@ -58,11 +58,12 @@ export class Funcion implements Instruccion {
         for (let instruccion of this.instrucciones) {
             let value = instruccion.traducir(tree, table);
             instrucciones+=value;
+            //console.log("el valor es: ",instruccion)
         }
 
         texto3d+="\nvoid "+id+"(){\n"+instrucciones+"\n}\n"
 
-        console.log(texto3d);
+        //console.log(texto3d);
         tree.addFuncion3D(texto3d);
 
     }

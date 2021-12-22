@@ -21,24 +21,82 @@ class Declaracion {
         //console.log('la expresion es: ',this.expresion);
         /* console.log('la el tipo: ',this.tipo); */
         if (this.decArreglo === true) {
+            if (this.porReferencia) {
+            }
+            else if (this.copia) {
+            }
+            else {
+                let tamanio = this.expresion.valor.length;
+                //console.log("el tamaño es: ",tamanio);
+                let posHeap = tree.getApuntadorHeap();
+                let temporal0 = tree.generarTemporal();
+                let texto3d = "\n//-----------Array\n";
+                let posStack = tree.getApuntadorStack();
+                texto3d += tree.generarInstruccion("P = " + posStack); //0
+                texto3d += tree.generarInstruccion("H = " + posHeap); //0
+                texto3d += tree.generarInstruccion(temporal0 + " = H"); //t0=0
+                let temporal1 = tree.generarTemporal();
+                //texto3d+=tree.generarInstruccion("H = H + "+tamanio);//H=2
+                texto3d += tree.generarInstruccion("stack[(int)" + posStack + "] = " + temporal0); //stak(0)=0
+                tree.addStack(posHeap);
+                let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], Tipo_1.Tipo.ARRAY, this.fila, this.columna, posHeap.toString());
+                tree.addTabla(temporalAux);
+                texto3d += tree.generarInstruccion(temporal1 + " = " + temporal0); //t1=0
+                let aux = tamanio;
+                if (this.tipo === Tipo_1.Tipo.INT) {
+                    for (let i = 0; i < tamanio; i++) {
+                        tree.addHeap(aux);
+                        texto3d += tree.generarInstruccion("heap[(int)" + temporal1 + "] = " + aux); //heap(0)=2----heap(1)=3
+                        texto3d += tree.generarInstruccion("H = H + 1"); //H=3----H=4
+                        texto3d += tree.generarInstruccion(temporal1 + " = " + temporal1 + " + 1"); //t1=1---T1=2  
+                        aux++;
+                    }
+                    this.expresion.valor.forEach(element => {
+                        let valor = element.traducir(tree, table);
+                        //console.log("el valor es: ", valor)
+                        tree.addHeap(valor);
+                        //texto3d+=tree.generarInstruccion(temporal1+" = "+temporal0);//t1=2
+                        texto3d += tree.generarInstruccion("heap[(int)" + temporal1 + "] = " + valor); //heap(0)=2----heap(1)=3
+                        texto3d += tree.generarInstruccion("H = H + 1"); //H=3----H=4
+                        texto3d += tree.generarInstruccion(temporal1 + " = " + temporal1 + " + 1"); //t1=1---T1=2  
+                    });
+                    //console.log(texto3d)
+                    /* console.log("la tabla es: ",tree.getTabla());
+                    console.log("stack: ",tree.getStack());
+                    console.log("heap :", tree.getHeap()); */
+                    return (texto3d);
+                }
+            }
         }
         else {
             if (this.expresion != null) {
                 if (this.tipo === Tipo_1.Tipo.INT || this.tipo === Tipo_1.Tipo.DOUBLE) {
-                    if (this.expresion.valor || this.expresion.valor === 0) {
-                        //console.log("se fue para int con valor")
+                    if (this.expresion.valor || this.expresion.valor === 0 && this.expresion.valor != Object) {
                         let value = this.expresion.traducir(tree, table);
                         if (value instanceof Excepcion_1.Excepcion)
                             return value;
+                        //console.log("se fue para int con valor",value)
                         //let temporal=tree.getUltimoTemporal();
                         let apuntador = tree.getApuntadorStack().toString();
-                        let texto3d = tree.generarInstruccion("stack[(int)" + apuntador + "] = " + this.expresion.valor);
-                        tree.addStack(this.expresion.valor);
+                        let texto3d = "";
+                        //console.log("se fue la object",this.expresion.valor.identificador,value);
+                        if (this.expresion.valor.identificador) {
+                            console.log("se fue al if del valor", this.expresion.valor);
+                            texto3d = tree.generarInstruccion("stack[(int)" + apuntador + "] = " + value);
+                            tree.addStack(this.expresion.valor);
+                        }
+                        else {
+                            console.log("se fue al else del valor");
+                            texto3d = tree.generarInstruccion("stack[(int)" + apuntador + "] = " + this.expresion.valor);
+                            tree.addStack(this.expresion.valor);
+                        }
+                        //tree.addStack(this.expresion.valor);
                         let temporalAux = new temporalAux_1.TemporalAux(this.identificador[0], this.tipo, this.fila, this.columna, apuntador);
                         tree.addTabla(temporalAux);
                         let lista = tree.getListaTemporalClase();
                         console.log(texto3d + "\n");
-                        return "\n//-------------------------Declaracion\n" + texto3d + "\n";
+                        tree.limpiartemporalClase();
+                        return "\n//-------------------------Declaracion\n" + lista + texto3d + "\n";
                     }
                     else {
                         //console.log("se fue para int sen valor")

@@ -17,15 +17,20 @@ class Asignacion {
         let texto3d = "";
         let lista = tree.getListaTemporalClase();
         let posStack = tree.getValorTablaByIdentificador(this.identificador);
-        let value = tree.getValorPosStack(posStack).toString();
+        //let value=tree.getValorPosStack(posStack).toString()
         if (this.expresion.valor) {
             texto3d = tree.generarInstruccion("stack[(int)" + posStack + "] = " + this.expresion.valor);
         }
         else {
-            texto3d = tree.generarInstruccion("stack[(int)" + posStack + "] = " + valor);
+            if (valor) {
+                texto3d = tree.generarInstruccion("stack[(int)" + posStack + "] = " + valor);
+            }
+            else {
+                console.log("ERROR: no existe el valor|variable ");
+            }
         }
         tree.limpiartemporalClase();
-        console.log(lista + texto3d);
+        //console.log(lista + texto3d)
         return "\n//-------------------Asignacion\n" + lista + texto3d;
     }
     interpretar(tree, table) {

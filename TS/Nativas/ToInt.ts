@@ -4,6 +4,7 @@ import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { Tipo } from "../AST/Tipo";
+import {  TemporalAux } from "../AST/temporalAux";
 
 export class ToInt implements Instruccion {
 
@@ -19,7 +20,25 @@ export class ToInt implements Instruccion {
         this.tipo = Tipo.INT;
     }
     traducir(tree: AST, table: Entorno) {
-        throw new Error("Method not implemented.");
+        console.log("la tabla: ", tree.getTabla())
+        console.log("el stack es ",tree.getStack())
+        var izq = this.valor.traducir(tree, table);
+        if(izq instanceof Excepcion) return izq;
+        let posStack=tree.getValorTablaByIdentificador(izq);
+        let temporal=tree.generarTemporal();
+        let value=tree.getValorPosStack(posStack).toString()
+        console.log("el valor es ", value);
+        let nuevoValor="";//Math.trunc(Number(value));
+        if (Math.trunc(Number(value))) {
+            nuevoValor=Math.trunc(Number(value)).toString();
+            
+        }else{
+            nuevoValor=value;
+        }
+        console.log("el nuevo valor es ", nuevoValor);
+        let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,nuevoValor);
+        tree.addTemporalClase(temporalAux);
+        return temporal;
     }
 
     interpretar(tree: AST, table: Entorno) {

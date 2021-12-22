@@ -21,14 +21,15 @@ class Imprimir {
                 //console.log("la tabal tiene:",tree.getTabla());
                 console.log("la impresion lleva: ", imprimir['expresion']);
                 let tipo = tree.getTipoTablaByIdentificador(imprimir['expresion'].identificador);
+                //console.log("el tipo es: ",tipo)
                 if (tipo === Tipo_1.Tipo.INT || tipo === Tipo_1.Tipo.DOUBLE) {
                     let value = tree.getValorTablaByIdentificador(imprimir['expresion'].identificador);
                     //console.log('el valor es: ',value);
                     let nuevoTemporal = tree.generarTemporal();
                     let texto3d = tree.generarInstruccion(nuevoTemporal + " = stack[(int)" + value + "]");
                     texto3d += tree.generarInstruccion("printf(\"%f\", (double)" + nuevoTemporal + ")");
-                    texto3d += tree.generarInstruccion("printf(\"%c\", (char)10)");
-                    textoFinal = "\n" + texto3d + "\n";
+                    //texto3d+=tree.generarInstruccion("printf(\"%c\", (char)10)");
+                    textoFinal += "\n" + texto3d + "\n";
                     /* tree.updateConsola(texto3d);
                     tree.updateConsola("\n"); */
                     //console.log(texto3d+"\n");
@@ -39,21 +40,52 @@ class Imprimir {
                     console.log("heap", tree.getHeap());
                     let texto3d = tree.getPrintString(imprimir['expresion'].identificador);
                     //console.log(texto3d+"\n");
-                    textoFinal = texto3d + "\n";
+                    textoFinal += texto3d + "\n";
                 }
                 else {
-                    /* let izq=imprimir['expresion'].opIzquierdo.traducir(tree,table);
-                    let der=imprimir['expresion'].opDerecho.traducir(tree,table);
-                    console.log(lista+"\n"+izq+"\n"+der) */
-                    let expre = imprimir['expresion'].traducir(tree, table);
-                    let lista = tree.getListaTemporalClase();
-                    let texto3d = "printf(\"%f\", (double)" + expre + ");\nprintf(\"%c\", (char)10);\n";
-                    //console.log(lista+"\n"+texto3d);
-                    textoFinal = lista + "\n" + texto3d;
+                    if (imprimir['expresion'].tipo === Tipo_1.Tipo.STRING) {
+                        let lista = tree.getListaTemporalClase();
+                        let temporal = tree.generarTemporal();
+                        let texto3d = tree.generarInstruccion(temporal + " = H");
+                        let apuntadorHeap = tree.getApuntadorHeap();
+                        for (let i = 0; i < imprimir['expresion'].valor.length; i++) {
+                            const element = imprimir['expresion'].valor[i];
+                            let value = element.charCodeAt(0);
+                            tree.addHeap(value);
+                            texto3d += tree.generarInstruccion("heap[(int)H] = " + value);
+                            texto3d += tree.generarInstruccion('H = H + 1');
+                        }
+                        tree.addHeap(-1);
+                        texto3d += tree.generarInstruccion("heap[(int)H] = -1");
+                        texto3d += tree.generarInstruccion('H = H + 1');
+                        //textoFinal= texto3d+"\n"
+                        let temporalS = tree.generarTemporal();
+                        texto3d += tree.generarInstruccion(temporalS + " = " + apuntadorHeap);
+                        let etiquetaEntrada = tree.generarEtiquetas();
+                        let etiquetaRegreso = tree.generarEtiquetas();
+                        texto3d += "\n" + etiquetaRegreso + ":";
+                        let temporalH = tree.generarTemporal();
+                        texto3d += tree.generarInstruccion(temporalH + " = heap[(int)" + temporalS + "]");
+                        texto3d += tree.generarInstruccion("if(" + temporalH + " == -1) goto " + etiquetaEntrada);
+                        texto3d += tree.generarInstruccion("printf(\"%c\", (char)" + temporalH + ")");
+                        texto3d += tree.generarInstruccion(temporalS + " = " + temporalS + "+1");
+                        texto3d += "\ngoto " + etiquetaRegreso + ";\n" + etiquetaEntrada + ":\n";
+                        textoFinal += lista + "\n" + texto3d;
+                    }
+                    else {
+                        let expre = imprimir['expresion'].traducir(tree, table);
+                        let lista = tree.getListaTemporalClase();
+                        let texto3d = "printf(\"%f\", (double)" + expre + ");"; //\nprintf(\"%c\", (char)10);\n"
+                        //console.log(lista+"\n"+texto3d);
+                        textoFinal += lista + "\n" + texto3d;
+                    }
                 }
             }
             else {
             }
+        }
+        if (this.salto === true) {
+            textoFinal += tree.generarInstruccion("printf(\"%c\", (char)10)");
         }
         console.log(textoFinal);
         return textoFinal;

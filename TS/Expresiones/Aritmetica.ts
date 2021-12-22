@@ -31,198 +31,203 @@ export class Aritmetica implements Instruccion {
             var der = this.opDerecho.traducir(tree, table);
             if(der instanceof Excepcion) return der;
         }
-
-        if (this.operador === OperadorAritmetico.MAS) {
-            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStack+"]+"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(der);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"+"+"stack[(int)"+posStack+"]");
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
-                let posStackIzq=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let valueIzq=tree.getValorPosStack(posStackIzq).toString()
-
-                let posStackDer=tree.getValorTablaByIdentificador(der);
-                let valueDer=tree.getValorPosStack(posStackDer).toString()
-
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStackIzq+"]+"+"stack[(int)"+posStackDer+"]");
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-
-
-            }else{
-                let temporal =tree.generarTemporal()
-                let texto3d= tree.generarInstruccion(temporal+"="+izq+"+"+der);
-                //tree.updateConsola(texto3d);
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"+"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }
-            
+        try {
+            if (this.operador === OperadorAritmetico.MAS) {
+                if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStack+"]+"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(der);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"+"+"stack[(int)"+posStack+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
+                    let posStackIzq=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let valueIzq=tree.getValorPosStack(posStackIzq).toString()
+    
+                    let posStackDer=tree.getValorTablaByIdentificador(der);
+                    let valueDer=tree.getValorPosStack(posStackDer).toString()
+    
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStackIzq+"]+"+"stack[(int)"+posStackDer+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+    
+    
+                }else{
+                    let temporal =tree.generarTemporal()
+                    let texto3d= tree.generarInstruccion(temporal+"="+izq+"+"+der);
+                    //tree.updateConsola(texto3d);
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"+"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }
                 
-        }else if (this.operador === OperadorAritmetico.MENOS) {
-            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,value+"-"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(der);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"-"+value);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
-                let posStackIzq=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let valueIzq=tree.getValorPosStack(posStackIzq).toString()
-
-                let posStackDer=tree.getValorTablaByIdentificador(der);
-                let valueDer=tree.getValorPosStack(posStackDer).toString()
-
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,valueIzq+"-"+valueDer);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-
-
-            }else{
-                let temporal =tree.generarTemporal()
-                let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
-                //tree.updateConsola(texto3d);
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"-"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }
-            
+                    
+            }else if (this.operador === OperadorAritmetico.MENOS) {
+                if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStack+"]-"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(der);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"-"+"stack[(int)"+posStack+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
+                    let posStackIzq=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let valueIzq=tree.getValorPosStack(posStackIzq).toString()
+    
+                    let posStackDer=tree.getValorTablaByIdentificador(der);
+                    let valueDer=tree.getValorPosStack(posStackDer).toString()
+    
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStackIzq+"]-"+"stack[(int)"+posStackDer+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+    
+    
+                }else{
+                    let temporal =tree.generarTemporal()
+                    let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
+                    //tree.updateConsola(texto3d);
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"-"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }
                 
-        }else if (this.operador === OperadorAritmetico.POR) {
-            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,value+"*"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(der);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"*"+value);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
-                let posStackIzq=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let valueIzq=tree.getValorPosStack(posStackIzq).toString()
-
-                let posStackDer=tree.getValorTablaByIdentificador(der);
-                let valueDer=tree.getValorPosStack(posStackDer).toString()
-
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,valueIzq+"*"+valueDer);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-
-
-            }else{
-                let temporal =tree.generarTemporal()
-                let texto3d= tree.generarInstruccion(temporal+"="+izq+"*"+der);
-                //tree.updateConsola(texto3d);
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"*"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }
-            
+                    
+            }else if (this.operador === OperadorAritmetico.POR) {
+                if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStack+"]*"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(der);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"*"+"stack[(int)"+posStack+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
+                    let posStackIzq=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let valueIzq=tree.getValorPosStack(posStackIzq).toString()
+    
+                    let posStackDer=tree.getValorTablaByIdentificador(der);
+                    let valueDer=tree.getValorPosStack(posStackDer).toString()
+    
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStackIzq+"]*"+"stack[(int)"+posStackDer+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+    
+    
+                }else{
+                    let temporal =tree.generarTemporal()
+                    let texto3d= tree.generarInstruccion(temporal+"="+izq+"*"+der);
+                    //tree.updateConsola(texto3d);
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"*"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }
                 
-        }else if (this.operador === OperadorAritmetico.DIV) {
-            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,value+"/"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(der);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"/"+value);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
-                let posStackIzq=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let valueIzq=tree.getValorPosStack(posStackIzq).toString()
-
-                let posStackDer=tree.getValorTablaByIdentificador(der);
-                let valueDer=tree.getValorPosStack(posStackDer).toString()
-
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,valueIzq+"/"+valueDer);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-
-
-            }else{
-                let temporal =tree.generarTemporal()
-                let texto3d= tree.generarInstruccion(temporal+"="+izq+"/"+der);
-                //tree.updateConsola(texto3d);
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"/"+der);
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }
-            
+                    
+            }else if (this.operador === OperadorAritmetico.DIV) {
+                if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStack+"]/"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(der);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"/"+"stack[(int)"+posStack+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
+                    let posStackIzq=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let valueIzq=tree.getValorPosStack(posStackIzq).toString()
+    
+                    let posStackDer=tree.getValorTablaByIdentificador(der);
+                    let valueDer=tree.getValorPosStack(posStackDer).toString()
+    
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"stack[(int)"+posStackIzq+"]/"+"stack[(int)"+posStackDer+"]");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+    
+    
+                }else{
+                    let temporal =tree.generarTemporal()
+                    let texto3d= tree.generarInstruccion(temporal+"="+izq+"/"+der);
+                    //tree.updateConsola(texto3d);
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,izq+"/"+der);
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }
                 
-        }else if (this.operador === OperadorAritmetico.MOD) {
-            if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+value+","+der+")");
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
-                let posStack=tree.getValorTablaByIdentificador(der);
-                let temporal=tree.generarTemporal();
-                let value=tree.getValorPosStack(posStack).toString()
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+izq+","+value+")");
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
-                let posStackIzq=tree.getValorTablaByIdentificador(izq);
-                let temporal=tree.generarTemporal();
-                let valueIzq=tree.getValorPosStack(posStackIzq).toString()
-
-                let posStackDer=tree.getValorTablaByIdentificador(der);
-                let valueDer=tree.getValorPosStack(posStackDer).toString()
-
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+valueIzq+","+valueDer+")");
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-
-
-            }else{
-                let temporal =tree.generarTemporal()
-                //let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
-                //tree.updateConsola(texto3d);
-                let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+izq+","+der+")");
-                tree.addTemporalClase(temporalAux);
-                return temporal;
-            }
-            
+                    
+            }else if (this.operador === OperadorAritmetico.MOD) {
+                if (this.opIzquierdo.identificador && !this.opDerecho.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+"stack[(int)"+posStack+"]"+","+der+")");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                } else if(this.opDerecho.identificador && !this.opIzquierdo.identificador) {
+                    let posStack=tree.getValorTablaByIdentificador(der);
+                    let temporal=tree.generarTemporal();
+                    let value=tree.getValorPosStack(posStack).toString()
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+izq+","+"stack[(int)"+posStack+"]"+")");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }else if(this.opIzquierdo.identificador && this.opDerecho.identificador){
+                    let posStackIzq=tree.getValorTablaByIdentificador(izq);
+                    let temporal=tree.generarTemporal();
+                    let valueIzq=tree.getValorPosStack(posStackIzq).toString()
+    
+                    let posStackDer=tree.getValorTablaByIdentificador(der);
+                    let valueDer=tree.getValorPosStack(posStackDer).toString()
+    
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+"stack[(int)"+posStackIzq+"]"+","+"stack[(int)"+posStackDer+"]"+")");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+    
+    
+                }else{
+                    let temporal =tree.generarTemporal()
+                    //let texto3d= tree.generarInstruccion(temporal+"="+izq+"-"+der);
+                    //tree.updateConsola(texto3d);
+                    let temporalAux = new TemporalAux(temporal,Tipo.INT,this.fila,this.columna,"fmod("+izq+","+der+")");
+                    tree.addTemporalClase(temporalAux);
+                    return temporal;
+                }
                 
+                    
+            }
+        } catch (error) {
+            console.log(error);
         }
+
+        
     }
 
     interpretar(tree: AST, table: Entorno) {

@@ -14,6 +14,7 @@ const { NodoAST } = require("./JS/Abstract/NodoAST");
 
 document.getElementById("eventoAnalizar").addEventListener("click", displayDate);
 document.getElementById("eventoTraducir").addEventListener("click", traducirCodigo);
+document.getElementById("tablaTaductor").addEventListener("click", tablaTraductor);
 
 
 function traducirCodigo() {
@@ -31,22 +32,41 @@ function traducirCodigo() {
             ast.getExcepciones().push(value);
             ast.updateConsola(value.toString());
         }
-        //console.log("el valor es ",value);
+   
         instrucciones3D += value;
-        //ast.getStructs().push(value);
-        //ast.getStrut('test');
-        /*if (value instanceof Struct) {
-            ast.getStructs().push(value)
-        }*/
-    });
-    //console.log(ast.getEncabezado());
 
-    //console.log(ast.getConsola());
-    //console.log(ast.getListaTemporales());
-   /*  console.log('el encabezado es: \n',ast.getEncabezado());
-    console.log('la lista de temporales es:\n' ,ast.getListaTemporales())
-    console.log("las instrucciones son \n", instrucciones3D); */
-    document.getElementById("editorSalida").value  = ast.getEncabezado()+"\ndouble "+ast.getListaTemporales()+";\n\n"+ast.getMain(instrucciones3D);
+    });
+  
+    let main="\n\n/*------MAIN------*/\nvoid main() {\nP = 0; H = 0;\n"+instrucciones3D+"\n"+ast.getMain()+"return;\n}";
+    document.getElementById("editorSalida").value  = ast.getEncabezado()+"\ndouble "+ast.getListaTemporales()+";\n\n"+ast.getListaFunciones3D()+main;
+    
+}
+function tablaTraductor() {
+    console.log("tabla traductor");
+    var instrucciones3D = "";
+    var textoIngresado = document.getElementById('txCodigo').value;
+
+    const instrucciones = parse(textoIngresado);
+    const ast = new AST(instrucciones);
+    const entornoGlobal = new Entorno(null);
+    ast.setTSglobal(entornoGlobal);
+    ast.getInstrucciones().forEach((element) => {
+        let value = element.traducir(ast, entornoGlobal);
+        if (value instanceof Excepcion) {
+            ast.getExcepciones().push(value);
+            ast.updateConsola(value.toString());
+        }
+   
+        instrucciones3D += value;
+
+    });
+  
+    let main="\n\n/*------MAIN------*/\nvoid main() {\nP = 0; H = 0;\n"+instrucciones3D+"\n"+ast.getMain()+"return;\n}";
+    document.getElementById("editorSalida").value  = ast.getEncabezado()+"\ndouble "+ast.getListaTemporales()+";\n\n"+ast.getListaFunciones3D()+main;
+    
+    console.log(ast.reporteTabla());
+    var elemento="<div>"+ast.reporteTabla()+"</div>"
+    document.getElementById("tabla").insertAdjacentHTML("afterbegin",elemento)
 }
 
 function displayDate() {

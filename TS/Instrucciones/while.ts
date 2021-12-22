@@ -41,7 +41,7 @@ export class While implements Instruccion {
         }
 
         instrucion=tree.getWhile(cond,texto3dVerdadero);
-        console.log(lista+"\n" + instrucion);
+        //console.log(lista+"\n" + instrucion);
         return lista+"\n" + instrucion;
     }
 
