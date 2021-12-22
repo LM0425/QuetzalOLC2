@@ -21,8 +21,9 @@ function traducirCodigo() {
     console.log("Traduciendo");
     var instrucciones3D = "";
     var textoIngresado = document.getElementById('txCodigo').value;
-
-    const instrucciones = parse(textoIngresado);
+    const result = parse(textoIngresado);
+    const instrucciones = result['instrucciones'];
+    console.log("instrucciones: ",instrucciones)
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);
@@ -45,11 +46,13 @@ function tablaTraductor() {
     console.log("tabla traductor");
     var instrucciones3D = "";
     var textoIngresado = document.getElementById('txCodigo').value;
-
-    const instrucciones = parse(textoIngresado);
+    const result = parse(textoIngresado);
+    const instrucciones = result['instrucciones'];
+    
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);
+    console.log("instrucciones: ",instrucciones)
     ast.getInstrucciones().forEach((element) => {
         let value = element.traducir(ast, entornoGlobal);
         if (value instanceof Excepcion) {

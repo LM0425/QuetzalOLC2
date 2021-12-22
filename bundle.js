@@ -3152,11 +3152,7 @@ class Main {
 }
 exports.Main = Main;
 
-<<<<<<< Updated upstream
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../Abstract/NodoAST":8}],31:[function(require,module,exports){
-=======
-},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],30:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Entorno":3,"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"../Abstract/NodoAST":8}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModificarArreglo = void 0;
@@ -3830,11 +3826,7 @@ class Coseno {
 }
 exports.Coseno = Coseno;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../Abstract/NodoAST":8}],40:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],39:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"../Abstract/NodoAST":8}],40:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Length = void 0;
@@ -4039,11 +4031,7 @@ class Pow {
 }
 exports.Pow = Pow;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../Abstract/NodoAST":8}],45:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],44:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"../Abstract/NodoAST":8}],45:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Push = void 0;
@@ -4126,11 +4114,7 @@ class Raiz {
 }
 exports.Raiz = Raiz;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../Abstract/NodoAST":8}],47:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],46:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"../Abstract/NodoAST":8}],47:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SString = void 0;
@@ -4207,11 +4191,7 @@ class Seno {
 }
 exports.Seno = Seno;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../Abstract/NodoAST":8}],49:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],48:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"../Abstract/NodoAST":8}],49:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubString = void 0;
@@ -4300,11 +4280,7 @@ class Tangente {
 }
 exports.Tangente = Tangente;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../Abstract/NodoAST":8}],51:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],50:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"../Abstract/NodoAST":8}],51:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToDouble = void 0;
@@ -4394,11 +4370,7 @@ class ToInt {
 }
 exports.ToInt = ToInt;
 
-<<<<<<< Updated upstream
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../Abstract/NodoAST":8}],53:[function(require,module,exports){
-=======
-},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7}],52:[function(require,module,exports){
->>>>>>> Stashed changes
+},{"../AST/Excepcion":4,"../AST/Tipo":6,"../AST/temporalAux":7,"../Abstract/NodoAST":8}],53:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ToLowerCase = void 0;
@@ -5826,8 +5798,9 @@ function traducirCodigo() {
     console.log("Traduciendo");
     var instrucciones3D = "";
     var textoIngresado = document.getElementById('txCodigo').value;
-
-    const instrucciones = parse(textoIngresado);
+    const result = parse(textoIngresado);
+    const instrucciones = result['instrucciones'];
+    console.log("instrucciones: ",instrucciones)
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);
@@ -5850,11 +5823,13 @@ function tablaTraductor() {
     console.log("tabla traductor");
     var instrucciones3D = "";
     var textoIngresado = document.getElementById('txCodigo').value;
-
-    const instrucciones = parse(textoIngresado);
+    const result = parse(textoIngresado);
+    const instrucciones = result['instrucciones'];
+    
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);
+    console.log("instrucciones: ",instrucciones)
     ast.getInstrucciones().forEach((element) => {
         let value = element.traducir(ast, entornoGlobal);
         if (value instanceof Excepcion) {
@@ -5944,7 +5919,6 @@ function displayDate() {
 
     //console.log(ast.getConsola());
     document.getElementById("editorSalida").value  =ast.getConsola();
-<<<<<<< Updated upstream
 
     let init = new NodoAST("RAIZ");
     let instr = new NodoAST("INSTRUCCIONES");
@@ -5990,10 +5964,6 @@ function displayDate() {
         tableError.appendChild(row)
         contadorError++;
     }
-=======
-    console.log("la tsglobal ",ast.getTSglobal());
-    
->>>>>>> Stashed changes
 }
 
 /* function numeracion(e) {
