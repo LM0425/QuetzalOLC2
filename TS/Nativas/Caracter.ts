@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -31,6 +32,21 @@ export class Caracter implements Instruccion {
         if (posicion instanceof Excepcion) return posicion;
 
         return expresion[posicion];
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("CARACTER OF POSITION");
+
+        let exp = new NodoAST("EXPRESION")
+        exp.agregarHijoNodo(this.expresion.getNodo())
+        nodo.agregarHijoNodo(exp);
+
+        let pos = new NodoAST("POSICION")
+        pos.agregarHijoNodo(this.posicion.getNodo());
+        nodo.agregarHijo(pos);
+
+        return nodo;
+        
     }
 
 }

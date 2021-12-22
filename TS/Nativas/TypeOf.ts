@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -40,6 +41,16 @@ export class TypeOf implements Instruccion {
         } else if(this.valor.tipo === Tipo.BOOL){
             return "boolean"
         }
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("TYPE OF");
+
+        let instrucciones = new NodoAST("VALOR")
+        instrucciones.agregarHijoNodo(this.valor.getNodo())
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
     }
 
 }

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Caracter = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class Caracter {
@@ -22,6 +23,16 @@ class Caracter {
         if (posicion instanceof Excepcion_1.Excepcion)
             return posicion;
         return expresion[posicion];
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("CARACTER OF POSITION");
+        let exp = new NodoAST_1.NodoAST("EXPRESION");
+        exp.agregarHijoNodo(this.expresion.getNodo());
+        nodo.agregarHijoNodo(exp);
+        let pos = new NodoAST_1.NodoAST("POSICION");
+        pos.agregarHijoNodo(this.posicion.getNodo());
+        nodo.agregarHijo(pos);
+        return nodo;
     }
 }
 exports.Caracter = Caracter;

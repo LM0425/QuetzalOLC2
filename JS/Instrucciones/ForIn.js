@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ForIn = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
@@ -51,6 +52,15 @@ class ForIn {
                     return result;
             }
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("FOR IN");
+        let instrucciones = new NodoAST_1.NodoAST("INSTRUCCIONES FOR");
+        for (let instr of this.instrucciones) {
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
     }
 }
 exports.ForIn = ForIn;

@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -26,6 +27,16 @@ export class Length implements Instruccion{
         if(expresion instanceof Excepcion) return expresion;
 
         return expresion.length
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("LENGTH");
+
+        let instrucciones = new NodoAST("EXPRESION")
+        instrucciones.agregarHijoNodo(this.expresion.getNodo())
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
     }
     
 }

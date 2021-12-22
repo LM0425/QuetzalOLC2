@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Imprimir = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class Imprimir {
@@ -128,6 +129,15 @@ class Imprimir {
         if (this.salto === true)
             tree.updateConsola('\n');
         return this;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("IMPIRMIR");
+        let instrucciones = new NodoAST_1.NodoAST("EXPRESIONES ");
+        // for(let instr of this.expresion){
+        //     instrucciones.agregarHijoNodo(instr.getNodo());
+        // }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
     }
 }
 exports.Imprimir = Imprimir;

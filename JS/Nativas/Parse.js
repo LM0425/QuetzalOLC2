@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parse = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class Parse {
@@ -29,6 +30,14 @@ class Parse {
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de dato en Parse no es int, double o boolean", this.fila, this.columna);
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("PARSE");
+        let instrucciones = new NodoAST_1.NodoAST("VALOR ");
+        instrucciones.agregarHijoNodo(this.expresion.getNodo());
+        nodo.agregarHijo(this.tipo);
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
     }
 }
 exports.Parse = Parse;

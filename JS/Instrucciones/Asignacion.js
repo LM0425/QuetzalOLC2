@@ -4,6 +4,7 @@ exports.Asignacion = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
 const Tipo_1 = require("../AST/Tipo");
+const NodoAST_1 = require("../Abstract/NodoAST");
 class Asignacion {
     constructor(identificador, expresion, fila, columna) {
         this.identificador = identificador;
@@ -46,6 +47,12 @@ class Asignacion {
         if (result instanceof Excepcion_1.Excepcion)
             return result;
         return null;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("ASIGNACION");
+        nodo.agregarHijo(String(this.identificador));
+        nodo.agregarHijoNodo(this.expresion.getNodo());
+        return nodo;
     }
 }
 exports.Asignacion = Asignacion;

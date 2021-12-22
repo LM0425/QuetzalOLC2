@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -72,6 +73,23 @@ export class ModificarArreglo implements Instruccion{
         if(value !== null) arreglo[dimension] = value
 
         return null
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("MODIFICAR ARREGLO");
+        nodo.agregarHijo(String(this.identificador));
+
+        let exp = new NodoAST("EXPRESIONES DE LAS DIMENSIONES")
+        for(let expresion of this.expresiones){
+            exp.agregarHijoNodo(expresion.getNodo());
+        }
+        nodo.agregarHijoNodo(exp);
+        let val = new NodoAST("VALOR A ASIGNAR");
+        val.agregarHijoNodo(this.valor.getNodo());
+
+        nodo.agregarHijoNodo(val);
+        return nodo;
+        
     }
 
 }

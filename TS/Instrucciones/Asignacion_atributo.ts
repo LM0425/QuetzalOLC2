@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -38,6 +39,11 @@ export class Asignacion_atributo implements Instruccion {
         if (result instanceof Excepcion) return result;  
 
         return null; 
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("ASIGNACION ATRIBUTO STRUCT");
+        return nodo;
     }
 
 }

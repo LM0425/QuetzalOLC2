@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -94,5 +95,16 @@ export class For implements Instruccion{
                 return new Excepcion("Semantico", "Tipo de dato no booleano en condicion de For", this.fila, this.columna);
             }
         }
+    }
+    
+    getNodo() {
+        let nodo = new NodoAST("FOR");
+        let instrucciones = new NodoAST("INSTRUCCIONES FOR");
+        for(let instr of this.instrucciones){
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+
+        return nodo;
     }
 }

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Pow = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class Pow {
@@ -26,6 +27,16 @@ class Pow {
         if (this.exponente.tipo !== Tipo_1.Tipo.INT)
             return new Excepcion_1.Excepcion("Semantico", "El exponente debe ser entero.", this.fila, this.columna);
         return Math.pow(base, exponente);
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("POW");
+        let instrucciones = new NodoAST_1.NodoAST("BASE");
+        instrucciones.agregarHijoNodo(this.base.getNodo());
+        nodo.agregarHijoNodo(instrucciones);
+        let expo = new NodoAST_1.NodoAST("EXPONENTE");
+        expo.agregarHijoNodo(this.exponente.getNodo());
+        nodo.agregarHijoNodo(expo);
+        return nodo;
     }
 }
 exports.Pow = Pow;

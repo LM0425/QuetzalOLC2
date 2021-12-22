@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -72,5 +73,17 @@ export class While implements Instruccion {
                 return new Excepcion("Semantico", "Tipo de dato no booleano en condicion While.", this.fila, this.columna);
             }
         }
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("WHILE");
+
+        let instrucciones = new NodoAST("INSTRUCCIONES ")
+        for(let instr of this.instruccionesIf){
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
     }
 }

@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -59,7 +60,12 @@ export class Llamada implements Instruccion {
 
                 if (resultParametro instanceof Excepcion) return resultParametro;
 
-                if (result.parametros[contador]['tipo'] === parametro.tipo) {
+                if (result.parametros[contador]['arreglo'] === true) {
+                    let simbolo = new Simbolo(result.parametros[contador]['identificador'], Tipo.ARRAY, this.fila, this.columna, resultParametro);
+                    simbolo.setTipoArreglo(result.parametros[contador]['tipo']);
+                    let resultTabla = nuevaTabla.agregarSimbolo(simbolo);
+                    if (resultTabla instanceof Excepcion) return resultTabla;
+                } else if (result.parametros[contador]['tipo'] === parametro.tipo) {
                     let simbolo = new Simbolo(result.parametros[contador]['identificador'], result.parametros[contador]['tipo'], this.fila, this.columna, resultParametro);
                     let resultTabla = nuevaTabla.agregarSimbolo(simbolo);
                     if (resultTabla instanceof Excepcion) return resultTabla;
@@ -81,4 +87,16 @@ export class Llamada implements Instruccion {
         return value;
     }
 
+    getNodo() {
+        let nodo = new NodoAST("LLAMADA A FUNCION");
+        nodo.agregarHijo(this.nombre);
+
+        let instrucciones = new NodoAST("PARAMETROS");
+        for(let param of this.parametros){
+            instrucciones.agregarHijoNodo(param.getNodo())
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
+    }
 }

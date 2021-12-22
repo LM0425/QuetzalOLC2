@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.For = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
@@ -83,6 +84,15 @@ class For {
                 return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no booleano en condicion de For", this.fila, this.columna);
             }
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("FOR");
+        let instrucciones = new NodoAST_1.NodoAST("INSTRUCCIONES FOR");
+        for (let instr of this.instrucciones) {
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
     }
 }
 exports.For = For;

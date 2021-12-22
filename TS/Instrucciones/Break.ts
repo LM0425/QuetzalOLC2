@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 
@@ -17,6 +18,11 @@ export class Break implements Instruccion {
 
     interpretar(tree: AST, table: Entorno) {
         return this
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("BREAK");
+        return nodo;
     }
 
 }

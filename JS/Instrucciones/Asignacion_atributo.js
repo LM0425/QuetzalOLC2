@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Asignacion_atributo = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
 class Asignacion_atributo {
@@ -28,6 +29,10 @@ class Asignacion_atributo {
         if (result instanceof Excepcion_1.Excepcion)
             return result;
         return null;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("ASIGNACION ATRIBUTO STRUCT");
+        return nodo;
     }
 }
 exports.Asignacion_atributo = Asignacion_atributo;

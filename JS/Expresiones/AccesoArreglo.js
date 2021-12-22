@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AccesoArreglo = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class AccesoArreglo {
@@ -58,6 +59,16 @@ class AccesoArreglo {
             // Definir el tipo de dato que estoy retornando (Pense agregar tipo y tipo arreglo (?))
             return simbolo.getValor().slice(posInicial, posFinal);
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("ACCESO ARREGLO");
+        nodo.agregarHijo(String(this.identificador));
+        let exp = new NodoAST_1.NodoAST("EXPRESIONES DE LAS DIMENSIONES");
+        for (let expresion of this.expresiones) {
+            exp.agregarHijoNodo(expresion.getNodo());
+        }
+        nodo.agregarHijoNodo(exp);
+        return nodo;
     }
     buscarDimensiones(tree, table, expresiones, arreglo) {
         var value = null;

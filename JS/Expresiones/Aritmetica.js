@@ -4,6 +4,7 @@ exports.Aritmetica = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 const temporalAux_1 = require("../AST/temporalAux");
+const NodoAST_1 = require("../Abstract/NodoAST");
 class Aritmetica {
     constructor(operador, opIzquierdo, opDerecho, fila, columna) {
         this.operador = operador;
@@ -400,7 +401,7 @@ class Aritmetica {
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.DIV) {
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
-                this.tipo = Tipo_1.Tipo.INT;
+                this.tipo = Tipo_1.Tipo.DOUBLE;
                 return Number(izq) / Number(der);
             }
             else if (this.opIzquierdo.tipo === Tipo_1.Tipo.INT && this.opDerecho.tipo === Tipo_1.Tipo.DOUBLE) {
@@ -510,13 +511,8 @@ class Aritmetica {
             }
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.CONCATENAR) {
-            if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.STRING) {
-                this.tipo = Tipo_1.Tipo.STRING;
-                return izq + der;
-            }
-            else {
-                return new Excepcion_1.Excepcion("Semantico", "Tipo de dato erroneo para operacion de Concatenacion", this.fila, this.columna);
-            }
+            this.tipo = Tipo_1.Tipo.STRING;
+            return izq + der;
         }
         else if (this.operador === Tipo_1.OperadorAritmetico.REPETIR) {
             if (this.opIzquierdo.tipo === Tipo_1.Tipo.STRING && this.opDerecho.tipo === Tipo_1.Tipo.INT) {
@@ -531,6 +527,45 @@ class Aritmetica {
         }
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
+        }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("ARITMETICA");
+        if (this.opDerecho !== null) {
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opDerecho.getNodo());
+        }
+        else {
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+        }
+        return nodo;
+    }
+    obtenerOperador(op) {
+        if (op === Tipo_1.OperadorAritmetico.MAS) {
+            return "+";
+        }
+        else if (op === Tipo_1.OperadorAritmetico.MENOS) {
+            return "-";
+        }
+        else if (op === Tipo_1.OperadorAritmetico.POR) {
+            return "*";
+        }
+        else if (op === Tipo_1.OperadorAritmetico.DIV) {
+            return "/";
+        }
+        else if (op === Tipo_1.OperadorAritmetico.MOD) {
+            return "%";
+        }
+        else if (op === Tipo_1.OperadorAritmetico.UMENOS) {
+            return "-";
+        }
+        else if (op === Tipo_1.OperadorAritmetico.CONCATENAR) {
+            return "&";
+        }
+        else if (op === Tipo_1.OperadorAritmetico.REPETIR) {
+            return "^";
         }
     }
 }

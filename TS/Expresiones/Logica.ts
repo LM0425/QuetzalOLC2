@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -53,6 +54,29 @@ export class Logica implements Instruccion {
         } else {
             return new Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
         }
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("LOGICA");
+        if(this.opDerecho !== null){
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opDerecho.getNodo());
+        } else{
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+        }
+        return nodo;
+    }
+
+    obtenerOperador(op:OperadorLogico){
+        if(op === OperadorLogico.NOT){
+            return "!";
+        } else if(op === OperadorLogico.AND){
+            return "&&";
+        } else if(op === OperadorLogico.OR){
+            return "||";
+        } 
     }
 
 }

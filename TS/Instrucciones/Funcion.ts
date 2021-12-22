@@ -5,6 +5,7 @@ import { Excepcion } from "../AST/Excepcion";
 import { Tipo } from "../AST/Tipo";
 import { Return } from "./Return";
 import {  TemporalAux } from "../AST/temporalAux";
+import { NodoAST } from "../Abstract/NodoAST";
 
 
 export class Funcion implements Instruccion {
@@ -83,4 +84,42 @@ export class Funcion implements Instruccion {
         return null;
     }
 
+    getNodo() {
+        let nodo = new NodoAST("FUNCION");
+        nodo.agregarHijo(this.valorTipo(this.tipo));
+        nodo.agregarHijo(this.nombre);
+        let parametros = new NodoAST("PARAMETROS");
+        for(let param of this.parametros){
+            let parametro = new NodoAST("PARAMETRO");
+            parametro.agregarHijo(this.valorTipo(param['tipo']));
+            parametro.agregarHijo(param['identificador']);
+            parametros.agregarHijoNodo(parametro);
+        }
+        nodo.agregarHijoNodo(parametros);
+
+        let instrucciones = new NodoAST("INSTRUCCIONES");
+        for(let instr of this.instrucciones){
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+    }
+
+    valorTipo(valor:Tipo){
+        if(valor === Tipo.INT){
+            return "int";
+        } else if(valor === Tipo.DOUBLE){
+            return "double";
+        } else if(valor === Tipo.BOOL){
+            return "boolean";
+        } else if(valor === Tipo.CHAR){
+            return "char";
+        } else if(valor === Tipo.STRING){
+            return "String";
+        } else if(valor === Tipo.ARRAY){
+            return "array";
+        } else if(valor === Tipo.VOID){
+            return "void";
+        }
+    }
 }

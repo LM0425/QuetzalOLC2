@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -35,6 +36,19 @@ export class Pow implements Instruccion {
         if (this.exponente.tipo !== Tipo.INT) return new Excepcion("Semantico", "El exponente debe ser entero.", this.fila, this.columna);
 
         return Math.pow(base, exponente)
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("POW");
+
+        let instrucciones = new NodoAST("BASE")
+        instrucciones.agregarHijoNodo(this.base.getNodo())
+        nodo.agregarHijoNodo(instrucciones);
+        let expo = new NodoAST("EXPONENTE")
+        expo.agregarHijoNodo(this.exponente.getNodo())
+        nodo.agregarHijoNodo(expo);
+        return nodo;
+        
     }
 
 }

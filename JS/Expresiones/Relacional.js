@@ -4,6 +4,7 @@ exports.Relacional = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 const temporalAux_1 = require("../AST/temporalAux");
+const NodoAST_1 = require("../Abstract/NodoAST");
 class Relacional {
     constructor(operador, opIzquierdo, opDerecho, fila, columna) {
         this.operador = operador;
@@ -214,6 +215,13 @@ class Relacional {
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("RELACIONAL");
+        nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+        nodo.agregarHijo(this.getSigno(this.operador));
+        nodo.agregarHijoNodo(this.opDerecho.getNodo());
+        return nodo;
     }
     getSigno(operador) {
         if (operador === Tipo_1.OperadorRelacional.DIFERENTE) {

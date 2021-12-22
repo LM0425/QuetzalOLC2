@@ -4,6 +4,7 @@ import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { OperadorAritmetico, Tipo } from "../AST/Tipo";
 import { Simbolo } from "../AST/Simbolo";
+import { NodoAST } from "../Abstract/NodoAST";
 
 export class inc_dec implements Instruccion {
 
@@ -81,6 +82,21 @@ export class inc_dec implements Instruccion {
             return new Excepcion("Semantico", "Tipo erroneo de operador en Incremento/Decremento.", this.fila, this.columna);
         }
 
+    }
+
+    getNodo() {
+        let nodo:NodoAST;
+        if(this.operador === OperadorAritmetico.MAS){
+            nodo = new NodoAST("INCREMENTO");
+            nodo.agregarHijo(this.expresion.getNodo());
+            nodo.agregarHijo("++")
+        }else{
+            nodo = new NodoAST("Decremento");
+            nodo.agregarHijo(this.expresion.getNodo());
+            nodo.agregarHijo("--")
+        }
+        return nodo;
+        
     }
 
 }

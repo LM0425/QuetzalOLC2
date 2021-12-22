@@ -6,6 +6,7 @@ const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 const Return_1 = require("./Return");
 const temporalAux_1 = require("../AST/temporalAux");
+const NodoAST_1 = require("../Abstract/NodoAST");
 class Funcion {
     constructor(tipo, nombre, parametros, instrucciones, fila, columna) {
         this.tipo = tipo;
@@ -59,6 +60,48 @@ class Funcion {
             }
         }
         return null;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("FUNCION");
+        nodo.agregarHijo(this.valorTipo(this.tipo));
+        nodo.agregarHijo(this.nombre);
+        let parametros = new NodoAST_1.NodoAST("PARAMETROS");
+        for (let param of this.parametros) {
+            let parametro = new NodoAST_1.NodoAST("PARAMETRO");
+            parametro.agregarHijo(this.valorTipo(param['tipo']));
+            parametro.agregarHijo(param['identificador']);
+            parametros.agregarHijoNodo(parametro);
+        }
+        nodo.agregarHijoNodo(parametros);
+        let instrucciones = new NodoAST_1.NodoAST("INSTRUCCIONES");
+        for (let instr of this.instrucciones) {
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+    }
+    valorTipo(valor) {
+        if (valor === Tipo_1.Tipo.INT) {
+            return "int";
+        }
+        else if (valor === Tipo_1.Tipo.DOUBLE) {
+            return "double";
+        }
+        else if (valor === Tipo_1.Tipo.BOOL) {
+            return "boolean";
+        }
+        else if (valor === Tipo_1.Tipo.CHAR) {
+            return "char";
+        }
+        else if (valor === Tipo_1.Tipo.STRING) {
+            return "String";
+        }
+        else if (valor === Tipo_1.Tipo.ARRAY) {
+            return "array";
+        }
+        else if (valor === Tipo_1.Tipo.VOID) {
+            return "void";
+        }
     }
 }
 exports.Funcion = Funcion;

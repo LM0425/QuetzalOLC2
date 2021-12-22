@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -67,6 +68,17 @@ export class AccesoArreglo implements Instruccion {
 
             return simbolo.getValor().slice(posInicial, posFinal)
         }
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("ACCESO ARREGLO");
+        nodo.agregarHijo(String(this.identificador));
+        let exp = new NodoAST("EXPRESIONES DE LAS DIMENSIONES")
+        for(let expresion of this.expresiones){
+            exp.agregarHijoNodo(expresion.getNodo());
+        }
+        nodo.agregarHijoNodo(exp);
+        return nodo;
     }
 
     buscarDimensiones(tree: AST, table: Entorno, expresiones: any, arreglo: any) {

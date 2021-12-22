@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Switch = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Break_1 = require("./Break");
@@ -60,7 +61,7 @@ class Switch {
         let cumple = false;
         if (this.cases !== null) {
             for (let caso of this.cases) {
-                let expresionCaso = caso.interpretar(tree, table);
+                let expresionCaso = caso.expresion.interpretar(tree, table);
                 if (expresionCaso instanceof Excepcion_1.Excepcion) {
                     tree.getExcepciones().push(expresionCaso);
                     tree.updateConsola(expresionCaso.toString());
@@ -75,12 +76,27 @@ class Switch {
                                 tree.getExcepciones().push(result);
                                 tree.updateConsola(result.toString());
                             }
+                            cumple = true;
                             if (result instanceof Break_1.Break) {
-                                cumple = true;
                                 return null;
                             }
                             if (result instanceof Return_1.Return) {
-                                cumple = true;
+                                return result;
+                            }
+                        }
+                    }
+                    else if (cumple) {
+                        let nuevaTabla = new Entorno_1.Entorno(table);
+                        for (let instruccion of caso.instrucciones) {
+                            let result = instruccion.interpretar(tree, nuevaTabla);
+                            if (result instanceof Excepcion_1.Excepcion) {
+                                tree.getExcepciones().push(result);
+                                tree.updateConsola(result.toString());
+                            }
+                            if (result instanceof Break_1.Break) {
+                                return null;
+                            }
+                            if (result instanceof Return_1.Return) {
                                 return result;
                             }
                         }
@@ -88,23 +104,33 @@ class Switch {
                 }
             }
         }
-        if (!cumple) {
-            if (this.porDefecto !== null) {
-                let nuevaTabla = new Entorno_1.Entorno(table);
-                for (let instruccion of this.porDefecto.instrucciones) {
-                    let result = instruccion.interpretar(tree, nuevaTabla);
-                    if (result instanceof Excepcion_1.Excepcion) {
-                        tree.getExcepciones().push(result);
-                        tree.updateConsola(result.toString());
-                    }
-                    if (result instanceof Break_1.Break)
-                        return null;
-                    if (result instanceof Return_1.Return) {
-                        return result;
-                    }
+        if (this.porDefecto !== null) {
+            let nuevaTabla = new Entorno_1.Entorno(table);
+            for (let instruccion of this.porDefecto.instrucciones) {
+                let result = instruccion.interpretar(tree, nuevaTabla);
+                if (result instanceof Excepcion_1.Excepcion) {
+                    tree.getExcepciones().push(result);
+                    tree.updateConsola(result.toString());
+                }
+                if (result instanceof Break_1.Break)
+                    return null;
+                if (result instanceof Return_1.Return) {
+                    return result;
                 }
             }
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("SWITCH");
+        if (this.cases !== null) {
+            for (let instr of this.cases) {
+                nodo.agregarHijoNodo(instr.getNodo());
+            }
+        }
+        if (this.porDefecto !== null) {
+            nodo.agregarHijoNodo(this.porDefecto.getNodo());
+        }
+        return nodo;
     }
 }
 exports.Switch = Switch;

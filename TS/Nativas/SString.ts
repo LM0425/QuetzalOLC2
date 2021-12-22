@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -28,6 +29,16 @@ export class SString implements Instruccion {
         if(this.valor.tipo === Tipo.NULL) return new Excepcion("Semantico", "El parametro no puede ser NULL", this.fila, this.columna);
         
         return String(valor)
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("STRING");
+
+        let instrucciones = new NodoAST("VALOR ")
+        instrucciones.agregarHijoNodo(this.valor.getNodo())
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
     }
 
 }

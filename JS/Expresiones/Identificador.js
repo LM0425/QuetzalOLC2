@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Identificador = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 class Identificador {
     constructor(identificador, fila, columna) {
@@ -17,6 +18,11 @@ class Identificador {
             return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + " no encontrada", this.fila, this.columna);
         this.tipo = simbolo.getTipo();
         return simbolo.getValor();
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("IDENTIFICADOR");
+        nodo.agregarHijo(String(this.identificador));
+        return nodo;
     }
 }
 exports.Identificador = Identificador;

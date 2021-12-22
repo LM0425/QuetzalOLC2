@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Primitivos = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class Primitivos {
@@ -32,6 +33,11 @@ class Primitivos {
             }
         }
         return this.valor;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("PRIMITIVO");
+        nodo.agregarHijo(String(this.valor));
+        return nodo;
     }
     defTipo(arreglo) {
         for (let valor of arreglo) {

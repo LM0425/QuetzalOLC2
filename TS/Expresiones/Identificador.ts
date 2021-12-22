@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -26,6 +27,12 @@ export class Identificador implements Instruccion {
         this.tipo = simbolo.getTipo();
 
         return simbolo.getValor();
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("IDENTIFICADOR");
+        nodo.agregarHijo(String(this.identificador));
+        return nodo;
     }
 
 }

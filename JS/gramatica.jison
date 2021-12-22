@@ -5,6 +5,10 @@
  **/
 
 /* Definición Léxica */
+%{
+	errores = []
+%}
+
 %lex
 
 escapeChar              [\'\"\\bfnrtv]
@@ -137,12 +141,16 @@ BSL                                 "\\".
 
 <<EOF>>                 return 'EOF';
 
-.                       { console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
+.                       { 
+							errores.push(new Excepcion("Lexico", "Error lexico - " + yytext, yylloc.first_line, yylloc.first_column))
+							//console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); 
+						}
 /lex
 
 /* Imports */
 
 %{
+	const { Excepcion } = require("./AST/Excepcion");
 	const { Tipo, OperadorAritmetico, OperadorRelacional, OperadorLogico } = require("./AST/Tipo");
 	const { Primitivos } = require("./Expresiones/Primitivos");
 	const { Aritmetica } = require("./Expresiones/Aritmetica");
@@ -208,13 +216,16 @@ BSL                                 "\\".
 %% /* Definición de la gramática */
 
 ini
-	: instrucciones EOF { $$ = $1; return $$;}
+	: instrucciones EOF { $$ = {'instrucciones':$1, 'errores':errores.slice()}; return $$;}
 ;
 
 instrucciones
 	: instrucciones instruccion	{ $1.push($2); $$ = $1;}
 	| instruccion  				{ $$ = [$1]; }
-	| error 					{ console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); }
+	| error 					{
+									errores.push(new Excepcion("Sintactico", "Error sintactico - " + yytext, yylloc.first_line, yylloc.first_column)) 
+									//console.error('Este es un error sintáctico: ' + yytext + ', en la linea: ' + this._$.first_line + ', en la columna: ' + this._$.first_column); 
+								}
 ;
 
 instruccion
@@ -235,6 +246,8 @@ instruccion
 	| main					{ $$ = $1; }
 	| funcion				{ $$ = $1; }
 	| llamada ptc	 		{ $$ = $1; }
+	| pop ptc				{ $$ = $1; }
+	| push ptc				{ $$ = $1; }
 ;
 
 ptc
@@ -246,6 +259,9 @@ variables
 	: tipo ID IGUAL expresion 					{ $$ = new Declaracion($1, [$2], @1.first_line, @1.first_column, $4, false, false, false); }
 	| tipo listaid 								{ $$ = new Declaracion($1, $2, @1.first_line, @1.first_column, null, false, false, false); }
 	| ID IGUAL expresion 						{ $$ = new Asignacion($1, $3, @1.first_line, @1.first_column); }
+	| ID IGUAL CORIZQ CORDER					{	let temp = new Primitivos(Tipo.ARRAY, [], @1.first_line, @1.first_column);
+													$$ = new Asignacion($1, temp, @1.first_line, @1.first_column);
+												}
 	| tipo CORIZQ CORDER ID IGUAL ID			{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $6, true, true, false); }
 	| tipo CORIZQ CORDER ID IGUAL NUMERAL ID	{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $7, true, false, true); }
 	| tipo CORIZQ CORDER ID IGUAL expresion		{ $$ = new Declaracion($1, [$4], @1.first_line, @1.first_column, $6, true, false, false); }
@@ -290,6 +306,7 @@ expresion
 	| CADENA 							{ $$ = new Primitivos(Tipo.STRING, String($1), @1.first_line, @1.first_column); }
 	| CARACTER							{ $$ = new Primitivos(Tipo.CHAR, String($1), @1.first_line, @1.first_column); }
 	| RTRUE								{ $$ = new Primitivos(Tipo.BOOL, true, @1.first_line, @1.first_column); }
+	| RNULL								{ $$ = new Primitivos(Tipo.NULL, null, @1.first_line, @1.first_column); }
 	| RFALSE							{ $$ = new Primitivos(Tipo.BOOL, false, @1.first_line, @1.first_column); }
 	| ID								{ $$ = new Identificador(String($1), @1.first_line, @1.first_column); }
 	| PARIZQ expresion PARDER       	{ $$ = $2; }
@@ -320,7 +337,7 @@ expresion
 	| RSSTRING PARIZQ expresion PARDER			{ $$ = new SString($3, @1.first_line, @1.first_column); }
 	| RTYPEOF PARIZQ expresion PARDER			{ $$ = new TypeOf($3, @1.first_line, @1.first_column); }
 
-	| expresion PUNTO RPOP PARIZQ PARDER	{ $$ = new Pop($1, @1.first_line, @1.first_column); } 
+	| pop									{ $$ = $1; }
 	| expresion PUNTO RLENGTH PARIZQ PARDER	{ $$ = new Length($1, @1.first_line, @1.first_column); }
 ;
 
@@ -346,6 +363,14 @@ valores
 
 modificarArreglo
 	: ID listaExpresiones IGUAL expresion PTCOMA { $$ = new ModificarArreglo($1, $2, $4, @1.first_line, @1.first_column); }
+;
+
+pop
+	: expresion PUNTO RPOP PARIZQ PARDER { $$ = new Pop($1, @1.first_line, @1.first_column); } 
+;
+
+push
+	: expresion PUNTO RPUSH PARIZQ expresion PARDER { $$ = new Push($1, $5, @1.first_line, @1.first_column); } 
 ;
 
 listaExpresiones
@@ -381,17 +406,18 @@ break
 	: RBREAK { $$ = new Break(@1.first_line, @1.first_column); }
 ;
 
-// continue
-// 	: RCONTINUE { $$ = new Continue(@1.first_line, @1.first_column); }
-// ;
+continue
+	: RCONTINUE { $$ = new Continue(@1.first_line, @1.first_column); }
+;
 
 return
 	: RRETURN expresion { $$ = new Return($2, @1.first_line, @1.first_column); }
-	// | RRETURN			{ $$ = new Return(null, @1.first_line, @1.first_column); }
+	| RRETURN			{ $$ = new Return(null, @1.first_line, @1.first_column); }
 ;
 
 funcion
 	: tipo ID PARIZQ parametros PARDER LLAVEIZQ instrucciones LLAVEDER	{ $$ = new Funcion($1, $2, $4, $7, @1.first_line, @1.first_column); }
+	| ID ID PARIZQ parametros PARDER LLAVEIZQ instrucciones LLAVEDER	{ $$ = new Funcion(Tipo.STRUCT, $2, $4, $7, @1.first_line, @1.first_column); }
 	| tipo ID PARIZQ PARDER LLAVEIZQ instrucciones LLAVEDER				{ $$ = new Funcion($1, $2, [], $6, @1.first_line, @1.first_column); }
 ;
 
@@ -401,7 +427,7 @@ parametros
 ;
 
 parametro
-	: tipo CORIZQ CORDER ID { $$ = {'tipo': $1, 'identificador': $3, 'arreglo':true}; }
+	: tipo CORIZQ CORDER ID { $$ = {'tipo': $1, 'identificador': $4, 'arreglo':true}; }
 	| tipo ID				{ $$ = {'tipo': $1, 'identificador': $2, 'arreglo':false}; }
 ;
 
@@ -463,6 +489,7 @@ l_atributos
 
 atributo
 	: tipo ID { $$ = new Declaracion_atributo($1, $2, @1.first_line, @1.first_column, null); }
+	| ID ID	{ $$ = new Declaracion_atributo(Tipo.STRUCT, $2, @1.first_line, @1.first_column, null); }
 	//| falta llamada de struct 
 	//| falta llamada de arreglo
 ;

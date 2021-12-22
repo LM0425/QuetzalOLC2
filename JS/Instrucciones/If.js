@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.If = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
@@ -114,6 +115,25 @@ class If {
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no booleano en condicion If.", this.fila, this.columna);
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("IF");
+        let instruccionesIf = new NodoAST_1.NodoAST("INSTRUCCIONES IF");
+        for (let instr of this.instruccionesIf) {
+            instruccionesIf.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instruccionesIf);
+        if (this.instruccionesElse !== null) {
+            let instruccionesElse = new NodoAST_1.NodoAST("INSTRUCCIONES ELSE");
+            for (let instr of this.instruccionesElse) {
+                instruccionesElse.agregarHijoNodo(instr.getNodo());
+            }
+            nodo.agregarHijoNodo(instruccionesElse);
+        }
+        else if (this.elseIf !== null) {
+            nodo.agregarHijoNodo(this.elseIf.getNodo());
+        }
+        return nodo;
     }
 }
 exports.If = If;

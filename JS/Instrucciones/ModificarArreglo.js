@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModificarArreglo = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class ModificarArreglo {
@@ -64,6 +65,19 @@ class ModificarArreglo {
         if (value !== null)
             arreglo[dimension] = value;
         return null;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("MODIFICAR ARREGLO");
+        nodo.agregarHijo(String(this.identificador));
+        let exp = new NodoAST_1.NodoAST("EXPRESIONES DE LAS DIMENSIONES");
+        for (let expresion of this.expresiones) {
+            exp.agregarHijoNodo(expresion.getNodo());
+        }
+        nodo.agregarHijoNodo(exp);
+        let val = new NodoAST_1.NodoAST("VALOR A ASIGNAR");
+        val.agregarHijoNodo(this.valor.getNodo());
+        nodo.agregarHijoNodo(val);
+        return nodo;
     }
 }
 exports.ModificarArreglo = ModificarArreglo;

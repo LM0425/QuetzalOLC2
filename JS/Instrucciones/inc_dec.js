@@ -4,6 +4,7 @@ exports.inc_dec = void 0;
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 const Simbolo_1 = require("../AST/Simbolo");
+const NodoAST_1 = require("../Abstract/NodoAST");
 class inc_dec {
     constructor(operador, expresion, fila, columna) {
         this.expresion = expresion;
@@ -74,6 +75,20 @@ class inc_dec {
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo erroneo de operador en Incremento/Decremento.", this.fila, this.columna);
         }
+    }
+    getNodo() {
+        let nodo;
+        if (this.operador === Tipo_1.OperadorAritmetico.MAS) {
+            nodo = new NodoAST_1.NodoAST("INCREMENTO");
+            nodo.agregarHijo(this.expresion.getNodo());
+            nodo.agregarHijo("++");
+        }
+        else {
+            nodo = new NodoAST_1.NodoAST("Decremento");
+            nodo.agregarHijo(this.expresion.getNodo());
+            nodo.agregarHijo("--");
+        }
+        return nodo;
     }
 }
 exports.inc_dec = inc_dec;

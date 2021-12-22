@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -75,7 +76,7 @@ export class Switch implements Instruccion{
 
         if(this.cases !== null){
             for(let caso of this.cases){
-                let expresionCaso = caso.interpretar(tree, table);
+                let expresionCaso = caso.expresion.interpretar(tree, table);
 
                 if(expresionCaso instanceof Excepcion){
                     tree.getExcepciones().push(expresionCaso);
@@ -92,14 +93,28 @@ export class Switch implements Instruccion{
                                 tree.getExcepciones().push(result);
                                 tree.updateConsola(result.toString());
                             }
-
+                            cumple = true;
                             if(result instanceof Break){
-                                cumple = true;
                                 return null;
                             }
 
                             if(result instanceof Return){
-                                cumple = true;
+                                return result;
+                            }
+                        }
+                    } else if(cumple){
+                        let nuevaTabla = new Entorno(table);
+                        for(let instruccion of caso.instrucciones){
+                            let result = instruccion.interpretar(tree, nuevaTabla);
+                            if(result instanceof Excepcion){
+                                tree.getExcepciones().push(result);
+                                tree.updateConsola(result.toString());
+                            }
+                            if(result instanceof Break){
+                                return null;
+                            }
+
+                            if(result instanceof Return){
                                 return result;
                             }
                         }
@@ -108,23 +123,36 @@ export class Switch implements Instruccion{
             }
         }
 
-        if(!cumple){
-            if(this.porDefecto !== null){
-                let nuevaTabla = new Entorno(table);
-                for(let instruccion of this.porDefecto.instrucciones){
-                    let result = instruccion.interpretar(tree, nuevaTabla);
-                    if(result instanceof Excepcion){
-                        tree.getExcepciones().push(result);
-                        tree.updateConsola(result.toString());
-                    }
+        if(this.porDefecto !== null){
+            let nuevaTabla = new Entorno(table);
+            for(let instruccion of this.porDefecto.instrucciones){
+                let result = instruccion.interpretar(tree, nuevaTabla);
+                if(result instanceof Excepcion){
+                    tree.getExcepciones().push(result);
+                    tree.updateConsola(result.toString());
+                }
 
-                    if(result instanceof Break) return null;
-                    if(result instanceof Return){
-                        return result;
-                    }
+                if(result instanceof Break) return null;
+                if(result instanceof Return){
+                    return result;
                 }
             }
+        }    
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("SWITCH");
+
+        if(this.cases !== null){
+            for(let instr of this.cases){
+                nodo.agregarHijoNodo(instr.getNodo());
+            }
         }
+        if(this.porDefecto !== null){
+            nodo.agregarHijoNodo(this.porDefecto.getNodo());
+        }
+        return nodo;
+        
     }
     
 }

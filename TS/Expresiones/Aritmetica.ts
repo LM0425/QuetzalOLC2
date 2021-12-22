@@ -4,6 +4,7 @@ import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { OperadorAritmetico, Tipo } from "../AST/Tipo";
 import {  TemporalAux } from "../AST/temporalAux";
+import { NodoAST } from "../Abstract/NodoAST";
 
 export class Aritmetica implements Instruccion {
 
@@ -387,7 +388,7 @@ export class Aritmetica implements Instruccion {
         } else if (this.operador === OperadorAritmetico.DIV) {
 
             if (this.opIzquierdo.tipo === Tipo.INT && this.opDerecho.tipo === Tipo.INT) {
-                this.tipo = Tipo.INT;
+                this.tipo = Tipo.DOUBLE;
                 return Number(izq) / Number(der);
             } else if (this.opIzquierdo.tipo === Tipo.INT && this.opDerecho.tipo === Tipo.DOUBLE) {
                 this.tipo = Tipo.DOUBLE;
@@ -479,13 +480,9 @@ export class Aritmetica implements Instruccion {
             }
 
         } else if (this.operador === OperadorAritmetico.CONCATENAR) {
-
-            if (this.opIzquierdo.tipo === Tipo.STRING && this.opDerecho.tipo === Tipo.STRING) {
-                this.tipo = Tipo.STRING;
-                return izq + der;
-            } else {
-                return new Excepcion("Semantico", "Tipo de dato erroneo para operacion de Concatenacion", this.fila, this.columna);
-            }
+            
+            this.tipo = Tipo.STRING;
+            return izq + der;
 
         } else if (this.operador === OperadorAritmetico.REPETIR) {
 
@@ -503,4 +500,36 @@ export class Aritmetica implements Instruccion {
         }
     }
 
+    getNodo() {
+        let nodo = new NodoAST("ARITMETICA");
+        if(this.opDerecho !== null){
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opDerecho.getNodo());
+        } else{
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+        }
+        return nodo;
+    }
+
+    obtenerOperador(op:OperadorAritmetico){
+        if(op === OperadorAritmetico.MAS){
+            return "+";
+        } else if(op === OperadorAritmetico.MENOS){
+            return "-";
+        } else if(op === OperadorAritmetico.POR){
+            return "*";
+        } else if(op === OperadorAritmetico.DIV){
+            return "/";
+        } else if(op === OperadorAritmetico.MOD){
+            return "%";
+        } else if(op === OperadorAritmetico.UMENOS){
+            return "-";
+        } else if(op === OperadorAritmetico.CONCATENAR){
+            return "&";
+        } else if(op === OperadorAritmetico.REPETIR){
+            return "^";
+        }
+    }
 }

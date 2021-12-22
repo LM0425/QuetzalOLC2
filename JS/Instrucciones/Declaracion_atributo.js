@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Declaracion_atributo = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
 class Declaracion_atributo {
@@ -31,6 +32,12 @@ class Declaracion_atributo {
             return result;
         //}
         return null;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("DECLARACION ATRIBUTO STRUCT");
+        nodo.agregarHijo(this.identificador);
+        nodo.agregarHijoNodo(this.expresion.getNodo());
+        return nodo;
     }
 }
 exports.Declaracion_atributo = Declaracion_atributo;

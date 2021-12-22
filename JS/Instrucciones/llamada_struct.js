@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Llamada_struct = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
@@ -38,7 +39,20 @@ class Llamada_struct {
                         //console.log('el elemento a ingresar es: ',element);
                         /* console.log('el atributo es: ',element.tipo);
                         console.log('la entrada es: ',structAux.expresion[0][i].tipo) */
-                        if (element.tipo == structAux.expresion[0][i].tipo) {
+                        if (element.tipo === Tipo_1.Tipo.NULL) {
+                            let result = element.interpretar(tree, nuevaTabla);
+                            // console.log('el elemento extraido es ', result);
+                            if (result instanceof Excepcion_1.Excepcion) {
+                                tree.getExcepciones().push(result);
+                                tree.updateConsola(result.toString());
+                            }
+                            let simbolo = new Simbolo_1.Simbolo(structAux.expresion[0][i].identificador, structAux.expresion[0][i].tipo, this.fila, this.columna, result);
+                            simbolo.setTipoStruct(this.tipo1);
+                            //console.log('el simbolo a insertar es: ', simbolo);
+                            let resultAux = nuevaTabla.agregarSimbolo(simbolo);
+                            // if (resultAux instanceof Excepcion) return result;
+                        }
+                        else if (element.tipo == structAux.expresion[0][i].tipo) {
                             let result = element.interpretar(tree, nuevaTabla);
                             // console.log('el elemento extraido es ', result);
                             if (result instanceof Excepcion_1.Excepcion) {
@@ -71,6 +85,13 @@ class Llamada_struct {
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipos de datos no coinciden  en struct +", this.fila, this.columna);
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("LLAMADA STRUCT");
+        let instrucciones = new NodoAST_1.NodoAST("STRUCT ");
+        instrucciones.agregarHijo(this.identificador);
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
     }
 }
 exports.Llamada_struct = Llamada_struct;

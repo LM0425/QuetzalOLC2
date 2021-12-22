@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -70,5 +71,16 @@ export class DoW implements Instruccion {
                 return new Excepcion("Semantico", "Tipo de dato no booleano en condicion While.", this.fila, this.columna);
             }
         } while (true);
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("DO WHILE");
+        let instrucciones = new NodoAST("INSTRUCCIONES FOR");
+        for(let instr of this.instruccionesIf){
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+
+        return nodo;
     }
 }

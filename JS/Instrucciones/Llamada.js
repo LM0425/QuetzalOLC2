@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Llamada = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
@@ -45,7 +46,14 @@ class Llamada {
                 let resultParametro = parametro.interpretar(tree, table);
                 if (resultParametro instanceof Excepcion_1.Excepcion)
                     return resultParametro;
-                if (result.parametros[contador]['tipo'] === parametro.tipo) {
+                if (result.parametros[contador]['arreglo'] === true) {
+                    let simbolo = new Simbolo_1.Simbolo(result.parametros[contador]['identificador'], Tipo_1.Tipo.ARRAY, this.fila, this.columna, resultParametro);
+                    simbolo.setTipoArreglo(result.parametros[contador]['tipo']);
+                    let resultTabla = nuevaTabla.agregarSimbolo(simbolo);
+                    if (resultTabla instanceof Excepcion_1.Excepcion)
+                        return resultTabla;
+                }
+                else if (result.parametros[contador]['tipo'] === parametro.tipo) {
                     let simbolo = new Simbolo_1.Simbolo(result.parametros[contador]['identificador'], result.parametros[contador]['tipo'], this.fila, this.columna, resultParametro);
                     let resultTabla = nuevaTabla.agregarSimbolo(simbolo);
                     if (resultTabla instanceof Excepcion_1.Excepcion)
@@ -65,6 +73,16 @@ class Llamada {
             return value;
         this.tipo = result.tipo;
         return value;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("LLAMADA A FUNCION");
+        nodo.agregarHijo(this.nombre);
+        let instrucciones = new NodoAST_1.NodoAST("PARAMETROS");
+        for (let param of this.parametros) {
+            instrucciones.agregarHijoNodo(param.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
     }
 }
 exports.Llamada = Llamada;

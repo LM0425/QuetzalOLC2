@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -34,6 +35,17 @@ export class Parse implements Instruccion {
         } else {
             return new Excepcion("Semantico", "Tipo de dato en Parse no es int, double o boolean", this.fila, this.columna);
         }
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("PARSE");
+
+        let instrucciones = new NodoAST("VALOR ")
+        instrucciones.agregarHijoNodo(this.expresion.getNodo())
+        nodo.agregarHijo(this.tipo);
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
     }
 
 }

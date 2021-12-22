@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -41,6 +42,12 @@ export class Primitivos implements Instruccion {
             }
         }
         return this.valor;
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("PRIMITIVO");
+        nodo.agregarHijo(String(this.valor));
+        return nodo;
     }
 
     defTipo(arreglo:any){

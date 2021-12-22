@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Logica = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
 class Logica {
@@ -50,6 +51,30 @@ class Logica {
         }
         else {
             return new Excepcion_1.Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
+        }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("LOGICA");
+        if (this.opDerecho !== null) {
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opDerecho.getNodo());
+        }
+        else {
+            nodo.agregarHijo(this.obtenerOperador(this.operador));
+            nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+        }
+        return nodo;
+    }
+    obtenerOperador(op) {
+        if (op === Tipo_1.OperadorLogico.NOT) {
+            return "!";
+        }
+        else if (op === Tipo_1.OperadorLogico.AND) {
+            return "&&";
+        }
+        else if (op === Tipo_1.OperadorLogico.OR) {
+            return "||";
         }
     }
 }

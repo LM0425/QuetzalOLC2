@@ -2,6 +2,7 @@ import { Instruccion } from "../Abstract/Instruccion";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Case3d } from "../AST/Case3d";
+import { NodoAST } from "../Abstract/NodoAST";
 
 export class Default implements Instruccion {
 
@@ -25,6 +26,17 @@ export class Default implements Instruccion {
 
     interpretar(tree: AST, table: Entorno) {
         return this
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("DEFAULT");
+        let instrucciones = new NodoAST("INSTRUCCIONES DEFAULT");
+        for(let instr of this.instrucciones){
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+
+        return nodo;
     }
 
 }

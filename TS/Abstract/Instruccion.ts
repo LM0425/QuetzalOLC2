@@ -7,4 +7,5 @@ export interface Instruccion {
 
     interpretar(tree: AST, table: Entorno): any;
     traducir(tree: AST, table: Entorno):any;
+    getNodo(): any;
 }

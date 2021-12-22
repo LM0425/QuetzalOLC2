@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -121,6 +122,29 @@ export class If implements Instruccion {
         } else {
             return new Excepcion("Semantico", "Tipo de dato no booleano en condicion If.", this.fila, this.columna);
         }
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("IF");
+
+        let instruccionesIf = new NodoAST("INSTRUCCIONES IF")
+        for(let instr of this.instruccionesIf){
+            instruccionesIf.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instruccionesIf);
+
+        if(this.instruccionesElse !== null){
+            let instruccionesElse = new NodoAST("INSTRUCCIONES ELSE");
+            for(let instr of this.instruccionesElse){
+                instruccionesElse.agregarHijoNodo(instr.getNodo());
+            }
+            nodo.agregarHijoNodo(instruccionesElse);
+        }else if(this.elseIf !== null){
+            nodo.agregarHijoNodo(this.elseIf.getNodo());
+        }
+
+        return nodo;
+        
     }
 
 }

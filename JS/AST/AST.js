@@ -8,6 +8,8 @@ class AST {
         this.funciones = [];
         this.excepciones = [];
         this.consola = "";
+        this.dot = "";
+        this.contador = 0;
         this.TSGlobal = null;
         this.contadores = [];
         this.contadorTemporal = 0;
@@ -76,6 +78,24 @@ class AST {
     }
     addFuncion(funcion) {
         this.funciones.push(funcion);
+    }
+    getDot(raiz) {
+        this.dot = "";
+        this.dot += "digraph {\n";
+        this.dot += "n0[label=\"" + raiz.getValor().replace("\"", "\\\"") + "\"];\n";
+        this.contador = 1;
+        this.recorrerAST("n0", raiz);
+        this.dot += "}";
+        return this.dot;
+    }
+    recorrerAST(idPadre, nodoPadre) {
+        for (let hijo of nodoPadre.getHijos()) {
+            let nombreHijo = "n" + String(this.contador);
+            this.dot += nombreHijo + "[label=\"" + hijo.getValor().replace("\"", "\\\"") + "\"];\n";
+            this.dot += idPadre + "->" + nombreHijo + ";\n";
+            this.contador += 1;
+            this.recorrerAST(nombreHijo, hijo);
+        }
     }
     addFuncion3D(funcion) {
         this.funciones3D.push(funcion);

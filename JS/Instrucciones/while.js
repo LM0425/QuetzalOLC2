@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.While = void 0;
+const NodoAST_1 = require("../Abstract/NodoAST");
 const Entorno_1 = require("../AST/Entorno");
 const Excepcion_1 = require("../AST/Excepcion");
 const Tipo_1 = require("../AST/Tipo");
@@ -63,6 +64,15 @@ class While {
                 return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no booleano en condicion While.", this.fila, this.columna);
             }
         }
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("WHILE");
+        let instrucciones = new NodoAST_1.NodoAST("INSTRUCCIONES ");
+        for (let instr of this.instruccionesIf) {
+            instrucciones.agregarHijoNodo(instr.getNodo());
+        }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
     }
 }
 exports.While = While;

@@ -12,6 +12,8 @@ export class AST {
     public structs: Array<Struct>;      //Pull de Strcuts
     excepciones: Array<Excepcion>;      //Pull de Excepciones
     consola: string;
+    dot: string;
+    contador: number;
     TSGlobal: Entorno;
 
     contadores: Array<string>;
@@ -38,6 +40,8 @@ export class AST {
         this.funciones = []
         this.excepciones = []
         this.consola = "";
+        this.dot = "";
+        this.contador = 0;
         this.TSGlobal = null;
 
         this.contadores=[];
@@ -125,6 +129,26 @@ export class AST {
 
     addFuncion(funcion: Funcion) {
         this.funciones.push(funcion);
+    }
+
+    getDot(raiz:any){
+        this.dot = "";
+        this.dot += "digraph {\n";
+        this.dot += "n0[label=\"" + raiz.getValor().replace("\"", "\\\"") + "\"];\n"
+        this.contador = 1;
+        this.recorrerAST("n0", raiz);
+        this.dot += "}"
+        return this.dot
+    }
+
+    recorrerAST(idPadre:any, nodoPadre:any){
+        for(let hijo of nodoPadre.getHijos()){
+            let nombreHijo = "n" + String(this.contador);
+            this.dot += nombreHijo + "[label=\"" + hijo.getValor().replace("\"", "\\\"") + "\"];\n";
+            this.dot += idPadre + "->" + nombreHijo + ";\n"
+            this.contador += 1
+            this.recorrerAST(nombreHijo, hijo)
+        }
     }
 
     addFuncion3D(funcion){

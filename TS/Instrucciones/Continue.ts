@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 
@@ -19,4 +20,8 @@ export class Continue implements Instruccion{
         return this;
     }
     
+    getNodo() {
+        let nodo = new NodoAST("CONTINUE");
+        return nodo;
+    }
 }

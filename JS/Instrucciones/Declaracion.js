@@ -5,6 +5,7 @@ const Excepcion_1 = require("../AST/Excepcion");
 const Simbolo_1 = require("../AST/Simbolo");
 const Tipo_1 = require("../AST/Tipo");
 const temporalAux_1 = require("../AST/temporalAux");
+const NodoAST_1 = require("../Abstract/NodoAST");
 class Declaracion {
     constructor(tipo, identficador, fila, columna, expresion, decArreglo, porRefencia, copia) {
         this.tipo = tipo;
@@ -171,6 +172,13 @@ class Declaracion {
             }
         }
         return null;
+    }
+    getNodo() {
+        let nodo = new NodoAST_1.NodoAST("DECLARACION");
+        for (let id of this.identificador) {
+            nodo.agregarHijo(String(id));
+        }
+        return nodo;
     }
 }
 exports.Declaracion = Declaracion;

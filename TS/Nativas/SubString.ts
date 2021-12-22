@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -38,4 +39,21 @@ export class SubString implements Instruccion {
         return expresion.slice(posInicial, posFinal);
     }
 
+    getNodo() {
+        let nodo = new NodoAST("SUBSTRING");
+
+        let instrucciones = new NodoAST("EXPRESION")
+        instrucciones.agregarHijoNodo(this.expresion.getNodo())
+        nodo.agregarHijoNodo(instrucciones);
+
+        let posi = new NodoAST("POSICION INICIAL")
+        posi.agregarHijoNodo(this.posInicial.getNodo())
+        nodo.agregarHijoNodo(posi);
+
+        let posf = new NodoAST("POSICION FINAL")
+        posf.agregarHijoNodo(this.posFinal.getNodo())
+        nodo.agregarHijoNodo(posf);
+        return nodo;
+        
+    }
 }

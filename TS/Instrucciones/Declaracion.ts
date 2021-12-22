@@ -5,6 +5,7 @@ import { Excepcion } from "../AST/Excepcion";
 import { Simbolo } from "../AST/Simbolo";
 import { Tipo } from "../AST/Tipo";
 import {  TemporalAux } from "../AST/temporalAux";
+import { NodoAST } from "../Abstract/NodoAST";
 
 export class Declaracion implements Instruccion {
     tipo: Tipo;
@@ -185,4 +186,11 @@ export class Declaracion implements Instruccion {
         return null;
     }
 
+    getNodo() {
+        let nodo = new NodoAST("DECLARACION");
+        for(let id of this.identificador){
+            nodo.agregarHijo(String(id));
+        }
+        return nodo;
+    }
 }

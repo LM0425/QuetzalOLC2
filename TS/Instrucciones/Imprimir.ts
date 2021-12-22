@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -142,6 +143,18 @@ export class Imprimir implements Instruccion {
         if (this.salto === true) tree.updateConsola('\n');
 
         return this;
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("IMPIRMIR");
+
+        let instrucciones = new NodoAST("EXPRESIONES ")
+        // for(let instr of this.expresion){
+        //     instrucciones.agregarHijoNodo(instr.getNodo());
+        // }
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
     }
 
 }

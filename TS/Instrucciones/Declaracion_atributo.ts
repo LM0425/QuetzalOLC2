@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -42,6 +43,13 @@ export class Declaracion_atributo implements Instruccion {
         //}
 
         return null;
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("DECLARACION ATRIBUTO STRUCT");
+        nodo.agregarHijo(this.identificador);
+        nodo.agregarHijoNodo(this.expresion.getNodo());
+        return nodo;
     }
 
 }

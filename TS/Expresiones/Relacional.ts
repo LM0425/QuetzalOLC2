@@ -4,6 +4,7 @@ import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
 import { Tipo, OperadorRelacional } from "../AST/Tipo";
 import {  TemporalAux } from "../AST/temporalAux";
+import { NodoAST } from "../Abstract/NodoAST";
 
 export class Relacional implements Instruccion {
     operador: OperadorRelacional;
@@ -177,6 +178,15 @@ export class Relacional implements Instruccion {
         } else {
             return new Excepcion("Semantico", "Tipo de operacion no especificada.", this.fila, this.columna);
         }
+    }
+
+    getNodo() {
+        let nodo = new NodoAST("RELACIONAL");
+        nodo.agregarHijoNodo(this.opIzquierdo.getNodo());
+        nodo.agregarHijo(this.getSigno(this.operador));
+        nodo.agregarHijoNodo(this.opDerecho.getNodo());
+        
+        return nodo;
     }
 
     getSigno(operador){

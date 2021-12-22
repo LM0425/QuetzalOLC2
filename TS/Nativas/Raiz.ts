@@ -1,4 +1,5 @@
 import { Instruccion } from "../Abstract/Instruccion";
+import { NodoAST } from "../Abstract/NodoAST";
 import { AST } from "../AST/AST";
 import { Entorno } from "../AST/Entorno";
 import { Excepcion } from "../AST/Excepcion";
@@ -28,4 +29,13 @@ export class Raiz implements Instruccion {
         return Math.sqrt(valor)
     }
 
+    getNodo() {
+        let nodo = new NodoAST("RAIZ");
+
+        let instrucciones = new NodoAST("VALOR ")
+        instrucciones.agregarHijoNodo(this.valor.getNodo())
+        nodo.agregarHijoNodo(instrucciones);
+        return nodo;
+        
+    }
 }
