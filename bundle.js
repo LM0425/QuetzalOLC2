@@ -6067,10 +6067,7 @@ function displayDate() {
     const result = parse(textoIngresado);
     const instrucciones = result['instrucciones'];
     const errores = result['errores'];
-<<<<<<< Updated upstream
-=======
     
->>>>>>> Stashed changes
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);
