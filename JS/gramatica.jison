@@ -160,6 +160,7 @@ BSL                                 "\\".
 	const { Asignacion } = require("./Instrucciones/Asignacion");
 	const { Identificador } = require("./Expresiones/Identificador");
 	const { Imprimir } = require("./Instrucciones/Imprimir");
+	const { Ternario } = require("./Instrucciones/Ternario");
 	const { If } = require("./Instrucciones/If");
 	const { Switch } = require("./Instrucciones/Switch");
 	const { Case } = require("./Instrucciones/Case");
@@ -206,6 +207,7 @@ BSL                                 "\\".
 %left 'OR'
 %left 'AND'
 %left 'UNOT'
+%left 'TERNARIO'
 %left 'IGUALIGUAL' 'DIFERENTE' 'MENOR' 'MAYOR' 'MENORIGUAL' 'MAYORIGUAL'
 %left 'MAS' 'MENOS' 'CONCATENAR' 'REPETICION'
 %left 'POR' 'DIVIDIDO' 'MODULO'
@@ -339,6 +341,8 @@ expresion
 
 	| pop									{ $$ = $1; }
 	| expresion PUNTO RLENGTH PARIZQ PARDER	{ $$ = new Length($1, @1.first_line, @1.first_column); }
+	
+	| expresion TERNARIO expresion DOSPT expresion	{ console.log($1); $$ = new Ternario($1, $3, $5, @1.first_line, @1.first_column); }
 ;
 
 posicion

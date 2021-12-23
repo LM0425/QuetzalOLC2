@@ -6,6 +6,7 @@ import { Struct } from "../Instrucciones/struct";
 import { TemporalAux } from "./temporalAux";
 import { Case3d } from "./Case3d";
 import {Tipo} from "./Tipo"
+import { SimboloReporte } from "./SimboloReporte";
 
 export class AST {
     instrucciones: Array<Instruccion>
@@ -16,6 +17,9 @@ export class AST {
     dot: string;
     contador: number;
     TSGlobal: Entorno;
+    entorno: string;
+    noEntorno: number;
+    simbolos: {[identificador: string]: SimboloReporte};
 
     contadores: Array<string>;
     contadorTemporal:number;
@@ -45,6 +49,9 @@ export class AST {
         this.dot = "";
         this.contador = 0;
         this.TSGlobal = null;
+        this.entorno = "Global"
+        this.noEntorno = 1;
+        this.simbolos = {}
 
         this.contadores=[];
         this.contadorTemporal=0;
@@ -63,6 +70,20 @@ export class AST {
         this.main3D="";
 
 
+    }
+
+    getSimbolos(){
+        return this.simbolos;
+    }
+
+    addSimbolo(id:string, simbolo:SimboloReporte){
+        this.simbolos[id] = simbolo;
+    }
+
+    updateSimbolo(identficador:string, valor:any){
+        if (this.simbolos.hasOwnProperty(identficador)) {
+            this.simbolos[identficador].valor = valor;
+        }
     }
 
     getInstrucciones() {

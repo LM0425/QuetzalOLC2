@@ -12,6 +12,9 @@ class AST {
         this.dot = "";
         this.contador = 0;
         this.TSGlobal = null;
+        this.entorno = "Global";
+        this.noEntorno = 1;
+        this.simbolos = {};
         this.contadores = [];
         this.contadorTemporal = 0;
         this.posicionContador = 0;
@@ -25,6 +28,17 @@ class AST {
         this.casos = [];
         this.funciones3D = [];
         this.main3D = "";
+    }
+    getSimbolos() {
+        return this.simbolos;
+    }
+    addSimbolo(id, simbolo) {
+        this.simbolos[id] = simbolo;
+    }
+    updateSimbolo(identficador, valor) {
+        if (this.simbolos.hasOwnProperty(identficador)) {
+            this.simbolos[identficador].valor = valor;
+        }
     }
     getInstrucciones() {
         return this.instrucciones;

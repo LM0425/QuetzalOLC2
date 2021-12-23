@@ -6,6 +6,7 @@ const Simbolo_1 = require("../AST/Simbolo");
 const Tipo_1 = require("../AST/Tipo");
 const temporalAux_1 = require("../AST/temporalAux");
 const NodoAST_1 = require("../Abstract/NodoAST");
+const SimboloReporte_1 = require("../AST/SimboloReporte");
 class Declaracion {
     constructor(tipo, identficador, fila, columna, expresion, decArreglo, porRefencia, copia) {
         this.tipo = tipo;
@@ -169,15 +170,16 @@ class Declaracion {
     interpretar(tree, table) {
         if (this.decArreglo === true) {
             if (this.porReferencia) {
-                let simbolo = table.getTabla(this.expresion);
+                let simbolo = table.getTabla(this.identificador[0]);
                 if (simbolo === null)
-                    return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
+                    return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador[0] + "no encontrada", this.fila, this.columna);
                 if (this.tipo !== simbolo.getTipoArreglo())
                     return new Excepcion_1.Excepcion("Semantico", "Tipo de arreglo diferente al tipo de variable", this.fila, this.columna);
-                simbolo.setId(this.identificador.pop());
+                simbolo.setId(this.identificador[0]);
                 let result = table.agregarSimbolo(simbolo);
                 if (result instanceof Excepcion_1.Excepcion)
                     return result;
+                tree.addSimbolo(this.identificador[0] + tree.entorno, new SimboloReporte_1.SimboloReporte(this.identificador[0], "Variable", this.valorTipo(this.tipo), tree.entorno, simbolo.getValor().slice(), this.fila, this.columna));
             }
             else if (this.copia) {
                 let simbolo = table.getTabla(this.expresion);
@@ -185,11 +187,12 @@ class Declaracion {
                     return new Excepcion_1.Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
                 if (this.tipo !== simbolo.getTipoArreglo())
                     return new Excepcion_1.Excepcion("Semantico", "Tipo de arreglo diferente al tipo de variable", this.fila, this.columna);
-                let nuevoSimbolo = new Simbolo_1.Simbolo(this.identificador.pop(), Tipo_1.Tipo.ARRAY, this.fila, this.columna, simbolo.getValor().slice());
+                let nuevoSimbolo = new Simbolo_1.Simbolo(this.identificador[0], Tipo_1.Tipo.ARRAY, this.fila, this.columna, simbolo.getValor().slice());
                 nuevoSimbolo.setTipoArreglo(this.tipo);
                 let result = table.agregarSimbolo(nuevoSimbolo);
                 if (result instanceof Excepcion_1.Excepcion)
                     return result;
+                tree.addSimbolo(this.identificador[0] + tree.entorno, new SimboloReporte_1.SimboloReporte(this.identificador[0], "Variable", this.valorTipo(this.tipo), tree.entorno, simbolo.getValor().slice(), this.fila, this.columna));
             }
             else {
                 let value = this.expresion.interpretar(tree, table); // Valor a asignar a la variable
@@ -198,11 +201,12 @@ class Declaracion {
                 if (this.tipo !== this.expresion.tipoArreglo)
                     return new Excepcion_1.Excepcion("Semantico", "Tipo de dato difente al tipo del arreglo.", this.fila, this.columna);
                 this.tipo = Tipo_1.Tipo.ARRAY;
-                let simbolo = new Simbolo_1.Simbolo(this.identificador.pop(), this.tipo, this.fila, this.columna, value);
+                let simbolo = new Simbolo_1.Simbolo(this.identificador[0], this.tipo, this.fila, this.columna, value);
                 simbolo.setTipoArreglo(this.expresion.tipoArreglo);
                 let result = table.agregarSimbolo(simbolo);
                 if (result instanceof Excepcion_1.Excepcion)
                     return result;
+                tree.addSimbolo(this.identificador[0] + tree.entorno, new SimboloReporte_1.SimboloReporte(this.identificador[0], "Variable", this.valorTipo(this.tipo), tree.entorno, value, this.fila, this.columna));
             }
         }
         else {
@@ -227,6 +231,7 @@ class Declaracion {
                 let result = table.agregarSimbolo(simbolo);
                 if (result instanceof Excepcion_1.Excepcion)
                     return result;
+                tree.addSimbolo(id + tree.entorno, new SimboloReporte_1.SimboloReporte(id, "Variable", this.valorTipo(this.tipo), tree.entorno, value, this.fila, this.columna));
             }
         }
         return null;
@@ -237,6 +242,29 @@ class Declaracion {
             nodo.agregarHijo(String(id));
         }
         return nodo;
+    }
+    valorTipo(valor) {
+        if (valor === Tipo_1.Tipo.INT) {
+            return "int";
+        }
+        else if (valor === Tipo_1.Tipo.DOUBLE) {
+            return "double";
+        }
+        else if (valor === Tipo_1.Tipo.BOOL) {
+            return "boolean";
+        }
+        else if (valor === Tipo_1.Tipo.CHAR) {
+            return "char";
+        }
+        else if (valor === Tipo_1.Tipo.STRING) {
+            return "String";
+        }
+        else if (valor === Tipo_1.Tipo.ARRAY) {
+            return "array";
+        }
+        else if (valor === Tipo_1.Tipo.VOID) {
+            return "void";
+        }
     }
 }
 exports.Declaracion = Declaracion;

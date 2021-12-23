@@ -47,6 +47,7 @@ export class Main implements Instruccion{
     }
 
     interpretar(tree: AST, table: Entorno) {
+        tree.entorno = "Main"
         let entornoMain = new Entorno(table)
         for(let instruccion of this.instrucciones){
             let value = instruccion.interpretar(tree, entornoMain);

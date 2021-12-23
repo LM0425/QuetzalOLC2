@@ -29,6 +29,7 @@ class Main {
         //console.log(texto3d);
     }
     interpretar(tree, table) {
+        tree.entorno = "Main";
         let entornoMain = new Entorno_1.Entorno(table);
         for (let instruccion of this.instrucciones) {
             let value = instruccion.interpretar(tree, entornoMain);

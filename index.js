@@ -79,7 +79,6 @@ function displayDate() {
     const result = parse(textoIngresado);
     const instrucciones = result['instrucciones'];
     const errores = result['errores'];
-    //console.log(instrucciones)
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);
@@ -140,9 +139,9 @@ function displayDate() {
         }
     }
 
-    //console.log(ast.getConsola());
     document.getElementById("editorSalida").value  =ast.getConsola();
 
+    // --- Reporte de AST
     let init = new NodoAST("RAIZ");
     let instr = new NodoAST("INSTRUCCIONES");
 
@@ -153,7 +152,6 @@ function displayDate() {
     init.agregarHijoNodo(instr);
     let grafo = ast.getDot(init);
 
-    //console.log(grafo)
     var divAST = document.getElementById("ast")
     //divAST.innerHTML = "<h5> probando </h5>"
     var viz = new Viz();
@@ -165,6 +163,8 @@ function displayDate() {
         console.log(error)
     })
 
+
+    // --- Reporte de Errores
     let tableError = document.getElementById("tableE")
     let contadorError = 1;
     for(let error of ast.getExcepciones()){
@@ -187,6 +187,65 @@ function displayDate() {
         tableError.appendChild(row)
         contadorError++;
     }
+
+    // --- Reporte de Tabla de Simbolos
+    let tableTS = document.getElementById("tableTS")
+    // console.log(ast.getSimbolos())
+    for (const [key, value] of Object.entries(ast.getSimbolos())) {
+        let row = document.createElement("tr")
+        var err = document.createElement("td")
+        err.innerHTML = value.identificador;
+        row.appendChild(err)
+        var cell1 = document.createElement("td")
+        cell1.innerHTML = value.tipoSimbolo;
+        row.appendChild(cell1)
+        var cell2 = document.createElement("td")
+        cell2.innerHTML = value.tipo
+        row.appendChild(cell2)
+        var cell3 = document.createElement("td")
+        cell3.innerHTML = value.entorno
+        row.appendChild(cell3)
+        var cell4 = document.createElement("td")
+        cell4.innerHTML = value.valor
+        row.appendChild(cell4)
+        var cell5 = document.createElement("td")
+        cell5.innerHTML = value.fila
+        row.appendChild(cell5)
+        var cell6 = document.createElement("td")
+        cell6.innerHTML = value.columna
+        row.appendChild(cell6)
+        tableTS.appendChild(row)
+
+    }
+
+    
+    // console.log(ast.getSimbolos())
+    // ast.getSimbolos().forEach((element) => {
+    //     let row = document.createElement("tr")
+    //     var err = document.createElement("td")
+    //     err.innerHTML = element.identificador;
+    //     row.appendChild(err)
+    //     var cell1 = document.createElement("td")
+    //     cell1.innerHTML = element.tipoSimbolo;
+    //     row.appendChild(cell1)
+    //     var cell2 = document.createElement("td")
+    //     cell2.innerHTML = element.tipo
+    //     row.appendChild(cell2)
+    //     var cell3 = document.createElement("td")
+    //     cell3.innerHTML = element.entorno
+    //     row.appendChild(cell3)
+    //     var cell4 = document.createElement("td")
+    //     cell4.innerHTML = element.valor
+    //     row.appendChild(cell4)
+    //     var cell5 = document.createElement("td")
+    //     cell5.innerHTML = element.fila
+    //     row.appendChild(cell5)
+    //     var cell6 = document.createElement("td")
+    //     cell6.innerHTML = element.columna
+    //     row.appendChild(cell6)
+    //     tableTS.appendChild(row)
+
+    // });
 }
 
 /* function numeracion(e) {

@@ -6,6 +6,7 @@ import { Tipo } from "../AST/Tipo";
 import { Return } from "./Return";
 import {  TemporalAux } from "../AST/temporalAux";
 import { NodoAST } from "../Abstract/NodoAST";
+import { SimboloReporte } from "../AST/SimboloReporte";
 
 
 export class Funcion implements Instruccion {
@@ -69,6 +70,11 @@ export class Funcion implements Instruccion {
     }
 
     interpretar(tree: AST, table: Entorno) {
+        // console.log(this.nombre)
+        let entornoAnterior = tree.entorno;
+        tree.entorno = "F_" + this.nombre;
+        tree.addSimbolo(this.nombre, new SimboloReporte(this.nombre, "Funcion", this.valorTipo(this.tipo), "Global", "---",this.fila, this.columna))
+        // console.log(tree.getSimbolos())
         let entornoFuncion = new Entorno(table);
 
         for (let instruccion of this.instrucciones) {
@@ -78,10 +84,13 @@ export class Funcion implements Instruccion {
                 tree.updateConsola(value.toString());
             }
             if(value instanceof Return){
+                tree.updateSimbolo(this.nombre, value.result)
+                tree.entorno = entornoAnterior;
                 return value.result;
             }
         }
 
+        tree.entorno = entornoAnterior;
         return null;
     }
 

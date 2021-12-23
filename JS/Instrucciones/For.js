@@ -48,16 +48,23 @@ class For {
         return texto3d;
     }
     interpretar(tree, table) {
+        let anterior = tree.entorno;
+        tree.entorno = anterior + "_" + "For";
         let entornoFor = new Entorno_1.Entorno(table);
         let decAsig = this.decAsig.interpretar(tree, entornoFor);
         if (decAsig instanceof Excepcion_1.Excepcion)
             return decAsig;
         while (true) {
             let condicion = this.condicion.interpretar(tree, entornoFor);
-            if (condicion instanceof Excepcion_1.Excepcion)
+            if (condicion instanceof Excepcion_1.Excepcion) {
+                tree.entorno = anterior;
                 return condicion;
+            }
             if (this.condicion.tipo === Tipo_1.Tipo.BOOL) {
                 if (condicion === true) {
+                    tree.entorno += "_";
+                    tree.entorno += String(tree.noEntorno);
+                    tree.noEntorno++;
                     let entornoPasadaFor = new Entorno_1.Entorno(entornoFor);
                     for (let instruccion of this.instrucciones) {
                         let result = instruccion.interpretar(tree, entornoPasadaFor);
@@ -65,25 +72,33 @@ class For {
                             tree.getExcepciones().push(result);
                             tree.updateConsola(result.toString());
                         }
-                        if (result instanceof Break_1.Break)
+                        if (result instanceof Break_1.Break) {
+                            tree.entorno = anterior;
                             return null;
+                        }
                         if (result instanceof Continue_1.Continue)
                             break;
-                        if (result instanceof Return_1.Return)
+                        if (result instanceof Return_1.Return) {
+                            tree.entorno = anterior;
                             return result;
+                        }
                     }
                     let actualizacion = this.actualizacion.interpretar(tree, entornoFor);
-                    if (actualizacion instanceof Excepcion_1.Excepcion)
+                    if (actualizacion instanceof Excepcion_1.Excepcion) {
+                        tree.entorno = anterior;
                         return actualizacion;
+                    }
                 }
                 else {
                     break;
                 }
             }
             else {
+                tree.entorno = anterior;
                 return new Excepcion_1.Excepcion("Semantico", "Tipo de dato no booleano en condicion de For", this.fila, this.columna);
             }
         }
+        tree.entorno = anterior;
     }
     getNodo() {
         let nodo = new NodoAST_1.NodoAST("FOR");

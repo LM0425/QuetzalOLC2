@@ -6,6 +6,7 @@ import { Simbolo } from "../AST/Simbolo";
 import { Tipo } from "../AST/Tipo";
 import {  TemporalAux } from "../AST/temporalAux";
 import { NodoAST } from "../Abstract/NodoAST";
+import { SimboloReporte } from "../AST/SimboloReporte";
 
 export class Declaracion implements Instruccion {
     tipo: Tipo;
@@ -193,14 +194,16 @@ export class Declaracion implements Instruccion {
     interpretar(tree: AST, table: Entorno) {
         if (this.decArreglo === true) {
             if (this.porReferencia) {
-                let simbolo = table.getTabla(this.expresion);
-                if (simbolo === null) return new Excepcion("Semantico", "Variable " + this.identificador + "no encontrada", this.fila, this.columna);
+                let simbolo = table.getTabla(this.identificador[0]);
+                if (simbolo === null) return new Excepcion("Semantico", "Variable " + this.identificador[0] + "no encontrada", this.fila, this.columna);
 
                 if(this.tipo !== simbolo.getTipoArreglo()) return new Excepcion("Semantico", "Tipo de arreglo diferente al tipo de variable", this.fila, this.columna);
 
-                simbolo.setId(this.identificador.pop());
+                simbolo.setId(this.identificador[0]);
                 let result = table.agregarSimbolo(simbolo);
                 if (result instanceof Excepcion) return result;
+
+                tree.addSimbolo(this.identificador[0]+tree.entorno, new SimboloReporte(this.identificador[0], "Variable", this.valorTipo(this.tipo),tree.entorno,simbolo.getValor().slice(), this.fila, this.columna))
 
             } else if (this.copia) {
                 let simbolo = table.getTabla(this.expresion);
@@ -208,11 +211,13 @@ export class Declaracion implements Instruccion {
 
                 if(this.tipo !== simbolo.getTipoArreglo()) return new Excepcion("Semantico", "Tipo de arreglo diferente al tipo de variable", this.fila, this.columna);
 
-                let nuevoSimbolo = new Simbolo(this.identificador.pop(), Tipo.ARRAY, this.fila, this.columna, simbolo.getValor().slice());
+                let nuevoSimbolo = new Simbolo(this.identificador[0], Tipo.ARRAY, this.fila, this.columna, simbolo.getValor().slice());
                 nuevoSimbolo.setTipoArreglo(this.tipo)
                 
                 let result = table.agregarSimbolo(nuevoSimbolo);
                 if (result instanceof Excepcion) return result
+
+                tree.addSimbolo(this.identificador[0]+tree.entorno, new SimboloReporte(this.identificador[0], "Variable", this.valorTipo(this.tipo),tree.entorno,simbolo.getValor().slice(), this.fila, this.columna))
 
             } else {
                 let value = this.expresion.interpretar(tree, table); // Valor a asignar a la variable
@@ -221,10 +226,12 @@ export class Declaracion implements Instruccion {
                 if (this.tipo !== this.expresion.tipoArreglo) return new Excepcion("Semantico", "Tipo de dato difente al tipo del arreglo.", this.fila, this.columna);
                 this.tipo = Tipo.ARRAY;
 
-                let simbolo = new Simbolo(this.identificador.pop(), this.tipo, this.fila, this.columna, value);
+                let simbolo = new Simbolo(this.identificador[0], this.tipo, this.fila, this.columna, value);
                 simbolo.setTipoArreglo(this.expresion.tipoArreglo)
                 let result = table.agregarSimbolo(simbolo);
                 if (result instanceof Excepcion) return result;
+
+                tree.addSimbolo(this.identificador[0]+tree.entorno, new SimboloReporte(this.identificador[0], "Variable", this.valorTipo(this.tipo),tree.entorno,value, this.fila, this.columna))
             }
         } else {
             let value = null;
@@ -246,6 +253,8 @@ export class Declaracion implements Instruccion {
                 let result = table.agregarSimbolo(simbolo);
 
                 if (result instanceof Excepcion) return result;
+
+                tree.addSimbolo(id+tree.entorno, new SimboloReporte(id, "Variable", this.valorTipo(this.tipo),tree.entorno,value, this.fila, this.columna))
             }
         }
 
@@ -258,5 +267,23 @@ export class Declaracion implements Instruccion {
             nodo.agregarHijo(String(id));
         }
         return nodo;
+    }
+
+    valorTipo(valor:Tipo){
+        if(valor === Tipo.INT){
+            return "int";
+        } else if(valor === Tipo.DOUBLE){
+            return "double";
+        } else if(valor === Tipo.BOOL){
+            return "boolean";
+        } else if(valor === Tipo.CHAR){
+            return "char";
+        } else if(valor === Tipo.STRING){
+            return "String";
+        } else if(valor === Tipo.ARRAY){
+            return "array";
+        } else if(valor === Tipo.VOID){
+            return "void";
+        }
     }
 }

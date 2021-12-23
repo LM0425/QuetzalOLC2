@@ -51,6 +51,7 @@ class Asignacion {
         }
         if (result instanceof Excepcion_1.Excepcion)
             return result;
+        tree.updateSimbolo(this.identificador + tree.entorno, value);
         return null;
     }
     getNodo() {

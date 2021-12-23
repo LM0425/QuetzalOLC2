@@ -7,6 +7,7 @@ const Tipo_1 = require("../AST/Tipo");
 const Return_1 = require("./Return");
 const temporalAux_1 = require("../AST/temporalAux");
 const NodoAST_1 = require("../Abstract/NodoAST");
+const SimboloReporte_1 = require("../AST/SimboloReporte");
 class Funcion {
     constructor(tipo, nombre, parametros, instrucciones, fila, columna) {
         this.tipo = tipo;
@@ -49,6 +50,11 @@ class Funcion {
         tree.addFuncion3D(texto3d);
     }
     interpretar(tree, table) {
+        // console.log(this.nombre)
+        let entornoAnterior = tree.entorno;
+        tree.entorno = "F_" + this.nombre;
+        tree.addSimbolo(this.nombre, new SimboloReporte_1.SimboloReporte(this.nombre, "Funcion", this.valorTipo(this.tipo), "Global", "---", this.fila, this.columna));
+        // console.log(tree.getSimbolos())
         let entornoFuncion = new Entorno_1.Entorno(table);
         for (let instruccion of this.instrucciones) {
             let value = instruccion.interpretar(tree, entornoFuncion);
@@ -57,9 +63,12 @@ class Funcion {
                 tree.updateConsola(value.toString());
             }
             if (value instanceof Return_1.Return) {
+                tree.updateSimbolo(this.nombre, value.result);
+                tree.entorno = entornoAnterior;
                 return value.result;
             }
         }
+        tree.entorno = entornoAnterior;
         return null;
     }
     getNodo() {

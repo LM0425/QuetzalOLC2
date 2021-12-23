@@ -61,6 +61,7 @@ export class Asignacion implements Instruccion {
         }
         if (result instanceof Excepcion) return result;
 
+        tree.updateSimbolo(this.identificador+tree.entorno, value)
         return null;
     }
 
