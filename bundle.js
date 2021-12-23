@@ -294,6 +294,7 @@ class AST {
         let etiquetaEntrada = this.generarEtiquetas();
         let etiquetaSalida = this.generarEtiquetas();
         let texto3d = "";
+        texto3d += etiquetaRetorno + ":\n";
         texto3d += "if(" + condicion + ") goto " + etiquetaEntrada + ";\n";
         texto3d += "goto " + etiquetaSalida + ";\n";
         texto3d += etiquetaEntrada + ":\n";
@@ -384,6 +385,34 @@ class AST {
             data += "<tr>\n" + "<td>" + element.indentificador + "</td>" + "<td>" + element.valor + "</td>" + "<td>" + this.getTipoString(element.tipo) + "</td>" + "<td>" + element.fila + "</td>" + "<td>" + element.columna + "</td>\n";
             data += "</tr>\n";
         });
+        data += "</table>\n";
+        return data;
+    }
+    reporteStack() {
+        let data = "<H1> REPORTE STACK </H1> \n";
+        data += "<br>\n";
+        data += "<table WIDTH=\"70%\" border='1'style='margin: 0 auto;'>\n";
+        data += "<tr>\n" + "<td>" + "posicion" + "</td>" + "<td>" + "Valor" + "</td>\n";
+        data += "</tr>\n";
+        for (let i = 0; i < this.stack.length; i++) {
+            const element = this.stack[i];
+            data += "<tr>\n" + "<td>" + i + "</td>" + "<td>" + element + "</td>\n";
+            data += "</tr>\n";
+        }
+        data += "</table>\n";
+        return data;
+    }
+    reporteHeap() {
+        let data = "<H1> REPORTE HEAP </H1> \n";
+        data += "<br>\n";
+        data += "<table WIDTH=\"70%\" border='1'style='margin: 0 auto;'>\n";
+        data += "<tr>\n" + "<td>" + "posicion" + "</td>" + "<td>" + "Valor" + "</td>\n";
+        data += "</tr>\n";
+        for (let i = 0; i < this.heap.length; i++) {
+            const element = this.heap[i];
+            data += "<tr>\n" + "<td>" + i + "</td>" + "<td>" + element + "</td>\n";
+            data += "</tr>\n";
+        }
         data += "</table>\n";
         return data;
     }
@@ -6025,8 +6054,9 @@ function tablaTraductor() {
     let main="\n\n/*------MAIN------*/\nvoid main() {\nP = 0; H = 0;\n"+instrucciones3D+"\n"+ast.getMain()+"return;\n}";
     document.getElementById("editorSalida").value  = ast.getEncabezado()+"\ndouble "+ast.getListaTemporales()+";\n\n"+ast.getListaFunciones3D()+main;
     
-    console.log(ast.reporteTabla());
-    var elemento="<div>"+ast.reporteTabla()+"</div>"
+    /* console.log("stack",ast.reporteStack());
+    console.log("heap",ast.reporteHeap()) */
+    var elemento="<div>"+ast.reporteTabla()+"</div><br>"+"<div>"+ast.reporteStack()+"</div><br><div>"+ast.reporteHeap()+"</div>"
     document.getElementById("tabla").insertAdjacentHTML("afterbegin",elemento)
 }
 
@@ -6037,6 +6067,10 @@ function displayDate() {
     const result = parse(textoIngresado);
     const instrucciones = result['instrucciones'];
     const errores = result['errores'];
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);

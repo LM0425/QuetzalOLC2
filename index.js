@@ -67,8 +67,9 @@ function tablaTraductor() {
     let main="\n\n/*------MAIN------*/\nvoid main() {\nP = 0; H = 0;\n"+instrucciones3D+"\n"+ast.getMain()+"return;\n}";
     document.getElementById("editorSalida").value  = ast.getEncabezado()+"\ndouble "+ast.getListaTemporales()+";\n\n"+ast.getListaFunciones3D()+main;
     
-    console.log(ast.reporteTabla());
-    var elemento="<div>"+ast.reporteTabla()+"</div>"
+    /* console.log("stack",ast.reporteStack());
+    console.log("heap",ast.reporteHeap()) */
+    var elemento="<div>"+ast.reporteTabla()+"</div><br>"+"<div>"+ast.reporteStack()+"</div><br><div>"+ast.reporteHeap()+"</div>"
     document.getElementById("tabla").insertAdjacentHTML("afterbegin",elemento)
 }
 
@@ -79,6 +80,7 @@ function displayDate() {
     const result = parse(textoIngresado);
     const instrucciones = result['instrucciones'];
     const errores = result['errores'];
+    
     const ast = new AST(instrucciones);
     const entornoGlobal = new Entorno(null);
     ast.setTSglobal(entornoGlobal);
